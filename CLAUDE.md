@@ -127,3 +127,10 @@ Quy tắc Drive:
 - Commit nhỏ, thông điệp tiếng Việt rõ ràng.
 - Mỗi quyết định mới ghi vào `docs/DECISIONS.md` theo mã WD-xx (ngày, nội dung, lý do).
 - Khi code, Drive và tài liệu mâu thuẫn nhau: dừng lại và hỏi Nery, không tự chọn.
+
+# PHẦN D · LÀM VIỆC NHIỀU THIẾT BỊ (máy cá nhân ↔ cloud)
+
+- Tiến độ hiện tại luôn nằm ở `docs/TIEN-DO.md`. Đọc file này đầu mỗi phiên.
+- Nery nói **"cần đổi thiết bị"** → chạy skill `doi-thiet-bi` (phần A: bàn giao).
+- Nery nói **"tiếp tục"** / **"đã đổi thiết bị"** → chạy skill `doi-thiet-bi` (phần B: nhận bàn giao).
+- Bối cảnh quan trọng phải nằm trong repo, không chỉ trong chat.
