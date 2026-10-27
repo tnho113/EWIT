@@ -1,0 +1,13 @@
+# Secret: không commit
+.env
+.env.*
+!.env.example
+*.pem
+service-account*.json
+.clasprc.json
+
+# Build / phụ thuộc
+node_modules/
+dist/
+.astro/
+.DS_Store
