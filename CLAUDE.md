@@ -33,7 +33,10 @@ Bạn là kỹ sư phần mềm đồng hành cùng **Nery** (Thượng Công Nh
 | **1. Thương hiệu** | Brand Guide v1.1 (logo, màu, font, giọng văn, nhánh học, màu nhận diện EF) | Văn bản giọng văn chính thức, FAQ, hồ sơ đội ngũ, kênh mạng xã hội |
 | **2. Website** | Landing page 12 khối (Astro + Decap CMS), lớp thương hiệu `brand.yaml` + design tokens; tên miền `mlwit.edu.vn` đã kích hoạt | Đề xuất v1.1 chờ Nery duyệt; deploy Cloudflare Pages; ứng dụng thành viên (`app.mlwit.edu.vn`, Oracle Cloud + PostgreSQL) chưa làm |
 | **3. Lịch học & Chấm công** | Hệ cũ: Schedule-YY + DS_Lop/DS_EF + 3 web app Apps Script (Lịch, Chấm công, Nhập lịch). Hệ mới: 3 file Sheets ① SYLLABUS, ② HỆ THỐNG, ③ CHẤM CÔNG đã dựng khung nấc 1, script đã thử trên dữ liệu giả | Chạy song song với hệ cũ 2–4 tuần; nhập đơn giá vào ③ |
-| **4. Hệ thống thi** | Thi Grade 1 trên Sheets: Form đăng ký dùng chung, mã eWitCode `K22-001`, script chốt danh sách | Link Zoom riêng cho từng học viên (đang thử trên Zoom Pro cá nhân); thi các lớp khác (Nghe/Đọc tự chấm, Viết có AI hỗ trợ, Nói thi trực tiếp) đang thiết kế |
+| **4. Hệ thống thi** | Thi Grade 1 trên Sheets: Form đăng ký dùng chung, mã eWitCode `K22-001`, script chốt danh sách. Bản chính: `ChatGPT-Exam Room` (WD-07) | Link Zoom riêng cho từng học viên (đang thử trên Zoom Pro cá nhân); thi các lớp khác (Nghe/Đọc tự chấm, Viết có AI hỗ trợ, Nói thi trực tiếp) đang thiết kế |
+| **5. Xây kênh** (WD-08) | Thư mục `Xây Kênh EWIT`: Kho truyện nội tâm (danh mục + bộ vai giọng), PLAN E-WIT 365 One Story A Day, WiTDaily P1/P2 | Chưa có phạm vi cụ thể |
+
+Tri thức WIT (Thay gân đổi cốt, iME01-Group 6, Wisdom Three): giữ trong EWIT-WORK, định hướng thành bộ não thứ 2 (WD-08).
 
 Kiến trúc hệ Lịch & Công mới:
 - ① SYLLABUS: mỗi lớp một tab nhập liệu; người phụ trách chỉ sửa tab lớp mình.

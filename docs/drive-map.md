@@ -34,6 +34,27 @@ EWIT-WORK/                                              folder   tạo 2026-10-2
 └── Wisdom Three                                        shortcut → đích chưa xác định
 ```
 
+## 0. Mục mới ở gốc (khảo sát lại 27/10/2026, tối)
+
+| Tên | ID | Loại | Sửa gần nhất | Vai trò |
+|---|---|---|---|---|
+| Xây Kênh EWIT/ | `1Mk6NyaTLn7YGxnnr0tcellJgWdVkDZE-` | folder | 2026-10-27 | [S] Mảng 5 · Xây kênh (WD-08) |
+| └ Kho truyện nội tâm - danh mục và bộ vai giọng | `1NdOus5DQqDXw6H3SJogxYyNgHw1dOrgkdAiNRAKzRtk` | sheet | 2026-10-25 | [SL] Kho nội dung + giọng đọc cho kênh |
+| └ Xây dựng Team IT | `1wtKzGI4YThacOm-SQZxxfaHNiNnbhWmq__KOumomlXk` | doc | 2026-04-24 | [SL] Kế hoạch đội IT |
+| └ PLAN FOR E-WIT 365 ONE STORY A DAY | `1JXwy6ZT_mwfFkfT6fL6ns9OhdFyNkB-HmiTVhb-YRoA` | sheet | 2024-12-29 | [SL] Lịch đăng nội dung 365 ngày |
+| └ WiTDaily (P1) 1000 CÂU CHUYỆN CHUYỂN HÓA TÂM THỨC | `1FWC7SJzNX6Q0HKpuoILtFpV38ii6B8ftX-lkDW43EDk` | doc | 2024-07-23 | [SL] Kho truyện |
+| └ WiTDaily(P2) 1000 CÂU CHUYỆN CHUYỂN HÓA TÂM THỨC | `19xlw8Q7CiSSLCaWi6v3fjTT8iKrsYBvuIo_m2GmixOs` | doc | 2024-07-23 | [SL] Kho truyện |
+| Syllabus_schedule | `1BFeDgHWEzQySFnT4bOUMAZmt0O-Az58EnqoInrdlHy4` | sheet | 2026-10-25 | [SL] Dữ liệu lịch hệ cũ, đang dùng |
+| Syllabus_schedule – BẢN THỬ web nhập liệu | `1jnvHxb9WnxZ31SiTfJDzsntI0V-beDR3aMgt4CMklOk` | sheet | 2026-10-09 | [S] Bản thử |
+| EWIT - Nhập lịch EF đứng lớp | `11LAUCR1wOuMdm9EGjhKPmCIubdLuERt9F7Zzhhe6QhhctciBy6wgRwNF` | Apps Script | 2026-10-09 | [SL] Web app Nhập lịch (hệ cũ) |
+| EWIT - Lich len lop | `12u7Ch8h-MzAYwIAcbmKV5raUYMDxf1GRkrcxSM-877Wif9BkT5VjscKd` | Apps Script | 2026-10-08 | [SL] Web app Lịch (hệ cũ) |
+| EWIT - Chấm công EF lên lớp | `1V3mDtVKfWifMsFD8ALE8kiseGpMe-Raw8XPGaqxLKD6x5caKzOQTSJgH` | Apps Script | 2026-10-08 | [SL] Web app Chấm công (hệ cũ) |
+| EWIT - Lịch lớp học | `1BzOqyNpplHNpz8_EJuz4rG0zL7lwBJn7` | Google Site | 2026-10-08 | [SL] Trang nhúng web Lịch |
+| [BẢN THỬ] Đăng ký thi Grade 1 – lọc DSThi theo khóa | `1qPLCWKINmQCvP3Wy_bceW3yaUdUswFJW-xi_2ysW_aM` | sheet | 2026-10-23 | [S] Bản thử đăng ký thi |
+| EF-CountingBoard-IT | `1vTpjlkN124OK2g_c0PhU42_h7pnRm8q6tR-qzeGEy8A` | sheet | 2026-02-09 | [SL] Đếm buổi EF lớp IT (gần trùng tên `EF-CountingBoard-IT-Classes` trong RollCall Form) |
+| EF-ReportBoard-Full | `1Sa9Jt2_kEGVn6NfF6-fkVbA2zXvVyg8yI4e6UT92v4o` | sheet | 2026-02-09 | [SL] Báo cáo EF |
+| EstimateSalary | `1krO7bfoX_YBus6u0jPJc1ktu1rGMiVAgOS5SEKd3N6I` | sheet | 2026-01-27 | [SL] Ước tính tiền công → **bảo mật, không đọc giá trị** |
+
 ## 1. EWIT · Hệ thống Lịch & Công (nấc 1) — `1TqS_2akpq9AkgW8ASSbIw2QXjXV52wWW`
 
 | File | ID | Sửa gần nhất | Tab (sự thật) | Vai trò |
