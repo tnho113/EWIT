@@ -107,7 +107,7 @@ Ghi chú về các mục đặc biệt:
 Quy tắc Drive:
 1. Trước khi đọc hoặc ghi một file, xác nhận file đó nằm trong cây EWIT-WORK: lần ngược chuỗi thư mục cha đến ID `1PGMwpCbG5NjQdPi18xwFaajkJonmOeSc`, hoặc đến được qua một lối tắt nằm trong cây.
 2. Với lối tắt, đọc `shortcutDetails.targetId` rồi duyệt tiếp từ đích. Tìm theo `parentId` sẽ không tự đi vào lối tắt.
-3. Không tìm kiếm toàn bộ Drive. Mọi truy vấn phải giới hạn bằng `parentId` trong cây, và phải lật hết các trang kết quả (`nextPageToken`).
+3. ~~Không tìm kiếm toàn bộ Drive.~~ **Thay bởi WD-06:** được tìm/đọc trên toàn Drive của Nery (ví dụ để tìm đích lối tắt), nhưng chỉ **tạo** file/thư mục trong EWIT-WORK. Duyệt cây vẫn dùng `parentId` và phải lật hết các trang kết quả (`nextPageToken`). Đích lối tắt đã xác định: xem `docs/drive-map.md` mục 6.
 4. Nếu tài liệu nhắc tới file nằm ngoài cây (ví dụ sheet lịch EF có DS_Lop, tài khoản Zoom), không tự truy cập. Báo tên file và hỏi Nery.
 5. File mới chỉ được tạo trong cây EWIT-WORK, trong thư mục do Nery sở hữu.
 6. Mục do người khác sở hữu (đến qua lối tắt) mặc định chỉ đọc, kể cả khi có quyền sửa.

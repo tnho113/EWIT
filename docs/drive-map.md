@@ -4,7 +4,7 @@
 - Phạm vi: chỉ truy vấn `parentId = …` trong cây, đã lật hết `nextPageToken`. Không tìm kiếm toàn Drive.
 - Chủ sở hữu mọi mục liệt kê dưới đây: **Nery** (tài khoản Gmail cá nhân). Thời gian theo UTC, định dạng YYYY-MM-DD.
 - Cột "Vai trò": **[S]** = sự thật (từ tên/tab/ghi chú của Nery) · **[SL]** = suy luận từ tên file, chưa đọc nội dung.
-- ⚠️ **Chưa duyệt được đích của 5 lối tắt**: connector không trả về `shortcutDetails.targetId`, và tải nội dung lối tắt bị từ chối. Theo Quy tắc Drive số 3, không tìm theo tên trên toàn Drive để đoán đích. Xem mục "Giới hạn" cuối file.
+- Đích của 5 lối tắt: đã xác định sau WD-06, xem mục 6.
 
 ## Cây thư mục
 
@@ -123,18 +123,45 @@ Ghi chú [SL]: đánh số 01–04, 09 → có thể thiếu 05–08 hoặc nằ
 | Cẩm Nang Thay Gân | `1UhMUn74OiM95lSOZuJj2p9h4ZYxzmoRYRUosFO3kSe8` | doc | 2026-10-21 |
 | Hành Trình Thay Gân Đổi Cốt - Đại Thư Cẩm Nang 5 Phần Completing Draft | `1LTzapT9wvEm7Tofh1R4qPX1GRst6V4TTjc95TG-IFPI` | doc | 2026-10-21 |
 
-## 6. Lối tắt ở gốc EWIT-WORK
+## 6. Lối tắt và đích (cập nhật 27/10/2026, sau WD-06)
 
-| Lối tắt | ID lối tắt | Tạo | Đích | Vai trò |
+Connector không trả `shortcutDetails.targetId`, nên đích được xác định bằng cách tìm theo **tên chính xác** trên Drive (được phép theo WD-06) và đối chiếu `sharedWithMeTime` với thời điểm tạo lối tắt. **[SL mạnh]**: khớp tên + khớp thời gian; cần Nery xác nhận một lần.
+
+| Lối tắt | ID lối tắt | Đích (ID) | Chủ đích | Vai trò |
 |---|---|---|---|---|
-| ChatGPT Connector | `1licwpibrb3Qpp9U593msFzXySCGqyVio` | 2026-08-18 | chưa xác định | [S] Hệ điểm danh & phòng thi cũ (chỉ đọc) |
-| I-MENTOR E-WIT | `19NgT-Z9bEa4XPZ6zRQE2bzQLG2C4nAk` | 2026-03-11 | chưa xác định | [SL] Thư mục chung nhánh IELTS Mentor |
-| E-WiT ENLISH IN MIND | `1Efg2Pn4ueYGa1MALYFgwcobzpEfdQQb5` | 2026-03-11 | chưa xác định | [SL] Thư mục chung của trung tâm / lõi English In Mind |
-| Wisdom Three | `1JRaGSUj8BefuvPq0dW-mLuAb07km00o` | 2026-03-11 | chưa xác định | Chưa đủ dữ liệu để kết luận |
+| ChatGPT Connector | `1licwpibrb3Qpp9U593msFzXySCGqyVio` | `1vKU4XIAAe6A0uub3QKVm0HmVfhCf372A` | ewitenglishai@ | [S] Hệ điểm danh & phòng thi cũ (chỉ đọc) |
+| I-MENTOR E-WIT | `19NgT-Z9bEa4XPZ6zRQE2bzQLG2C4nAk` | `15VpebDbauEmhOUzZE5SOB1GgLu4tDfE2` | neryewit@ | [SL] Hệ vận hành lớp IMEW01 (bộ board 00–10, Form) |
+| E-WiT ENLISH IN MIND | `1Efg2Pn4ueYGa1MALYFgwcobzpEfdQQb5` | `1iKVLMXQN6bNVnYBMC6u_HK7dFAjiSpqT` | neryewit@ | [SL] Kho chung 2024–2025 (M5 PRO, EFC, IT Team) |
+| Wisdom Three | `1JRaGSUj8BefuvPq0dW-mLuAb07km00o` | `1UQPeT-CtyHKsA_-W27wlr09z48dVbvYv` | neryewit@ | [SL] Kho cá nhân / tu dưỡng (Mentor 5–7, Master K04, tài chính cá nhân) |
+| QUẢN TRỊ VÀ ĐIỀU PHỐI PHÒNG ZOOM (gốc) | `1YDbY4NW8Uky6YS4bDOLJ-j9XjN37vXZj` | `1mYmPSObZQocOsASfyBp9BmmyixsJ0Pi5Ek5TviIGT_o` (doc) | minhngoc55vn@ | [S] Bản gốc, sửa lần cuối 2026-10-27 12:04 UTC |
 
-## Giới hạn & việc cần Nery hỗ trợ
+### 6.1 ChatGPT Connector (đích, cấp 1–2)
+```
+ChatGPT Connector/
+├── ChatGPT-Exam Room/          1GlSLxuV-8WzS3StT868Paj5MuOwE3dTA
+│   ├── K22/                    1KbYvPSxcxetzULJeH5F6AtpyUzSRwhLw   (tạo 2026-10-01)
+│   ├── K21/                    1YrBDBvaRnxfpnEM_lPnLQgjEd_tDGWB_   ⚠ trùng tên với Exam Room/K21
+│   ├── K[xx]-Template/         1e3s_eziRWqiY-j4LScPVFwfPMHFzS4Ts
+│   ├── HD tạo phòng thi lớp Grade 1        (doc + pdf)
+└── ChatGPT-RollCallForm/       1hsCtUHFv40iGCecML6zuHeFQ_0B8SVpE
+    ├── 00_PROJECT_OS/          1dAt9DDDeSKV0CRm005qq6J6mzuqRkkOQ
+    ├── RCF-Operator/           1rCCGI0tcuu90KdP-Lq9QufVGO_DhJZZH
+    ├── Zoom Report/            1MbChvQW4hnfAMMaY592hS7oWcZ8gqShM
+    └── _SYSTEM_UNUSED_AI_CREATED/  1ITC5ZGOKUrlEdG6oudVX3RkydCRcoU-3
+```
 
-1. **Đích lối tắt**: connector hiện tại không lộ `shortcutDetails.targetId`. Hai cách giải quyết (cần Nery chọn):
-   - Nery gửi ID/link thư mục đích của 5 lối tắt → ghi vào `CLAUDE.md`, duyệt tiếp bằng `parentId`.
-   - Hoặc thiết lập Drive API riêng (service account / `rclone`) đọc được `shortcutDetails` — xem báo cáo phiên khởi tạo.
-2. Chưa đọc nội dung file nào (trừ tên tab của 3 file nấc 1). Mô tả [SL] cần xác nhận khi đọc nội dung.
+### 6.2 I-MENTOR E-WIT (đích, cấp 1) — file do Nery sở hữu trong thư mục của neryewit@
+00 Learning Status · 01 Learner-Board · 02 EF-Board · 03 RollCall-Board · 04 Judge-Board · 05 Exam Board · 06 IPA/SYM/WiL-eROOM · 07 Multi-Choice Test (sheet + form) · 08 Report-Board · 09 IT-Board · 10 ReportFinalVer-M7PRO (tất cả hậu tố `-IMEW01`), Form-HomeWorks Update, iME01-SmallZoomRoom, I-Mentor E-Wit ME01, E-WIT RACING - Final Record, HỒ SƠ NHẬP HỌC MENTOR K01 (sheet + lối tắt), Nội dung Video hướng dẫn.
+
+[SL] Đây là **bộ khung chuẩn 00–10** của hệ phòng thi / vận hành lớp; Exam Room/K21 dùng lại cùng cách đánh số (01–04, 09).
+
+### 6.3 E-WiT ENLISH IN MIND (đích, cấp 1, chưa hết trang)
+Thư mục: E-WIT IT Team, EFC-16 Weeks, EWIT-M5PRO CLASS, EFC-Proficiency Test, LUYỆN NGHE PHẢN XẠ 30 NGÀY. File: điểm thi lớp đặc biệt M5 PRO, Phonectics4Vocab, E-Wittees Information, các pptx bài giảng, RollCallForm (2024), Mẫu xin phép nghỉ học, lối tắt `1. E-WIT CLASSES`, `TEST ST LEVEL UP & TOR`.
+
+### 6.4 Wisdom Three (đích, cấp 1)
+Thư mục: Mentor 5, Mentor 6, Mentor 7, Master K04, 3346-175-TCN, GNCT, New Me. File: HOẠCH ĐỊNH TÀI CHÍNH TRỌN ĐỜI (cá nhân), THẤU HIỂU NỘI TÂM, Nhạc chuyển hóa WIT, lối tắt THNT - KTAV K26.
+
+## Giới hạn còn lại
+
+1. Chưa duyệt hết cấp sâu của 4 thư mục đích (chỉ cấp 1–2). Sẽ duyệt tiếp khi một việc cụ thể cần tới.
+2. Chưa đọc nội dung file nào (trừ tên tab 3 file nấc 1). Mô tả [SL] cần xác nhận khi đọc nội dung.
