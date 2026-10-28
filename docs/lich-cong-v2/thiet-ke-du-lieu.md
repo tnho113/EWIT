@@ -26,9 +26,8 @@
 | `ef_level` | 1 giai đoạn level của 1 EF | `ef_id` · `level_id` · `tu_ngay` · `den_ngay` (trống = đến nay). Lên level: điền `den_ngay` dòng cũ, thêm dòng mới → **buổi cũ vẫn giữ đúng level lúc dạy** |
 | `vai_tro` | 1 vai trò | `role_id` · `ten_vai_tro` (Teacher in charge, H.O.E, Small Zoom, Zoom admin, Giám khảo…) · `cho_phep_nhieu_nguoi` (Có/Không) · `dang_dung` |
 | `bo_vai_tro` | 1 vai trò thuộc 1 bộ | `bo_id` · `role_id` · `thu_tu_cot`. Mỗi lớp chọn 1 bộ → tab nhập liệu có đúng các cột vai trò đó (**vai trò tùy theo lớp**) |
-| `trang_thai_buoi` | 1 trạng thái | `status_id` · `ten` (Bình thường, OFF, REVISION, MIDTERM TEST, FINAL TEST, OFFLINE, NGOẠI KHÓA, CLOSING…) · `ghi_nhan_nguoi` (Có/Không: OFF thì không ghi nhận ai) · `mau` |
+| `trang_thai_buoi` | 1 trạng thái | `status_id` · `ten` (Bình thường, OFF, REVISION, MIDTERM TEST, FINAL TEST, OFFLINE, NGOẠI KHÓA, CLOSING, SELF TEACHING…) · `ghi_nhan_nguoi` (Có/Không: OFF thì không ghi nhận ai) · `mau` |
 | `bi_danh` | 1 cách viết khác | `bi_danh` → `ef_id` (dùng khi nạp dữ liệu cũ) |
-| `quyen_thu_lao` | 1 email × quyền với ⓓ | `email` · `quyen` (SUA / XEM) · `dang_hieu_luc` · `ghi_chu`. **Tab khóa, chỉ QUAN_TRI sửa** (WD-16). Lưu ý: ai xem được ⓐ thì thấy danh sách email này (không có số tiền) |
 | `quyen` | 1 email × 1 quyền | `email` · `vai_tro_he_thong` (QUAN_TRI · DANH_MUC · NHAP_LIEU · XEM) · `dang_hieu_luc` · `ghi_chu` |
 | `cau_hinh` | 1 thiết lập | `khoa` → `gia_tri` (ID các file ⓑⓒ, múi giờ, phiên bản code) |
 
@@ -43,7 +42,7 @@
 
 - Menu **E-WIT ▸ Áp dụng quyền**: đọc `quyen` + `lop.phu_trach_email` → cập nhật chia sẻ file và khóa từng tab. Đổi người phụ trách = sửa email trong `lop` rồi bấm nút (hoặc tự chạy mỗi giờ).
 - Giới hạn của Google Sheets (sự thật): người có quyền xem file ⓑ **xem được mọi tab**; khóa chỉ chặn *sửa*. Chủ file luôn sửa được mọi thứ.
-- Quyền ⓓ THÙ LAO lấy từ tab `quyen_thu_lao` (WD-16); nút Áp dụng quyền cũng cập nhật chia sẻ ⓓ.
+- Quyền ⓓ THÙ LAO **không** cấu hình ở ⓐ: nằm ở tab `quyen` trong chính ⓓ (WD-17).
 
 ## 2. ⓑ NHẬP LIỆU — mỗi lớp 1 tab, tạo bằng menu (không nhân bản tay)
 
@@ -76,6 +75,7 @@ Web Lịch v2 đọc `buoi_hoc` + `phan_cong` + `ef` (màu) + `lop`.
 | `du_lieu` | Bản kéo về từ `ⓒ.phan_cong` (+ tên lớp, tên EF, tên level, tên vai trò). Không sửa tay |
 | **`bao_cao`** | Người phụ trách **chọn từ ngày – đến ngày** (và lọc tùy chọn: EF, lớp, nhóm lớp, vai trò, level) → bấm **Lập báo cáo** → bảng: **EF × vai trò × lớp × level → số buổi**, kèm danh sách ngày cụ thể; cột **Mức đề xuất** (nếu có quy tắc) và cột **Thù lao quyết định** (người phụ trách tự điền) |
 | `quy_tac_muc` | (Tùy chọn) mức gợi ý theo `nhom_lop` hoặc `class_id` × `role_id` × `level_id` × ngày hiệu lực; ô trống = áp dụng mọi giá trị. Quy tắc cụ thể hơn được ưu tiên. Không bắt buộc dùng |
+| `quyen` | Email × quyền (SUA / XEM) với ⓓ. Người có quyền SUA hoặc QUAN_TRI tự đổi; nút **Áp dụng quyền** của ⓓ cập nhật chia sẻ (WD-17) |
 | `ky_chot` | Mỗi lần chốt: khoảng ngày, người chốt, thời điểm; chụp lại bảng báo cáo + thù lao đã quyết định. Không sửa tay |
 | `dieu_chinh` | Buổi sửa sau khi đã chốt → hiện ở đây để xử lý ở kỳ sau |
 | `cau_hinh` | ID file ⓒ, lần kéo cuối |
