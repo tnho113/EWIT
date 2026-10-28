@@ -28,6 +28,7 @@
 | `bo_vai_tro` | 1 vai trò thuộc 1 bộ | `bo_id` · `role_id` · `thu_tu_cot`. Mỗi lớp chọn 1 bộ → tab nhập liệu có đúng các cột vai trò đó (**vai trò tùy theo lớp**) |
 | `trang_thai_buoi` | 1 trạng thái | `status_id` · `ten` (Bình thường, OFF, REVISION, MIDTERM TEST, FINAL TEST, OFFLINE, NGOẠI KHÓA, CLOSING…) · `ghi_nhan_nguoi` (Có/Không: OFF thì không ghi nhận ai) · `mau` |
 | `bi_danh` | 1 cách viết khác | `bi_danh` → `ef_id` (dùng khi nạp dữ liệu cũ) |
+| `quyen_thu_lao` | 1 email × quyền với ⓓ | `email` · `quyen` (SUA / XEM) · `dang_hieu_luc` · `ghi_chu`. **Tab khóa, chỉ QUAN_TRI sửa** (WD-16). Lưu ý: ai xem được ⓐ thì thấy danh sách email này (không có số tiền) |
 | `quyen` | 1 email × 1 quyền | `email` · `vai_tro_he_thong` (QUAN_TRI · DANH_MUC · NHAP_LIEU · XEM) · `dang_hieu_luc` · `ghi_chu` |
 | `cau_hinh` | 1 thiết lập | `khoa` → `gia_tri` (ID các file ⓑⓒ, múi giờ, phiên bản code) |
 
@@ -36,13 +37,13 @@
 |---|---|---|---|---|
 | QUAN_TRI (Nery) | Sửa | Sửa mọi tab | Sửa | Xem |
 | DANH_MUC (người quản lý danh sách lớp / EF) | Sửa | Xem | Xem | Xem |
-| NHAP_LIEU (bộ phận nhập liệu) | Xem | Sửa mọi tab lớp **[GĐ]** | Xem | Xem |
+| NHAP_LIEU (bộ phận nhập liệu) | Xem | Sửa mọi tab lớp (WD-16) | Xem | Xem |
 | Người phụ trách lớp (từ `lop.phu_trach_email`) | Xem | **Chỉ sửa tab lớp mình** | — | Xem |
 | XEM | — | — | — | Xem |
 
 - Menu **E-WIT ▸ Áp dụng quyền**: đọc `quyen` + `lop.phu_trach_email` → cập nhật chia sẻ file và khóa từng tab. Đổi người phụ trách = sửa email trong `lop` rồi bấm nút (hoặc tự chạy mỗi giờ).
 - Giới hạn của Google Sheets (sự thật): người có quyền xem file ⓑ **xem được mọi tab**; khóa chỉ chặn *sửa*. Chủ file luôn sửa được mọi thứ.
-- **ⓓ THÙ LAO không nằm trong bảng quyền này** (xem §4).
+- Quyền ⓓ THÙ LAO lấy từ tab `quyen_thu_lao` (WD-16); nút Áp dụng quyền cũng cập nhật chia sẻ ⓓ.
 
 ## 2. ⓑ NHẬP LIỆU — mỗi lớp 1 tab, tạo bằng menu (không nhân bản tay)
 
@@ -77,7 +78,6 @@ Web Lịch v2 đọc `buoi_hoc` + `phan_cong` + `ef` (màu) + `lop`.
 | `quy_tac_muc` | (Tùy chọn) mức gợi ý theo `nhom_lop` hoặc `class_id` × `role_id` × `level_id` × ngày hiệu lực; ô trống = áp dụng mọi giá trị. Quy tắc cụ thể hơn được ưu tiên. Không bắt buộc dùng |
 | `ky_chot` | Mỗi lần chốt: khoảng ngày, người chốt, thời điểm; chụp lại bảng báo cáo + thù lao đã quyết định. Không sửa tay |
 | `dieu_chinh` | Buổi sửa sau khi đã chốt → hiện ở đây để xử lý ở kỳ sau |
-| `quyen` | Email được xem/sửa ⓓ — **chỉ quản lý trong chính ⓓ** **[GĐ]** |
 | `cau_hinh` | ID file ⓒ, lần kéo cuối |
 
 Trả lời câu hỏi "ai đã làm vai trò gì ở lớp nào trong khoảng thời gian X": tab `bao_cao`.
