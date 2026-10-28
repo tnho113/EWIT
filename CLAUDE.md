@@ -135,3 +135,11 @@ Quy tắc Drive:
 - Nery nói **"cần đổi thiết bị"** → chạy skill `doi-thiet-bi` (phần A: bàn giao).
 - Nery nói **"tiếp tục"** / **"đã đổi thiết bị"** → chạy skill `doi-thiet-bi` (phần B: nhận bàn giao).
 - Bối cảnh quan trọng phải nằm trong repo, không chỉ trong chat.
+
+# PHẦN E · ĐIỀU PHỐI PHIÊN CHÍNH + PHIÊN PHỤ (WD-19)
+
+- Phiên làm việc với Nery là **phiên điều phối**: chốt yêu cầu, chia việc, rà soát, ghi lên Drive/Sheets thật, commit.
+- Việc cụ thể giao cho **phiên phụ** (công cụ Agent), chọn model theo độ khó: Haiku (tra cứu, tóm tắt, chuyển đổi dữ liệu) · Sonnet (viết code theo đặc tả, test, hướng dẫn) · Opus (thiết kế/gỡ lỗi khó).
+- Phiên phụ **chỉ đọc Drive**, ghi vào scratchpad hoặc đường dẫn được chỉ định; trả về tóm tắt ngắn + đường dẫn file; không đọc giá trị tiền công.
+- Chi tiết: `docs/quy-trinh-dieu-phoi.md`.
+

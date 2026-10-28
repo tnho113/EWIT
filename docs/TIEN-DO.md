@@ -10,6 +10,7 @@
   - Chưa có: data validation, khóa tab, menu — sẽ do code (B4) tạo.
 
 ## Việc kế tiếp
+0. (Đang chạy) Phiên phụ Haiku chuẩn bị CSV cho B3 (chỉ đọc ②) → scratchpad, phiên điều phối rà rồi báo Nery.
 1. B3: nạp `lop` + `nhan_su` từ ② (nấc 1) sang ⓐ `lop` / `ef`; Nery rà, điền `phu_trach_email`, level EF.
 2. B4: viết code ⓐ (Áp dụng quyền, Tạo tab lớp) + ⓑ→ⓒ (đồng bộ, kiểm tra) trong `apps-script/lich-cong-v2/`; hướng dẫn Nery dán.
 3. B5: web Lịch v2.
@@ -26,6 +27,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-19: mô hình phiên điều phối + phiên phụ; giao phiên phụ Haiku chuẩn bị dữ liệu B3 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-18: bộ vai trò CHINH_THUC/TRAINING, thêm IT, Small Zoom từ Zoom report, quy ước màu + Data Validation |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-17: chuyển quyền ⓓ vào chính ⓓ; thêm màu SELF_TEACHING |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-16; B2: tạo thư mục + 4 file v2 (ⓐⓑⓒⓓ) với tab, cột, danh mục nền |
