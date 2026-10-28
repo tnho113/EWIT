@@ -26,3 +26,25 @@ Gốc EWIT-WORK = `1PGMwpCbG5NjQdPi18xwFaajkJonmOeSc` (viết tắt ROOT).
 ## GĐ3–4 · Di chuyển
 | Thao tác | Mục | ID | Cha cũ → cha mới |
 |---|---|---|---|
+| Move + đổi tên | EWIT · Hệ thống Lịch & Công (nấc 1) → Nấc 1 (hệ mới) | `1TqS_2akpq9AkgW8ASSbIw2QXjXV52wWW` | ROOT → 30 |
+| Move | Syllabus_schedule | `1BFeDgHWEzQySFnT4bOUMAZmt0O-Az58EnqoInrdlHy4` | ROOT → 30/Hệ cũ |
+| Move | EWIT - Nhập lịch EF đứng lớp | `11LAUCR1wOuMdm9EGjhKPmCIubdLuERt9F7Zzhhe6QhhctciBy6wgRwNF` | ROOT → 30/Hệ cũ |
+| Move | EWIT - Lich len lop | `12u7Ch8h-MzAYwIAcbmKV5raUYMDxf1GRkrcxSM-877Wif9BkT5VjscKd` | ROOT → 30/Hệ cũ |
+| Move | EWIT - Chấm công EF lên lớp | `1V3mDtVKfWifMsFD8ALE8kiseGpMe-Raw8XPGaqxLKD6x5caKzOQTSJgH` | ROOT → 30/Hệ cũ |
+| Move | EWIT - Lịch lớp học (Site) | `1BzOqyNpplHNpz8_EJuz4rG0zL7lwBJn7` | ROOT → 30/Hệ cũ |
+| Move | EF-CountingBoard-IT | `1vTpjlkN124OK2g_c0PhU42_h7pnRm8q6tR-qzeGEy8A` | ROOT → 30/Hệ cũ |
+| Move | EF-ReportBoard-Full | `1Sa9Jt2_kEGVn6NfF6-fkVbA2zXvVyg8yI4e6UT92v4o` | ROOT → 30/Hệ cũ |
+| Move | Syllabus_schedule – BẢN THỬ web nhập liệu | `1jnvHxb9WnxZ31SiTfJDzsntI0V-beDR3aMgt4CMklOk` | ROOT → 30/Bản thử |
+| Move | EXAM ROOM — PROJECT INSTRUCTIONS | `1GO_JowNd4_kfZEiySsuBiyt_gBOotbkC2FtXw3icg-4` | 40 → 40/Hướng dẫn |
+| Move | [BẢN THỬ] Đăng ký thi Grade 1 | `1qPLCWKINmQCvP3Wy_bceW3yaUdUswFJW-xi_2ysW_aM` | ROOT → 40/Bản thử |
+| Move + đổi tên | K21 → Exam Room · K21 (bản cũ) | `1vRE8Y6Wqrx06z0QFevFkFmCWiU2Gkf5k` | 40 → 90 |
+| Move + đổi tên | RollCall Form → Điểm danh cũ · RollCall Form 2025–26 | `1NcZqDl1QycXphv-GJQQj9fpnH-6cGVsx` | 50 → 90 |
+| Move | Xây dựng Team IT | `1wtKzGI4YThacOm-SQZxxfaHNiNnbhWmq__KOumomlXk` | 60 → 00 |
+| Move | Thay gân đổi cốt | `16fvJYKnKEBl-6TtsufVygqxGB4xqMb3D` | ROOT → 70 |
+| Move | iME01-Group 6 | `17S5Du6l7549EV5fkRzU5DpuDc2_NdIi6` | ROOT → 70 |
+| Move | Lối tắt Wisdom Three | `1JRaGSUj8BefuvPq0dW-mLuAb07km00o` | ROOT → 70 |
+| Move | Lối tắt ChatGPT Connector | `1licwpibrb3Qpp9U593msFzXySCGqyVio` | ROOT → 80 |
+| Move | Lối tắt I-MENTOR E-WIT | `19NgT-Z9bEa4XPZ6zRQE2bzQLG2C4nAk` | ROOT → 80 |
+| Move | Lối tắt E-WiT ENLISH IN MIND | `1Efg2Pn4ueYGa1MALYFgwcobzpEfdQQb5` | ROOT → 80 |
+
+Ghi chú: `EstimateSalary` do Nery tự chuyển ra khỏi EWIT-WORK (vào 3346-175-TCN) trước GĐ2. Lối tắt Zoom bản gốc + bản sao vẫn nằm trong 50 (thư mục đã đổi tên), không cần move.
