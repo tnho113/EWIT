@@ -6,6 +6,8 @@
 
 ## Đang làm
 - **Lịch & Công v2**: B0–B3 ✅ · **B4–B6 code xong** (5 phiên phụ song song; 66/66 test logic đạt; đã rà và sửa điểm ghép: Buổi/Thứ dùng công thức thay onEdit). **Chưa chạy trên Google thật.**
+  - ⓐ đã có sẵn ô chọn (kiểu mũi tên như Nery làm ở `quyen`) + tô màu cho 9 tab, 999 dòng; tab ẩn `_dm_nhom_lop`. Ô kiểm email chưa tạo (locale vi_VN dùng `;`) → để `caiDatDinhDang` tạo. `caiDatDinhDang` giờ **giữ và kéo dài** ô chọn có sẵn.
+  - Bước 0 mẫu: điền họ tên + email 18 EF khớp chắc từ `EWIT_LIST` (1XWTPbZx87RKNIGOtZhHo9yGJvPMV24AesWZ-QfxC_U8), 17 dòng `ef_level` (từ 01/10/2026). Đối chiếu đầy đủ: 13 khớp nghi, 266 người EF_LIST chưa có trong ⓐ, lớp lệch (G1-K22 COMPLETED ở EWT, PME-3A/3B giờ, 4 lớp mới).
   - Hướng dẫn dán code cho Nery: **Google Docs** https://docs.google.com/document/d/1Sg0wIQqIbNBs23mmucOTkMbUSfJagJOCS2Ajen-VgiM/edit (bản .md trong repo chỉ để Claude tham chiếu).
 
 ## Việc kế tiếp
@@ -14,6 +16,7 @@
 3. B7: thử với lớp G1-K22 trong 2–4 tuần.
 
 ## Câu hỏi chờ Nery
+- TEA = TEACHER? P016 Hoàng Mỹ: PIONEER hay TOR? Có thêm 266 người EF_LIST vào ⓐ.ef? Lớp thử thay G1-K22 (đã COMPLETED theo EWT-CLASSES)?
 - Màu trạng thái BINH_THUONG, REVISION đang trống (không tô); màu EF mặc định hồng như web cũ — giữ hay điền?
 - Người phụ trách lớp hiện **không** tự có quyền xem web Lịch (cần thêm dòng XEM trong `quyen`) — giữ vậy hay tự cấp?
 - (Không gấp) Lý do gốc WD-01→05; tên miền chính; ba điểm website. GĐ6 xem lại `90 · Lưu trữ`.
@@ -25,6 +28,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | Đối chiếu EWIT_LIST; tạo sẵn ô chọn + màu cho ⓐ; điền mẫu bước 0 (18 EF, 17 ef_level) |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-21: hướng dẫn qua chat/Google Docs kèm link; tạo Docs hướng dẫn triển khai v2 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | 5 phiên phụ viết xong code v2 (A, B1, B2, D, W); rà, sửa điểm ghép, hướng dẫn triển khai |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-20; B3 ghi ⓐ; viết đặc tả chung + Chung.gs; giao 5 phiên phụ Sonnet viết code song song |

@@ -41,7 +41,7 @@ function cauHinhCot_() {
     },
     bo_vai_tro: { role_id: { loai: 'RANGE', tab: 'vai_tro', ghiChu: 'Chọn từ cột role_id của tab vai_tro.' } },
     trang_thai_buoi: { ghi_nhan_nguoi: { loai: 'LIST', ds: CO_KHONG, ghiChu: 'Chọn Có / Không. Không = buổi đó không ghi nhận ai (OFF, Closing).' } },
-    bi_danh: {},
+    bi_danh: { ef_id: { loai: 'RANGE', tab: 'ef', ghiChu: 'Chọn từ cột ef_id của tab ef.' } },
     quyen: {
       vai_tro_he_thong: { loai: 'LIST', ds: ['QUAN_TRI', 'DANH_MUC', 'NHAP_LIEU', 'XEM'], ghiChu: 'Chọn: QUAN_TRI / DANH_MUC / NHAP_LIEU / XEM (xem bảng quyền trong thiết kế dữ liệu §1).' },
       dang_hieu_luc: { loai: 'LIST', ds: CO_KHONG, ghiChu: 'Chọn Có / Không. Không = bỏ qua dòng này khi áp dụng quyền.' },
@@ -102,7 +102,6 @@ function dinhDangTab_(ss, tenTab, cotCauHinh) {
   var head = sh.getRange(1, 1, 1, soCot).getValues()[0].map(function (h) { return String(h).trim(); });
   if (sh.getMaxRows() < SO_DONG_AP_DUNG) sh.insertRowsAfter(sh.getMaxRows(), SO_DONG_AP_DUNG - sh.getMaxRows());
   var thanh = sh.getRange(2, 1, SO_DONG_AP_DUNG - 1, soCot);
-  thanh.clearDataValidations(); // xóa DV cũ để chạy lại không trùng
   thanh.setBackground(null);
   var tieuDe = sh.getRange(1, 1, 1, soCot);
   tieuDe.setBackground(MAU.TIEU_DE_NEN).setFontColor(MAU.TIEU_DE_CHU).setFontWeight('bold');
@@ -115,10 +114,14 @@ function dinhDangTab_(ss, tenTab, cotCauHinh) {
     var vung = sh.getRange(2, col, SO_DONG_AP_DUNG - 1, 1);
     var mau = cot.loai === 'TU_DONG' ? MAU.TU_DONG : (cot.loai === 'LIST' || cot.loai === 'RANGE') ? MAU.CHON : MAU.NHAP_TAY;
     vung.setBackground(mau);
-    var quyTac = taoQuyTac_(ss, cot, chu);
-    if (quyTac) { vung.setDataValidation(quyTac); n++; }
     if (cot.loai === 'TU_DONG') sh.getRange(1, col).setNote('Cột tự động: script ghi, không nhập tay.');
     else if (cot.ghiChu) sh.getRange(1, col).setNote('Danh sách chọn. ' + cot.ghiChu);
+    // Ô chọn đã có sẵn ở dòng 2 (tạo tay, kiểu chip/mũi tên) → giữ nguyên kiểu đó, chỉ kéo dài cho cả cột.
+    var dvCo = sh.getRange(2, col).getDataValidation();
+    if (dvCo) { vung.setDataValidation(dvCo); n++; return; }
+    vung.clearDataValidations();
+    var quyTac = taoQuyTac_(ss, cot, chu);
+    if (quyTac) { vung.setDataValidation(quyTac); n++; }
   });
   return n;
 }
