@@ -48,3 +48,12 @@ Gốc EWIT-WORK = `1PGMwpCbG5NjQdPi18xwFaajkJonmOeSc` (viết tắt ROOT).
 | Move | Lối tắt E-WiT ENLISH IN MIND | `1Efg2Pn4ueYGa1MALYFgwcobzpEfdQQb5` | ROOT → 80 |
 
 Ghi chú: `EstimateSalary` do Nery tự chuyển ra khỏi EWIT-WORK (vào 3346-175-TCN) trước GĐ2. Lối tắt Zoom bản gốc + bản sao vẫn nằm trong 50 (thư mục đã đổi tên), không cần move.
+
+## Lịch & Công v2 · B2 (28/10/2026)
+| Thao tác | Mục | ID | Cha |
+|---|---|---|---|
+| Tạo | Hệ mới v2 (thử nghiệm) | `1RHStjlCCAYNSw_CQdxESBR0mRkOajCVv` | 30 · Lịch & Công |
+| Tạo | ⓐ EWIT v2 · DANH MỤC | `1-w1bSyxdcEfZs4ZdJn6ra2ImQFaF3m9q9-J8DmFvm0Q` | Hệ mới v2 |
+| Tạo | ⓑ EWIT v2 · NHẬP LIỆU | `1nl0lXQjlhXoLWsQ17BVdXqGfDo7VaEe3KfFXEcrCOoY` | Hệ mới v2 |
+| Tạo | ⓒ EWIT v2 · DỮ LIỆU CHUẨN | `1HWwRBmyYAxZjLjl-Uo1fwJbJ9aQQNmn45tMSl3OS4Rs` | Hệ mới v2 |
+| Tạo | ⓓ EWIT v2 · THÙ LAO (bảo mật) | `1u0e4vxLRgEM4vplb6sj0UrGRI0GApC5C3E22vULUu5A` | Hệ mới v2 |
