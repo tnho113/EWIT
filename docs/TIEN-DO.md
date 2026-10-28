@@ -5,19 +5,16 @@
 > Nhánh bàn giao: **`main`** (WD-09, Nery xác nhận 28/10/2026).
 
 ## Đang làm
-- **Lịch & Công v2**: B0 ✅ · B1 ✅ (WD-13→16) · **B2 ✅ dựng khung 4 file** trong `30 · Lịch & Công/Hệ mới v2 (thử nghiệm)` (ID: `docs/drive-move-log.md`).
-  - ⓐ có sẵn danh mục nền: 8 level, 5 vai trò, 2 bộ vai trò (CHINH_THUC, TRAINING — WD-18), 9 trạng thái buổi (thêm SELF_TEACHING), quyền QUAN_TRI = Nery. Quyền ⓓ ở tab `quyen` trong ⓓ (WD-17).
-  - Chưa có: data validation, khóa tab, menu — sẽ do code (B4) tạo.
+- **Lịch & Công v2**: B0–B2 ✅ · **B3 ✅** (ⓐ có 60 lớp, 60 EF, 25 bí danh; WD-20) · **B4–B6 đang làm song song** bằng 5 phiên phụ Sonnet theo `apps-script/lich-cong-v2/DAC-TA-CHUNG.md`:
+  - A `a-danh-muc/` · B1 `b-nhap-lieu/` (tạo tab lớp) · B2 `b-nhap-lieu/` (đồng bộ) · D `d-thu-lao/` · W `web-lich/`.
+  - Dùng chung `_chung/Chung.gs` (đã có test, 4/4 qua).
 
 ## Việc kế tiếp
-0. ✅ Phiên phụ Haiku đã dựng CSV B3 (60 lớp, 60 EF; scratchpad của phiên cloud, không nằm trong repo — phiên khác chạy lại được bằng cùng lời giao việc). Phát hiện: 60/60 EF chưa có email; 27 bí danh ở ② chưa chuyển; zoom_id dùng chung PP-C26/PP-T26 và EP2-02/EP2-03. Chờ Nery cho ghi vào ⓐ.
-1. B3: nạp `lop` + `nhan_su` từ ② (nấc 1) sang ⓐ `lop` / `ef`; Nery rà, điền `phu_trach_email`, level EF.
-2. B4: viết code ⓐ (Áp dụng quyền, Tạo tab lớp) + ⓑ→ⓒ (đồng bộ, kiểm tra) trong `apps-script/lich-cong-v2/`; hướng dẫn Nery dán.
-3. B5: web Lịch v2.
+1. Rà code 5 phiên phụ, chạy toàn bộ test, ghép, commit.
+2. Viết hướng dẫn Nery dán code từng project (thứ tự: ⓐ → ⓑ → ⓒ không cần code → ⓓ → web).
+3. Nery/người quản lý danh mục điền email EF (`email`, `zoom_email`), `phu_trach_email` cho lớp thử (đề xuất G1-K22), level EF.
 
 ## Câu hỏi chờ Nery
-- Cho ghi B3 vào ⓐ (lop, ef, kèm 27 bí danh)?
-- `IT` có phải là `Zoom admin` cũ không (gộp)? Lớp chính thức có cần cột `Giám khảo` cho buổi thi không?
 - (Không gấp) Lý do gốc WD-01→05; tên miền chính; ba điểm website. GĐ6 xem lại `90 · Lưu trữ`.
 
 ## Ghi chú trạng thái ngoài repo
@@ -27,6 +24,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-20; B3 ghi ⓐ; viết đặc tả chung + Chung.gs; giao 5 phiên phụ Sonnet viết code song song |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-19: mô hình phiên điều phối + phiên phụ; giao phiên phụ Haiku chuẩn bị dữ liệu B3 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-18: bộ vai trò CHINH_THUC/TRAINING, thêm IT, Small Zoom từ Zoom report, quy ước màu + Data Validation |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-17: chuyển quyền ⓓ vào chính ⓓ; thêm màu SELF_TEACHING |
