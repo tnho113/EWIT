@@ -21,10 +21,10 @@
 | Tab | Mỗi dòng | Cột chính |
 |---|---|---|
 | `lop` | 1 lớp | `class_id` · `ten_lop` · `nhom_lop` (Grade, Kids, Mentor, Phát âm, Tiếng Nhật, Training, Đối tác…) · `ngay_bat_dau` · `ngay_ket_thuc` · `gio_bat_dau` · `gio_ket_thuc` · `thu_hoc` (vd `246`) · `zoom_acc` · `zoom_id` · `trang_thai` (ACTIVE / PAUSED / COMPLETED) · **`phu_trach_email`** (nhiều email cách bằng dấu phẩy) · `bo_vai_tro` (mã bộ vai trò, xem `bo_vai_tro`) · `tab_nhap` (script ghi) · `ghi_chu` |
-| `ef` | 1 người | `ef_id` (EF###) · `ten_hien_thi` · `ho_ten` · `email` · `team` · `dang_hoat_dong` (Có/Không) · `mau_nen` · `mau_chu` · `ghi_chu` |
+| `ef` | 1 người | `ef_id` (EF###) · `ten_hien_thi` · `ho_ten` · `email` · `zoom_email` (email dùng vào Zoom, để khớp Zoom report) · `team` · `dang_hoat_dong` (Có/Không) · `mau_nen` · `mau_chu` · `ghi_chu` |
 | `level` | 1 level | `level_id` · `ten_level` (Teacher, Pioneer, TORs, L1, L2, L3, Thỉnh giảng, Khách mời…) · `thu_tu` · `dang_dung` — **danh sách mở, thêm dòng là có level mới** |
 | `ef_level` | 1 giai đoạn level của 1 EF | `ef_id` · `level_id` · `tu_ngay` · `den_ngay` (trống = đến nay). Lên level: điền `den_ngay` dòng cũ, thêm dòng mới → **buổi cũ vẫn giữ đúng level lúc dạy** |
-| `vai_tro` | 1 vai trò | `role_id` · `ten_vai_tro` (Teacher in charge, H.O.E, Small Zoom, Zoom admin, Giám khảo…) · `cho_phep_nhieu_nguoi` (Có/Không) · `dang_dung` |
+| `vai_tro` | 1 vai trò | `role_id` · `ten_vai_tro` (Teacher in charge, H.O.E, IT, Small Zoom, Zoom admin, Giám khảo…) · `cho_phep_nhieu_nguoi` · `dang_dung` · `nguon` (NHAP_TAY / ZOOM_REPORT) · `ghi_chu` |
 | `bo_vai_tro` | 1 vai trò thuộc 1 bộ | `bo_id` · `role_id` · `thu_tu_cot`. Mỗi lớp chọn 1 bộ → tab nhập liệu có đúng các cột vai trò đó (**vai trò tùy theo lớp**) |
 | `trang_thai_buoi` | 1 trạng thái | `status_id` · `ten` (Bình thường, OFF, REVISION, MIDTERM TEST, FINAL TEST, OFFLINE, NGOẠI KHÓA, CLOSING, SELF TEACHING…) · `ghi_nhan_nguoi` (Có/Không: OFF thì không ghi nhận ai) · `mau` |
 | `bi_danh` | 1 cách viết khác | `bi_danh` → `ef_id` (dùng khi nạp dữ liệu cũ) |
@@ -61,7 +61,7 @@ Dòng 9+  : mỗi dòng 1 buổi
 | Tab | Mỗi dòng | Cột chính |
 |---|---|---|
 | `buoi_hoc` | 1 buổi | `session_id` = `class_id_yyyymmdd[_n]` · `class_id` · `ngay` · `gio_bat_dau` · `gio_ket_thuc` · `buoi_so` · `plan` · `actual` · `status_id` · `ghi_chu` · `cap_nhat_luc` |
-| `phan_cong` | 1 người × 1 vai trò × 1 buổi | `assignment_id` · `session_id` · `class_id` · `nhom_lop` · `ngay` · `ef_id` · `role_id` · **`level_id` (level của EF tại ngày buổi học)** · `status_id` · `cap_nhat_luc` |
+| `phan_cong` | 1 người × 1 vai trò × 1 buổi | `assignment_id` · `session_id` · `class_id` · `nhom_lop` · `ngay` · `ef_id` · `role_id` · **`level_id` (level của EF tại ngày buổi học)** · `status_id` · `nguon` · `cap_nhat_luc` |
 | `lich_su` | 1 thay đổi | ai sửa, lúc nào, giá trị cũ → mới (chỉ ghi thêm) |
 | `kiem_tra` | 1 lỗi / lưu ý | mức độ · loại · lớp · ngày · chi tiết |
 | `cau_hinh` | — | lần đồng bộ cuối, phiên bản code |
@@ -94,3 +94,25 @@ Trả lời câu hỏi "ai đã làm vai trò gì ở lớp nào trong khoảng 
 - Danh mục tách file riêng (ⓐ); thêm `level` + `ef_level` (level theo thời gian); `bo_vai_tro` (vai trò theo lớp); bảng `quyen`.
 - `phan_cong` lưu sẵn level tại thời điểm dạy.
 - ⓓ chuyển từ "bảng công tự tính" sang **báo cáo theo khoảng ngày tự chọn + người phụ trách quyết định thù lao**; quy tắc mức chỉ là gợi ý.
+
+## 7. Quy ước giao diện nhập liệu (WD-18)
+
+**Nguyên tắc:** chỗ nào lấy được từ danh sách thì **bắt buộc chọn** (Data Validation, từ chối giá trị lạ); chỉ ô thật sự cần thì mới cho gõ tay.
+
+| Màu ô | Mã | Nghĩa |
+|---|---|---|
+| 🟩 Xanh lá nhạt | `#E3F6EC` | **Chọn từ danh sách** (dropdown). Gõ giá trị ngoài danh sách sẽ bị từ chối |
+| 🟨 Kem | `#FFF4DC` | **Nhập tay** (PLAN, ACTUAL, ghi chú; ngày có kiểm tra định dạng ngày) |
+| ⬜ Tím xám nhạt | `#F3EFF7` | **Tự động / khóa** (Buổi, Thứ, thông tin lớp, cột lấy từ Zoom report) |
+| Tiêu đề | nền `#3D0A6E`, chữ trắng | Dòng tên cột |
+
+- Mỗi tab có **dòng chú thích màu** ở trên cùng.
+- **Dẫn tới danh sách gốc:** mỗi cột dropdown có ghi chú ở tiêu đề + dòng trợ giúp của Data Validation: *"Không thấy tên? Mở DANH MỤC ▸ tab ef"*, kèm **link mở thẳng tab đó** (`=HYPERLINK(url#gid=…)`). Người không có quyền sửa ⓐ thấy thêm email người quản lý danh mục (lấy từ `quyen`, vai trò DANH_MUC) để nhờ thêm.
+- Giới hạn Google Sheets (sự thật): dropdown không lấy trực tiếp được từ file khác → ⓑ có các tab ẩn `_dm_ef`, `_dm_trang_thai`… do script làm mới từ ⓐ (mỗi giờ + khi bấm "Cập nhật danh mục").
+- Ô được validate trong ⓐ: `lop.trang_thai`, `lop.bo_vai_tro`, `lop.nhom_lop`, `ef.dang_hoat_dong`, `ef.team`, `ef_level.ef_id`, `ef_level.level_id`, `bo_vai_tro.role_id`, `vai_tro.nguon`, `quyen.vai_tro_he_thong`, các cột ngày.
+
+## 8. Vai trò lấy từ Zoom report (Small Zoom) — module sau
+
+- Lớp chính thức: Teacher in charge, H.O.E, IT **nhập tay**; **Small Zoom** do EF tự nguyện vào phòng nhỏ → **không nhập tay**, lấy từ Zoom report sau mỗi buổi, khớp theo `ef.zoom_email`.
+- `vai_tro.nguon` = `NHAP_TAY` / `ZOOM_REPORT`; `ⓒ.phan_cong.nguon` ghi nguồn từng dòng.
+- Cột Small Zoom trong tab lớp là cột **chỉ xem** (tím xám), được điền khi module điểm danh / Zoom report hoàn thành (liên quan `50 · Zoom & Điểm danh`).

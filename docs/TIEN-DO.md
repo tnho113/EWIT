@@ -6,7 +6,7 @@
 
 ## Đang làm
 - **Lịch & Công v2**: B0 ✅ · B1 ✅ (WD-13→16) · **B2 ✅ dựng khung 4 file** trong `30 · Lịch & Công/Hệ mới v2 (thử nghiệm)` (ID: `docs/drive-move-log.md`).
-  - ⓐ có sẵn danh mục nền: 8 level, 5 vai trò, 2 bộ vai trò (CHUAN, DON_GIAN), 9 trạng thái buổi (thêm SELF_TEACHING), quyền QUAN_TRI = Nery. Quyền ⓓ ở tab `quyen` trong ⓓ (WD-17).
+  - ⓐ có sẵn danh mục nền: 8 level, 5 vai trò, 2 bộ vai trò (CHINH_THUC, TRAINING — WD-18), 9 trạng thái buổi (thêm SELF_TEACHING), quyền QUAN_TRI = Nery. Quyền ⓓ ở tab `quyen` trong ⓓ (WD-17).
   - Chưa có: data validation, khóa tab, menu — sẽ do code (B4) tạo.
 
 ## Việc kế tiếp
@@ -16,6 +16,7 @@
 
 ## Câu hỏi chờ Nery
 - Duyệt chạy B3 (nạp danh mục cũ sang ⓐ)?
+- `IT` có phải là `Zoom admin` cũ không (gộp)? Lớp chính thức có cần cột `Giám khảo` cho buổi thi không?
 - (Không gấp) Lý do gốc WD-01→05; tên miền chính; ba điểm website. GĐ6 xem lại `90 · Lưu trữ`.
 
 ## Ghi chú trạng thái ngoài repo
@@ -25,6 +26,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-18: bộ vai trò CHINH_THUC/TRAINING, thêm IT, Small Zoom từ Zoom report, quy ước màu + Data Validation |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-17: chuyển quyền ⓓ vào chính ⓓ; thêm màu SELF_TEACHING |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-16; B2: tạo thư mục + 4 file v2 (ⓐⓑⓒⓓ) với tab, cột, danh mục nền |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-14/15 (nhập bằng Sheets mỗi lớp 1 tab + bảng quyền; thù lao do người phụ trách quyết định); soạn thiết kế dữ liệu B1 |
