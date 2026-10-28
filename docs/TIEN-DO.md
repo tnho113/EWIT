@@ -2,7 +2,7 @@
 
 > Nguồn sự thật duy nhất về tiến độ, dùng chung cho máy cá nhân và cloud.
 > Claude cập nhật file này mỗi khi Nery nói **"cần đổi thiết bị"** và khi kết thúc một việc lớn.
-> Nhánh bàn giao: `main` (chờ Nery xác nhận — xem Câu hỏi chờ Nery).
+> Nhánh bàn giao: **`main`** (WD-09, Nery xác nhận 28/10/2026).
 
 ## Đang làm
 - **Làm sạch Drive EWIT-WORK** theo `docs/drive-cleanup-plan.md` (v2, đã duyệt).
@@ -19,7 +19,6 @@
 - `EstimateSalary` (tiền công ngoài ③): (a) ngoại lệ có thời hạn hay (b) gộp vào ③?
 - `ewit-nac1`: script gắn ①②③ có dùng `getFoldersByName` / `getFilesByName` / `getParents` không?
 - Web Lịch lên lớp đang mở `ANYONE_ANONYMOUS`: có muốn siết quyền không?
-- Đồng ý dùng `main` làm nhánh bàn giao giữa các thiết bị?
 
 ## Ghi chú trạng thái ngoài repo
 - Drive là dữ liệu sống, dùng chung mọi thiết bị: luôn liệt kê lại trước khi làm.
@@ -28,4 +27,5 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | Tạo nhánh bàn giao `main` (WD-09); tổng hợp lại các quyết định chờ Nery |
 | 2026-10-27 | Cloud | `claude/sleepy-shannon-xahr78` | Khởi tạo repo (CLAUDE.md, DECISIONS WD-01→08), bản đồ Drive, kế hoạch làm sạch v2, GĐ1 rà script, dựng cơ chế đổi thiết bị |

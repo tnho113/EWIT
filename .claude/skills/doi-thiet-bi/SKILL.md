@@ -8,7 +8,7 @@ description: Bàn giao bối cảnh EWIT WORK giữa máy cá nhân và cloud. D
 Nguồn bối cảnh duy nhất là **repo git**: `CLAUDE.md`, `docs/TIEN-DO.md`, `docs/DECISIONS.md` và các file trong `docs/`.
 Lịch sử chat **không** đi theo thiết bị, nên mọi điều cần nhớ phải nằm trong các file này.
 
-Nhánh bàn giao: `main`. Chỉ dùng sau khi Nery đã xác nhận (xem `docs/TIEN-DO.md`). Nếu chưa xác nhận, dùng nhánh hiện tại và ghi rõ tên nhánh trong lời nhắn bàn giao.
+Nhánh bàn giao: `main` (WD-09).
 
 ## A. Bên ĐI — Nery nói "cần đổi thiết bị"
 
@@ -22,7 +22,7 @@ Nhánh bàn giao: `main`. Chỉ dùng sau khi Nery đã xác nhận (xem `docs/T
 3. Kiểm tra không có secret: `git diff --cached` không chứa key/token; `.env` không được add.
 4. Commit: `Bàn giao: <tóm tắt>`. Push lên nhánh làm việc hiện tại, rồi đưa vào nhánh bàn giao:
    - `git push -u origin <nhánh hiện tại>`
-   - Nếu nhánh bàn giao đã được xác nhận: `git fetch origin main` → merge fast-forward nhánh hiện tại vào `main` → `git push origin main`. Nếu không fast-forward được: **dừng và hỏi Nery**, không force-push.
+   - `git fetch origin main` → merge fast-forward nhánh hiện tại vào `main` → `git push origin main`. Nếu không fast-forward được: **dừng và hỏi Nery**, không force-push.
 5. Trả lời Nery đúng mẫu:
    ```
    ✅ Đã bàn giao · <nhánh> · commit <hash ngắn>
