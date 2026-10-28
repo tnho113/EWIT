@@ -6,7 +6,7 @@
 
 ## Đang làm
 - **Lịch & Công v2**: B0–B3 ✅ · **B4–B6 code xong** (5 phiên phụ song song; 66/66 test logic đạt; đã rà và sửa điểm ghép: Buổi/Thứ dùng công thức thay onEdit). **Chưa chạy trên Google thật.**
-  - Hướng dẫn dán code: `docs/lich-cong-v2/huong-dan-trien-khai.md`.
+  - Hướng dẫn dán code cho Nery: **Google Docs** https://docs.google.com/document/d/1Sg0wIQqIbNBs23mmucOTkMbUSfJagJOCS2Ajen-VgiM/edit (bản .md trong repo chỉ để Claude tham chiếu).
 
 ## Việc kế tiếp
 1. Nery chuẩn bị ⓐ (bước 0 hướng dẫn) rồi dán code theo thứ tự ⓐ → ⓑ → ⓓ → web; gửi ảnh lỗi nếu có.
@@ -25,6 +25,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-21: hướng dẫn qua chat/Google Docs kèm link; tạo Docs hướng dẫn triển khai v2 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | 5 phiên phụ viết xong code v2 (A, B1, B2, D, W); rà, sửa điểm ghép, hướng dẫn triển khai |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-20; B3 ghi ⓐ; viết đặc tả chung + Chung.gs; giao 5 phiên phụ Sonnet viết code song song |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-19: mô hình phiên điều phối + phiên phụ; giao phiên phụ Haiku chuẩn bị dữ liệu B3 |
