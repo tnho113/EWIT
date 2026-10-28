@@ -90,11 +90,36 @@ function taoTabLop(classId) {
   sh.setFrozenColumns(3);
 
   dinhDangTabLop(sh, cols, nDong);
+  datCongThucTuDong(sh, cols, nDong);
   datDoRongCot(sh, cols);
 
   ghiTabNhapVaoDanhMuc(dm, classId);
   PropertiesService.getScriptProperties().setProperty('CO_THAY_DOI', 'true');
   return sh;
+}
+
+/**
+ * Cột Buổi và Thứ tính bằng công thức (đặt ở dòng 9), không ghi bằng onEdit:
+ * hai cột này bị khóa chỉ QUAN_TRI sửa nên onEdit của người nhập không ghi được.
+ */
+function datCongThucTuDong(sh, cols, nDong) {
+  var d0 = TAB_LOP.DONG_DAU, d1 = d0 + nDong - 1;
+  var cNgay = 0, cBuoi = 0, cThu = 0;
+  cols.forEach(function (c, i) {
+    if (c.khoa === 'ngay') cNgay = i + 1;
+    if (c.khoa === 'buoi_so') cBuoi = i + 1;
+    if (c.khoa === 'thu') cThu = i + 1;
+  });
+  if (!cNgay) return;
+  var vung = chuCot(cNgay) + d0 + ':' + chuCot(cNgay) + d1;
+  if (cBuoi) {
+    sh.getRange(d0, cBuoi, nDong, 1).clearContent();
+    sh.getRange(d0, cBuoi).setFormula('=ARRAYFORMULA(IF(' + vung + '="","",COUNTIFS(' + vung + ',"<>",ROW(' + vung + '),"<="&ROW(' + vung + '))))');
+  }
+  if (cThu) {
+    sh.getRange(d0, cThu, nDong, 1).clearContent();
+    sh.getRange(d0, cThu).setFormula('=ARRAYFORMULA(IF(' + vung + '="","",CHOOSE(WEEKDAY(' + vung + '),"CN","T2","T3","T4","T5","T6","T7")))');
+  }
 }
 
 function datDoRongCot(sh, cols) {
@@ -273,6 +298,7 @@ function lamMoiDinhDangTab() {
   var can = TAB_LOP.DONG_DAU + nDong - 1;
   if (sh.getMaxRows() < can) sh.insertRowsAfter(sh.getMaxRows(), can - sh.getMaxRows());
   dinhDangTabLop(sh, cols, nDong);
+  datCongThucTuDong(sh, cols, nDong);
   datDoRongCot(sh, cols);
   ss.toast('Đã làm mới định dạng tab ' + classId + (thieu.length ? ' (thêm ' + thieu.length + ' cột vai trò).' : '.'), 'E-WIT', 5);
 }

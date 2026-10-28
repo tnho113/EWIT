@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-WIT · Lịch lên lớp v2</title>
+<?!= include('Brand') ?>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--mau-nen);color:var(--mau-chu);font:14px/1.45 var(--font-noi-dung)}
+  header{background:var(--mau-chinh);color:#fff;padding:14px 16px}
+  header h1{margin:0;font:700 20px/1.2 var(--font-tieu-de);letter-spacing:.3px}
+  header .tag{color:var(--mau-nhan);font:600 12px var(--font-tieu-de);letter-spacing:1.5px;margin-top:2px}
+  .bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;padding:12px 16px;background:var(--mau-nen-phu);border-bottom:1px solid var(--mau-vien)}
+  .field{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mau-chu-phu);font-weight:600}
+  input[type=date],select{font:600 14px var(--font-noi-dung);color:var(--mau-chon-chu);background:var(--mau-chon);border:1px solid var(--mau-chon-vien);border-radius:8px;padding:6px 8px;min-height:36px}
+  select{min-width:150px;max-width:220px}
+  .quick{display:flex;gap:6px;flex-wrap:wrap}
+  button{font:600 13px var(--font-noi-dung);border:1px solid var(--mau-chinh);background:#fff;color:var(--mau-chinh);border-radius:999px;padding:7px 12px;cursor:pointer;min-height:36px}
+  button.primary{background:var(--mau-chinh);color:#fff}
+  button:hover{filter:brightness(.95)}
+  .kpis{display:flex;gap:18px;margin-left:auto;align-items:center}
+  .kpi{text-align:center}
+  .kpi b{display:block;font:700 22px var(--font-tieu-de);color:var(--mau-nhan);line-height:1}
+  .kpi span{font-size:11px;color:var(--mau-chu-phu)}
+  .msg{padding:10px 16px;font-size:13px;color:var(--mau-chu-phu)}
+  .msg.err{color:var(--mau-loi);font-weight:600}
+  .wrap{overflow:auto;max-height:calc(100vh - 230px);border-top:1px solid var(--mau-vien)}
+  .wrap.cho{opacity:.55}
+  table{border-collapse:separate;border-spacing:0;min-width:100%}
+  th,td{border-right:1px solid var(--mau-vien);border-bottom:1px solid var(--mau-vien);padding:6px 8px;vertical-align:middle}
+  thead th{position:sticky;top:0;background:var(--mau-chinh);color:#fff;font:600 12px var(--font-tieu-de);text-align:center;z-index:2;white-space:nowrap}
+  thead th .dow{display:block;font-size:11px;opacity:.85}
+  thead th.today{background:var(--mau-kem);color:var(--mau-chinh);box-shadow:inset 0 -3px 0 var(--mau-hom-nay)}
+  th.c1,td.c1{position:sticky;left:0;z-index:1;min-width:190px;max-width:230px}
+  th.c2,td.c2{position:sticky;left:190px;z-index:1;min-width:104px;white-space:nowrap}
+  thead th.c1,thead th.c2{z-index:3}
+  td.c1{background:var(--mau-nen-phu);font-weight:700;color:var(--mau-chinh)}
+  td.c1 small{display:block;font-weight:400;color:var(--mau-chu-phu);font-size:11px}
+  td.c2{background:var(--mau-nen-phu);font-size:12px;text-align:center}
+  tbody tr:nth-child(even) td.c1,tbody tr:nth-child(even) td.c2{background:var(--mau-nen-phu2)}
+  td.d{min-width:118px;text-align:center;font-size:12.5px}
+  td.d.today{box-shadow:inset 0 0 0 2px var(--mau-hom-nay)}
+  td.d.today:empty,td.d.today.trong{background:var(--mau-kem)}
+  td.d .buoi + .buoi{margin-top:4px;padding-top:4px;border-top:1px dashed #0003}
+  td.d .st{display:block;font-weight:700;font-size:12px;letter-spacing:.2px}
+  .chip{display:inline-block;padding:2px 7px;margin:2px 1px;border-radius:999px;font-weight:700;white-space:nowrap;background:var(--mau-ef-nen);color:var(--mau-ef-chu)}
+  .chip.founder{box-shadow:0 0 0 2px var(--mau-nhan)}
+  .chip .vai{font-size:9.5px;font-weight:600;opacity:.75;margin-left:3px;letter-spacing:.3px}
+  .efleg{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;font-size:12px}
+  .efleg b{font-weight:600;color:var(--mau-chu-phu);margin-right:4px;align-self:center}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:10px 16px;font-size:12px;color:var(--mau-chu-phu);border-top:1px solid var(--mau-vien)}
+  .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px;border:1px solid #0001}
+  footer{padding:8px 16px 16px;font-size:11px;color:var(--mau-chu-phu)}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--mau-nhat);border-top-color:var(--mau-chinh);border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  @media (max-width:640px){
+    header h1{font-size:17px}
+    .kpis{margin-left:0;width:100%;justify-content:flex-start}
+    select{min-width:0;width:100%;max-width:none}
+    .field{flex:1 1 140px}
+    th.c1,td.c1{min-width:130px;max-width:150px}
+    th.c2,td.c2{position:static;min-width:84px}
+    .wrap{max-height:none}
+  }
+  @media print{
+    .bar,.legend button{display:none}
+    .wrap{max-height:none;overflow:visible}
+    th.c1,td.c1,th.c2,td.c2,thead th{position:static}
+    *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1 id="tieuDe"></h1>
+  <div class="tag" id="slogan"></div>
+</header>
+
+<div class="bar">
+  <label class="field">Từ ngày<input type="date" id="from"></label>
+  <label class="field">Đến ngày<input type="date" id="to"></label>
+  <label class="field">Lọc theo EF<select id="ef"><option value="">Tất cả EF</option></select></label>
+  <label class="field">Lọc theo lớp<select id="cl"><option value="">Tất cả lớp</option></select></label>
+  <label class="field">Lọc trạng thái<select id="st"><option value="">Tất cả trạng thái</option></select></label>
+  <label class="field">Lọc vai trò<select id="vai"><option value="">Tất cả vai trò</option></select></label>
+  <div class="quick">
+    <button class="primary" id="btnView">Xem</button>
+    <button data-q="week">Tuần này</button>
+    <button data-q="next">Tuần sau</button>
+    <button data-q="month">Tháng này</button>
+    <button id="btnPrint">In</button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="kClass">–</b><span>lớp</span></div>
+    <div class="kpi"><b id="kBuoi">–</b><span>buổi</span></div>
+    <div class="kpi"><b id="kEF">–</b><span>lượt EF</span></div>
+  </div>
+</div>
+
+<div class="msg" id="msg"><span class="spin"></span>Đang tải dữ liệu…</div>
+<div class="wrap" id="wrap"><table id="grid"></table></div>
+
+<div class="legend" id="legend"></div>
+<div class="efleg" id="efleg"></div>
+<footer id="foot"></footer>
+
+<script>
+var $ = function (id) { return document.getElementById(id); };
+var KHOA_LUU = 'ewit_lich_v2_loc';
+var MAX_NGAY = 62;
+var dem = 0;          // chống kết quả cũ ghi đè kết quả mới
+var LUOI = null;
+
+var pad = function (n) { return String(n).padStart(2, '0'); };
+var ymd = function (d) { return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()); };
+var parse = function (s) { var p = s.split('-').map(Number); return new Date(p[0], p[1] - 1, p[2]); };
+var addDays = function (d, n) { var x = new Date(d); x.setDate(x.getDate() + n); return x; };
+var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); };
+// Chỉ cho phép mã màu hex (dữ liệu từ Sheets) đi vào thuộc tính style
+var mau = function (c) { return /^#[0-9a-f]{3,8}$/i.test(String(c || '').trim()) ? String(c).trim() : ''; };
+
+function docLoc() { try { return JSON.parse(localStorage.getItem(KHOA_LUU)) || {}; } catch (e) { return {}; } }
+function luuLoc() {
+  try { localStorage.setItem(KHOA_LUU, JSON.stringify({ ef: $('ef').value, cl: $('cl').value, st: $('st').value, vai: $('vai').value })); } catch (e) {}
+}
+var LOC_BAN_DAU = docLoc();
+
+function setRange(kind) {
+  var t = new Date(); t.setHours(0, 0, 0, 0);
+  var mon = addDays(t, -((t.getDay() + 6) % 7)), a, b;
+  if (kind === 'next') { a = addDays(mon, 7); b = addDays(a, 6); }
+  else if (kind === 'month') { a = new Date(t.getFullYear(), t.getMonth(), 1); b = new Date(t.getFullYear(), t.getMonth() + 1, 0); }
+  else { a = mon; b = addDays(mon, 6); }
+  $('from').value = ymd(a); $('to').value = ymd(b);
+}
+
+function showMsg(html, err) { var m = $('msg'); m.innerHTML = html; m.className = 'msg' + (err ? ' err' : ''); m.style.display = html ? 'block' : 'none'; }
+
+function load() {
+  var f = $('from').value, t = $('to').value;
+  if (!f || !t) return showMsg('Vui lòng chọn đủ Từ ngày và Đến ngày.', true);
+  if (t < f) return showMsg('“Đến ngày” đang trước “Từ ngày”.', true);
+  if (Math.round((parse(t) - parse(f)) / 864e5) + 1 > MAX_NGAY) { t = ymd(addDays(parse(f), MAX_NGAY - 1)); $('to').value = t; }
+  luuLoc();
+  var boLoc = { ef_id: $('ef').value, class_id: $('cl').value, status_id: $('st').value, role_id: $('vai').value };
+  var lan = ++dem;
+  showMsg('<span class="spin"></span>Đang tải dữ liệu…');
+  $('wrap').classList.add('cho');
+  google.script.run
+    .withSuccessHandler(function (d) { if (lan !== dem) return; $('wrap').classList.remove('cho'); LUOI = d; render(); })
+    .withFailureHandler(function (e) {
+      if (lan !== dem) return;
+      $('wrap').classList.remove('cho');
+      var m = String((e && e.message) || e);
+      showMsg(/KHONG_CO_QUYEN/.test(m) ? 'Bạn chưa được cấp quyền xem lịch. Liên hệ người quản lý.' : 'Không tải được dữ liệu: ' + esc(m), true);
+    })
+    .layLuoi(f, t, boLoc);
+}
+
+// Đổ danh sách vào ô chọn, giữ lựa chọn hiện có (kể cả khi không còn trong khoảng ngày)
+function doSelect(id, tatCa, ds, giaTri, nhan) {
+  var sel = $(id), cur = giaTri !== undefined ? giaTri : sel.value;
+  var coMuc = ds.some(function (x) { return x.id === cur; });
+  var h = '<option value="">' + tatCa + '</option>';
+  if (cur && !coMuc) h += '<option value="' + esc(cur) + '" selected>' + esc(cur) + '</option>';
+  h += ds.map(function (x) { return '<option value="' + esc(x.id) + '"' + (x.id === cur ? ' selected' : '') + '>' + esc(nhan ? nhan(x) : x.ten) + '</option>'; }).join('');
+  sel.innerHTML = h;
+}
+
+var daDoLocBanDau = false;
+function fillSelect() {
+  var tc = LUOI.tuyChon, b = daDoLocBanDau ? undefined : LOC_BAN_DAU;
+  doSelect('ef', 'Tất cả EF', tc.ef, b && b.ef);
+  doSelect('cl', 'Tất cả lớp', tc.lop, b && b.cl);
+  doSelect('st', 'Tất cả trạng thái', tc.trangThai, b && b.st);
+  doSelect('vai', 'Tất cả vai trò', tc.vaiTro, b && b.vai, function (x) { return x.kyHieu + ' · ' + x.ten; });
+  daDoLocBanDau = true;
+}
+
+function chip(n) {
+  var s = '';
+  if (mau(n.mauNen)) s += 'background:' + mau(n.mauNen) + ';';
+  if (mau(n.mauChu)) s += 'color:' + mau(n.mauChu) + ';';
+  var vai = n.vaiTro ? '<span class="vai">' + esc(n.vaiTro) + '</span>' : '';
+  return '<span class="chip' + (n.ten === THUONG_HIEU.nguoiSangLap ? ' founder' : '') + '" style="' + s + '" title="' + esc(n.tenVaiTro || '') + ': ' + esc(n.ten) + '">' + esc(n.ten) + vai + '</span>';
+}
+
+function oBuoi(ds) {
+  return ds.map(function (b) {
+    var st = b.laThuong ? '' : '<span class="st">' + esc(b.tenTrangThai) + '</span>';
+    return '<div class="buoi" data-nen="' + esc(mau(b.mau)) + '" data-chu="' + esc(mau(b.mauChu)) + '">' + st + b.nguoi.map(chip).join(' ') + '</div>';
+  }).join('');
+}
+
+function render() {
+  fillSelect();
+  var L = LUOI, today = L.homNay;
+  var h = '<thead><tr><th class="c1">Lớp</th><th class="c2">Giờ học</th>';
+  L.ngay.forEach(function (d) { h += '<th class="' + (d.key === today ? 'today' : '') + '"><span class="dow">' + d.thu + '</span>' + d.hien + '</th>'; });
+  h += '</tr></thead><tbody>';
+  L.lop.forEach(function (c) {
+    h += '<tr><td class="c1">' + esc(c.ten) + (c.thuHoc ? '<small>' + esc(c.thuHoc) + '</small>' : '') + '</td><td class="c2">' + esc(c.gio) + '</td>';
+    L.ngay.forEach(function (d) {
+      var ds = c.o[d.key] || [];
+      // Ô có đúng 1 buổi có màu trạng thái → tô cả ô; nhiều buổi → tô từng khối
+      var nen = ds.length === 1 ? mau(ds[0].mau) : '', chu = ds.length === 1 ? mau(ds[0].mauChu) : '';
+      var st = nen ? ' style="background:' + nen + (chu ? ';color:' + chu : '') + '"' : '';
+      h += '<td class="d' + (d.key === today ? ' today' : '') + (ds.length ? '' : ' trong') + '"' + st + '>' + oBuoi(ds) + '</td>';
+    });
+    h += '</tr>';
+  });
+  h += '</tbody>';
+  $('grid').innerHTML = L.lop.length ? h : '';
+  // Khối buổi trong ô nhiều buổi: tô nền riêng
+  document.querySelectorAll('.buoi').forEach(function (e) {
+    if (e.parentNode.hasAttribute('style')) return;
+    if (e.dataset.nen) { e.style.background = e.dataset.nen; if (e.dataset.chu) e.style.color = e.dataset.chu; e.style.borderRadius = '6px'; }
+  });
+  $('kClass').textContent = L.kpi.soLop; $('kBuoi').textContent = L.kpi.soBuoi; $('kEF').textContent = L.kpi.soLuotEf;
+  showMsg(L.lop.length ? '' : 'Không có lớp nào trong khoảng ngày này.');
+  veChuThich(L);
+  $('foot').textContent = 'Dữ liệu lấy trực tiếp từ file dữ liệu E-WIT · cập nhật lúc ' + L.capNhat + ' · bấm “Xem” để tải lại.';
+}
+
+function veChuThich(L) {
+  var tc = L.tuyChon;
+  var lg = tc.trangThai.filter(function (t) { return mau(t.mau); }).map(function (t) {
+    return '<span><i class="sw" style="background:' + mau(t.mau) + '"></i>' + esc(t.ten) + '</span>';
+  }).join('');
+  lg += '<span><i class="sw" style="background:var(--mau-kem);box-shadow:inset 0 0 0 2px var(--mau-hom-nay)"></i>Hôm nay</span>';
+  lg += '<span><i class="sw" style="background:#fff"></i>Ô trống = chưa xếp EF</span>';
+  lg += tc.vaiTro.map(function (v) { return '<span><b>' + esc(v.kyHieu) + '</b> = ' + esc(v.ten) + '</span>'; }).join('');
+  $('legend').innerHTML = lg;
+  var ef = tc.ef.filter(function (e) { return mau(e.mauNen); }).sort(function (a, b) {
+    return a.ten === THUONG_HIEU.nguoiSangLap ? -1 : b.ten === THUONG_HIEU.nguoiSangLap ? 1 : a.ten.localeCompare(b.ten, 'vi');
+  });
+  $('efleg').innerHTML = '<b>Màu EF:</b>' + ef.map(function (e) { return chip({ ten: e.ten, mauNen: e.mauNen, mauChu: e.mauChu }); }).join('') + '<span class="chip">Các EF khác</span>';
+}
+
+$('tieuDe').textContent = THUONG_HIEU.tieuDe;
+$('slogan').textContent = THUONG_HIEU.slogan;
+document.querySelectorAll('[data-q]').forEach(function (b) { b.onclick = function () { setRange(b.dataset.q); load(); }; });
+$('btnView').onclick = load;
+$('btnPrint').onclick = function () { window.print(); };
+['from', 'to', 'ef', 'cl', 'st', 'vai'].forEach(function (id) { $(id).onchange = load; });
+setRange('week');
+// Đưa lựa chọn lọc đã lưu vào ô chọn trước lần tải đầu
+['ef', 'cl', 'st', 'vai'].forEach(function (id) {
+  var v = LOC_BAN_DAU[id]; if (v) $(id).innerHTML = '<option value="">…</option><option value="' + esc(v) + '" selected>' + esc(v) + '</option>';
+});
+load();
+</script>
+</body>
+</html>

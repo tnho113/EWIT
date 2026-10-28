@@ -87,35 +87,20 @@ function ghiTabAn(ss, ten, tieuDe, dong) {
 }
 
 /**
- * Simple trigger: sửa trong tab lớp (dòng khóa 7 có 'ngay') ở dòng >= 9
- * → cập nhật buoi_so + thu, bật cờ CO_THAY_DOI. Nhanh, không mở file khác.
+ * Simple trigger: sửa trong tab lớp (dòng khóa 7 có 'ngay') ở dòng >= 9 → bật cờ CO_THAY_DOI.
+ * Buổi và Thứ do công thức trong tab tự tính (datCongThucTuDong), không ghi ở đây.
  */
 function onEdit(e) {
   try {
     if (!e || !e.range) return;
     var sh = e.range.getSheet();
-    var r1 = e.range.getRow(), r2 = r1 + e.range.getNumRows() - 1;
+    var r2 = e.range.getRow() + e.range.getNumRows() - 1;
     if (r2 < TAB_LOP.DONG_DAU) return;
-    var nCot = sh.getLastColumn();
-    if (nCot < 2) return;
-    var khoa = sh.getRange(TAB_LOP.DONG_KHOA, 1, 1, nCot).getValues()[0].map(String);
-    var cNgay = khoa.indexOf('ngay') + 1;
-    if (!cNgay) return; // không phải tab lớp
+    if (sh.getLastColumn() < 2) return;
+    var khoa = sh.getRange(TAB_LOP.DONG_KHOA, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+    if (khoa.indexOf('ngay') < 0) return; // không phải tab lớp
     PropertiesService.getScriptProperties().setProperty('CO_THAY_DOI', 'true');
-
-    var c1 = e.range.getColumn(), c2 = c1 + e.range.getNumColumns() - 1;
-    if (cNgay < c1 || cNgay > c2) return; // không đụng cột ngày → không cần đánh số lại
-    var cBuoi = khoa.indexOf('buoi_so') + 1, cThu = khoa.indexOf('thu') + 1;
-    var n = TAB_LOP.SO_DONG_CHUAN_BI;
-    var ngay = sh.getRange(TAB_LOP.DONG_DAU, cNgay, n, 1).getValues().map(function (r) { return r[0]; });
-    if (cBuoi) {
-      sh.getRange(TAB_LOP.DONG_DAU, cBuoi, n, 1).setValues(danhSoBuoi(ngay).map(function (x) { return [x]; }));
-    }
-    if (cThu) {
-      var thu = ngay.map(function (v) { var k = ngayKey(v); return [k ? nhanThu(thuCuaNgay(k)) : '']; });
-      sh.getRange(TAB_LOP.DONG_DAU, cThu, n, 1).setValues(thu);
-    }
   } catch (err) {
-    // Simple trigger không được báo lỗi ồn ào; ô tự động có thể đang khóa với người sửa.
+    // Simple trigger: không báo lỗi ra người dùng.
   }
 }
