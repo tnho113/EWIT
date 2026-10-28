@@ -10,13 +10,13 @@
   - Chưa có: data validation, khóa tab, menu — sẽ do code (B4) tạo.
 
 ## Việc kế tiếp
-0. (Đang chạy) Phiên phụ Haiku chuẩn bị CSV cho B3 (chỉ đọc ②) → scratchpad, phiên điều phối rà rồi báo Nery.
+0. ✅ Phiên phụ Haiku đã dựng CSV B3 (60 lớp, 60 EF; scratchpad của phiên cloud, không nằm trong repo — phiên khác chạy lại được bằng cùng lời giao việc). Phát hiện: 60/60 EF chưa có email; 27 bí danh ở ② chưa chuyển; zoom_id dùng chung PP-C26/PP-T26 và EP2-02/EP2-03. Chờ Nery cho ghi vào ⓐ.
 1. B3: nạp `lop` + `nhan_su` từ ② (nấc 1) sang ⓐ `lop` / `ef`; Nery rà, điền `phu_trach_email`, level EF.
 2. B4: viết code ⓐ (Áp dụng quyền, Tạo tab lớp) + ⓑ→ⓒ (đồng bộ, kiểm tra) trong `apps-script/lich-cong-v2/`; hướng dẫn Nery dán.
 3. B5: web Lịch v2.
 
 ## Câu hỏi chờ Nery
-- Duyệt chạy B3 (nạp danh mục cũ sang ⓐ)?
+- Cho ghi B3 vào ⓐ (lop, ef, kèm 27 bí danh)?
 - `IT` có phải là `Zoom admin` cũ không (gộp)? Lớp chính thức có cần cột `Giám khảo` cho buổi thi không?
 - (Không gấp) Lý do gốc WD-01→05; tên miền chính; ba điểm website. GĐ6 xem lại `90 · Lưu trữ`.
 
