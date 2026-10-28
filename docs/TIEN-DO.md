@@ -5,16 +5,17 @@
 > Nhánh bàn giao: **`main`** (WD-09, Nery xác nhận 28/10/2026).
 
 ## Đang làm
-- **Lịch & Công v2**: B0 chốt yêu cầu ✅ (WD-13→15) · **B1 thiết kế dữ liệu** — bản thảo `docs/lich-cong-v2/thiet-ke-du-lieu.md`, chờ Nery duyệt.
+- **Lịch & Công v2**: B0 ✅ · B1 ✅ (WD-13→16) · **B2 ✅ dựng khung 4 file** trong `30 · Lịch & Công/Hệ mới v2 (thử nghiệm)` (ID: `docs/drive-move-log.md`).
+  - ⓐ có sẵn danh mục nền: 8 level, 5 vai trò, 2 bộ vai trò (CHUAN, DON_GIAN), 8 trạng thái buổi, quyền QUAN_TRI = Nery.
+  - Chưa có: data validation, khóa tab, menu — sẽ do code (B4) tạo.
 
 ## Việc kế tiếp
-1. Nery duyệt B1 (trả lời 2 câu hỏi bên dưới + góp ý các mục [GĐ]).
-2. B2: tạo thư mục `30 · Lịch & Công/Hệ mới v2 (thử nghiệm)` và 4 file ⓐⓑⓒⓓ trống (tab, cột, danh sách chọn).
-3. B3: nạp danh mục lớp + EF từ ② sang ⓐ để Nery rà.
+1. B3: nạp `lop` + `nhan_su` từ ② (nấc 1) sang ⓐ `lop` / `ef`; Nery rà, điền `phu_trach_email`, level EF.
+2. B4: viết code ⓐ (Áp dụng quyền, Tạo tab lớp) + ⓑ→ⓒ (đồng bộ, kiểm tra) trong `apps-script/lich-cong-v2/`; hướng dẫn Nery dán.
+3. B5: web Lịch v2.
 
 ## Câu hỏi chờ Nery
-- Bộ phận nhập liệu có được sửa mọi tab lớp (hỗ trợ khi người phụ trách vắng) không?
-- Quyền file ⓓ Thù lao: quản lý riêng trong ⓓ (đề xuất) hay chung bảng quyền ở ⓐ?
+- Duyệt chạy B3 (nạp danh mục cũ sang ⓐ)?
 - (Không gấp) Lý do gốc WD-01→05; tên miền chính; ba điểm website. GĐ6 xem lại `90 · Lưu trữ`.
 
 ## Ghi chú trạng thái ngoài repo
@@ -24,6 +25,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-16; B2: tạo thư mục + 4 file v2 (ⓐⓑⓒⓓ) với tab, cột, danh mục nền |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-14/15 (nhập bằng Sheets mỗi lớp 1 tab + bảng quyền; thù lao do người phụ trách quyết định); soạn thiết kế dữ liệu B1 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-13: làm lại Lịch & Công v2; soạn đề xuất kiến trúc 4 khối + lộ trình B0–B8 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | Đánh giá nấc 1 (①②③): thiết kế tốt nhưng chưa từng đồng bộ trên file thật; chưa có tab lớp đang chạy |

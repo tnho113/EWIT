@@ -83,6 +83,7 @@ EWIT-WORK (1PGMwpCbG5NjQdPi18xwFaajkJonmOeSc)
 ├── 30 · Lịch & Công                       14uMM4EN0BwaZ5fKtFhgmL4Ggh2fTvH0N
 │   ├── Nấc 1 (hệ mới)                     1TqS_2akpq9AkgW8ASSbIw2QXjXV52wWW   ① ② ③
 │   ├── Hệ cũ (đang chạy)                  1pMiVq4q9zcHwbsnGtKJ4xzbhWp3KjKN0   Syllabus_schedule, 3 web app, Site
+│   ├── Hệ mới v2 (thử nghiệm)             1RHStjlCCAYNSw_CQdxESBR0mRkOajCVv   ⓐ DANH MỤC · ⓑ NHẬP LIỆU · ⓒ DỮ LIỆU · ⓓ THÙ LAO (WD-13)
 │   └── Bản thử                            1J7qPVj7jXqqQfBhKvtcBZ3CnjRmpktw5
 ├── 40 · Thi                               1mmoSMK4jq0dtGCfD1BUgvBUJ8bUncnYy   Hướng dẫn, Bản thử
 ├── 50 · Zoom & Điểm danh                  1LR4nMXhvGdpzHD2f3z3E6ZdIgiSR4Lg1
