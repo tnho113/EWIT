@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-WIT · Lịch lên lớp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Exo+2:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pur:#3D0A6E; --grn:#1FAF6E; --lav:#ECE3F6; --pnk:#FBE4EE; --crm:#FFF4DC;
+    --mnt:#E3F6EC; --mntt:#137A4C; --txt:#2B2238; --mut:#6B5E7B; --band:#F7F2FB;
+    --ef:#EFE6F7; --off:#F6B3B3; --exam:#FFE08A; --examt:#8A6100; --line:#E4DAF0;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;color:var(--txt);font:14px/1.45 "Be Vietnam Pro",system-ui,sans-serif}
+  header{background:var(--pur);color:#fff;padding:14px 16px}
+  header h1{margin:0;font:700 20px/1.2 "Exo 2",sans-serif;letter-spacing:.3px}
+  header .tag{color:var(--grn);font:600 12px "Exo 2",sans-serif;letter-spacing:1.5px;margin-top:2px}
+  .bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;padding:12px 16px;background:var(--band);border-bottom:1px solid var(--line)}
+  .field{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mut);font-weight:600}
+  input[type=date],select{font:600 14px "Be Vietnam Pro",sans-serif;color:var(--mntt);background:var(--mnt);border:1px solid #bfe6d1;border-radius:8px;padding:6px 8px;min-height:36px}
+  select{min-width:170px}
+  .quick{display:flex;gap:6px;flex-wrap:wrap}
+  button{font:600 13px "Be Vietnam Pro",sans-serif;border:1px solid var(--pur);background:#fff;color:var(--pur);border-radius:999px;padding:7px 12px;cursor:pointer;min-height:36px}
+  button.primary{background:var(--pur);color:#fff}
+  button:hover{filter:brightness(.95)}
+  .kpis{display:flex;gap:18px;margin-left:auto;align-items:center}
+  .kpi{text-align:center}
+  .kpi b{display:block;font:700 22px "Exo 2",sans-serif;color:var(--grn);line-height:1}
+  .kpi span{font-size:11px;color:var(--mut)}
+  .msg{padding:10px 16px;font-size:13px;color:var(--mut)}
+  .msg.err{color:#b3261e}
+  .wrap{overflow:auto;max-height:calc(100vh - 190px);border-top:1px solid var(--line)}
+  table{border-collapse:separate;border-spacing:0;min-width:100%}
+  th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 8px;vertical-align:middle}
+  thead th{position:sticky;top:0;background:var(--pur);color:#fff;font:600 12px "Exo 2",sans-serif;text-align:center;z-index:2;white-space:nowrap}
+  thead th .dow{display:block;font-size:11px;opacity:.85}
+  thead th.today{background:var(--crm);color:var(--pur)}
+  th.c1,td.c1{position:sticky;left:0;z-index:1;min-width:190px;max-width:230px}
+  th.c2,td.c2{position:sticky;left:190px;z-index:1;min-width:104px;white-space:nowrap}
+  thead th.c1,thead th.c2{z-index:3}
+  td.c1{background:var(--band);font-weight:700;color:var(--pur)}
+  td.c2{background:var(--band);font-size:12px;text-align:center}
+  tbody tr:nth-child(even) td.c1,tbody tr:nth-child(even) td.c2{background:#efe7f8}
+  td.d{min-width:118px;text-align:center;font-size:12.5px}
+  td.d.today{background:var(--crm);box-shadow:inset 0 0 0 2px #E8C66A}
+  td.d .st{font-weight:700;margin-right:2px}
+  td.d.stat{background:#F3EFF7;color:var(--mut)}
+  td.d.cer{background:var(--pur);color:#fff;font-weight:800;letter-spacing:.3px;box-shadow:inset 0 0 0 3px var(--grn)}
+  td.d.cer .st{color:#fff}
+  .chip{display:inline-block;padding:2px 7px;margin:2px 1px;border-radius:999px;font-weight:700;white-space:nowrap}
+  .chip.founder{box-shadow:0 0 0 2px var(--grn)}
+  .efleg{display:flex;flex-wrap:wrap;gap:6px;padding:0 16px 10px;font-size:12px}
+  .efleg b{font-weight:600;color:var(--mut);margin-right:4px;align-self:center}
+  td.d.ef{background:var(--ef)}
+  td.d.off{background:var(--off);font-weight:700}
+  td.d.exam{background:var(--exam);color:var(--examt);font-weight:700}
+  td.d b{font-weight:700}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:10px 16px;font-size:12px;color:var(--mut);border-top:1px solid var(--line)}
+  .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px;border:1px solid #0001}
+  footer{padding:8px 16px 16px;font-size:11px;color:var(--mut)}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--lav);border-top-color:var(--pur);border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  @media (max-width:640px){
+    header h1{font-size:17px}
+    .kpis{margin-left:0;width:100%;justify-content:flex-start}
+    th.c1,td.c1{min-width:140px;max-width:160px}
+    th.c2,td.c2{position:static;min-width:92px}
+    .wrap{max-height:none}
+  }
+  @media print{.bar,.legend button{display:none}.wrap{max-height:none;overflow:visible}}
+</style>
+</head>
+<body>
+<header>
+  <h1>LỊCH LÊN LỚP EF</h1>
+  <div class="tag">E-WIT · PAY IT FORWARD</div>
+</header>
+
+<div class="bar">
+  <label class="field">Từ ngày<input type="date" id="from"></label>
+  <label class="field">Đến ngày<input type="date" id="to"></label>
+  <label class="field">Lọc theo EF<select id="ef"><option value="">Tất cả EF</option></select></label>
+  <label class="field">Lọc theo lớp<select id="cl"><option value="">Tất cả lớp</option></select></label>
+  <label class="field">Lọc trạng thái<select id="st"><option value="">Tất cả trạng thái</option></select></label>
+  <div class="quick">
+    <button class="primary" id="btnView">Xem</button>
+    <button data-q="week">Tuần này</button>
+    <button data-q="next">Tuần sau</button>
+    <button data-q="month">Tháng này</button>
+  </div>
+  <div class="kpis">
+    <div class="kpi"><b id="kClass">–</b><span>lớp</span></div>
+    <div class="kpi"><b id="kEF">–</b><span>buổi EF</span></div>
+  </div>
+</div>
+
+<div class="msg" id="msg"><span class="spin"></span>Đang tải dữ liệu…</div>
+<div class="wrap"><table id="grid"></table></div>
+
+<div class="legend">
+  <span><i class="sw" style="background:var(--off)"></i>OFF / nghỉ</span>
+  <span><i class="sw" style="background:var(--pur)"></i>Closing Ceremony</span>
+  <span><i class="sw" style="background:var(--exam)"></i>Buổi thi / offline / ngoại khóa chưa có tên người</span>
+  <span><i class="sw" style="background:#F3EFF7"></i>Ôn / trạng thái khác (không tính công)</span>
+  <span><i class="sw" style="background:var(--crm);box-shadow:inset 0 0 0 2px #E8C66A"></i>Hôm nay</span>
+  <span><i class="sw" style="background:#fff"></i>Ô trống = chưa xếp EF</span>
+</div>
+<div class="efleg" id="efleg"></div>
+<footer id="foot"></footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const DOW = ['CN','T2','T3','T4','T5','T6','T7'];
+const EXAM = /FINAL TEST|MIDTERM TEST|NGOẠI KHÓA|^OFFLINE$/i;  // dự phòng khi Code.gs chưa cập nhật
+let NEED = [];
+let DATA = null;
+const DEF_BG = '#F9CBF4', DEF_FG = '#2B2238';   // màu chung cho EF chưa đặt màu riêng (tab DS_EF cột D, E)
+const FOUNDER = 'Mr. Okie';                       // người sáng lập: viền xanh lá E-WIT
+const colorOf = n => { const c = (DATA.efColors||{})[n] || {}; return { bg: c.bg || DEF_BG, fg: c.fg || DEF_FG }; };
+const chip = n => { const c = colorOf(n); return `<span class="chip${n===FOUNDER?' founder':''}" style="background:${c.bg};color:${c.fg}">${esc(n)}</span>`; };
+
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function setRange(kind){
+  const t = new Date(); t.setHours(0,0,0,0);
+  const mon = addDays(t, -((t.getDay()+6)%7));
+  let a, b;
+  if (kind==='next'){ a = addDays(mon,7); b = addDays(a,6); }
+  else if (kind==='month'){ a = new Date(t.getFullYear(), t.getMonth(), 1); b = new Date(t.getFullYear(), t.getMonth()+1, 0); }
+  else { a = mon; b = addDays(mon,6); }
+  $('from').value = ymd(a); $('to').value = ymd(b);
+}
+
+function load(){
+  let f = $('from').value, t = $('to').value;
+  if (!f || !t){ return showMsg('Vui lòng chọn đủ Từ ngày và Đến ngày.', true); }
+  if (t < f){ return showMsg('“Đến ngày” đang trước “Từ ngày”.', true); }
+  const days = Math.round((parse(t)-parse(f))/864e5)+1;
+  if (days > 31){ t = ymd(addDays(parse(f),30)); $('to').value = t; }
+  showMsg('<span class="spin"></span>Đang tải dữ liệu…');
+  google.script.run
+    .withSuccessHandler(d => { DATA = d; NEED = (d.needName||[]).map(x => x.toUpperCase()); fillEF(); render(); })
+    .withFailureHandler(e => showMsg('Không tải được dữ liệu: '+esc(e.message||e), true))
+    .getData(f, t);
+}
+
+function showMsg(html, err){ const m = $('msg'); m.innerHTML = html; m.className = 'msg'+(err?' err':''); m.style.display = html?'block':'none'; }
+
+function fillEF(){
+  const sel = $('ef'), cur = sel.value;
+  const names = [...new Set(DATA.rows.filter(r=>r.ef).map(r=>r.ef))].sort((a,b)=>a.localeCompare(b,'vi'));
+  sel.innerHTML = '<option value="">Tất cả EF</option>' + names.map(n=>`<option${n===cur?' selected':''}>${esc(n)}</option>`).join('');
+  // Trạng thái có trong khoảng ngày đang xem (OFF, FINAL TEST, NGOẠI KHÓA...)
+  const ss = $('st'), sc = ss.value;
+  const sts = [...new Set(DATA.rows.filter(r => r.type === 'Trạng thái').map(r => r.content.trim()))];
+  if (sc && !sts.includes(sc)) sts.push(sc);
+  sts.sort((a,b)=>a.localeCompare(b,'vi'));
+  ss.innerHTML = '<option value="">Tất cả trạng thái</option>' + sts.map(n=>`<option${n===sc?' selected':''}>${esc(n)}</option>`).join('');
+  // Lớp: có buổi trong khoảng ngày hoặc đang mở theo DS_Lop
+  const cs = $('cl'), cc = cs.value, f = $('from').value, t = $('to').value;
+  const cset = new Set(DATA.rows.map(r => r.cls));
+  DATA.classes.forEach(c => { if (c.from && c.from <= t && (!c.to || c.to >= f)) cset.add(c.name); });
+  if (cc) cset.add(cc);
+  const cls = [...cset].sort((a,b)=>a.localeCompare(b,'vi'));
+  cs.innerHTML = '<option value="">Tất cả lớp</option>' + cls.map(n=>`<option${n===cc?' selected':''}>${esc(n)}</option>`).join('');
+}
+
+function render(){
+  const f = $('from').value, t = $('to').value, efSel = $('ef').value, stSel = $('st').value, clSel = $('cl').value;
+  const days = []; for (let d = parse(f); ymd(d) <= t; d = addDays(d,1)) days.push(ymd(d));
+  // Lọc trạng thái theo cả ô (Lớp × Ngày): giữ nguyên mọi mảnh trong ô có trạng thái được chọn
+  const stKeys = stSel ? new Set(DATA.rows.filter(r => r.content.trim() === stSel).map(r => r.cls+'|'+r.d)) : null;
+  let rows = efSel ? DATA.rows.filter(r => r.ef === efSel) : DATA.rows;
+  if (stKeys) rows = rows.filter(r => stKeys.has(r.cls+'|'+r.d));
+  if (clSel) rows = rows.filter(r => r.cls === clSel);
+
+  // Danh sách lớp: lớp có buổi trong khoảng + lớp đang mở theo DS_Lop (khi không lọc EF)
+  const info = {}; DATA.classes.forEach(c => info[c.name] = c);
+  const set = new Set(rows.map(r => r.cls));
+  if (!efSel && !stSel) DATA.classes.forEach(c => { if (c.from && c.from <= t && (!c.to || c.to >= f)) set.add(c.name); });
+  const timeOf = n => (info[n] && info[n].time) || (rows.find(r => r.cls===n)||{}).time || '';
+  if (clSel) { set.clear(); set.add(clSel); }
+  const classes = [...set].sort((a,b) => (timeOf(a)||'99').localeCompare(timeOf(b)||'99') || a.localeCompare(b,'vi'));
+
+  // Gom các mảnh nội dung theo ô Lớp × Ngày
+  const cell = {};
+  rows.forEach(r => { (cell[r.cls+'|'+r.d] = cell[r.cls+'|'+r.d] || []).push(r); });
+
+  const today = DATA.today;
+  let h = '<thead><tr><th class="c1">Lớp</th><th class="c2">Giờ học</th>';
+  days.forEach(d => { const x = parse(d); h += `<th class="${d===today?'today':''}"><span class="dow">${DOW[x.getDay()]}</span>${pad(x.getDate())}/${pad(x.getMonth()+1)}</th>`; });
+  h += '</tr></thead><tbody>';
+  classes.forEach(c => {
+    h += `<tr><td class="c1">${esc(c)}</td><td class="c2">${esc(timeOf(c))}</td>`;
+    days.forEach(d => {
+      const items = cell[c+'|'+d] || [];
+      const hasEF = items.some(i => i.ef);
+      const isOff = items.some(i => /^OFF\b/i.test(i.content.trim()));
+      const isExamNoName = items.some(i => NEED.length ? NEED.includes(i.content.trim().toUpperCase()) : EXAM.test(i.content)) && !hasEF;
+      let cls = 'd' + (d===today?' today':''), style = '', txt;
+      const efs = items.filter(i => i.ef), others = items.filter(i => !i.ef);
+      // EF được tính công luôn hiện dạng chip; trạng thái (OFF, THI, ÔN, TEST...) hiện dạng chữ thường
+      const st = others.map(i => `<span class="st">${esc(i.content)}</span>`), ch = efs.map(i => chip(i.ef));
+      const isCer = items.some(i => /^CLOSING CEREMONY$/i.test(i.content.trim()));
+      if (isCer) cls += ' cer';
+      else if (isOff) cls += ' off';
+      else if (isExamNoName) cls += ' exam';
+      else if (others.length && !efs.length) cls += ' stat';
+      txt = st.concat(ch).join(' ');
+      h += `<td class="${cls}"${style?` style="${style}"`:''}>${txt}</td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody>';
+  $('grid').innerHTML = classes.length ? h : '';
+  $('kClass').textContent = classes.length;
+  $('kEF').textContent = rows.filter(r => r.type === 'EF').length;
+  showMsg(classes.length ? '' : 'Không có lớp nào trong khoảng ngày này.');
+  const named = Object.keys(DATA.efColors||{}).filter(n => { const c = colorOf(n); return !(c.bg.toUpperCase()===DEF_BG && c.fg.toUpperCase()===DEF_FG); }).sort((a,b)=> (a===FOUNDER?-1:b===FOUNDER?1:a.localeCompare(b,'vi')));
+  $('efleg').innerHTML = '<b>Màu EF:</b>' + named.map(chip).join('') + `<span class="chip" style="background:${DEF_BG};color:${DEF_FG}">Các EF khác</span>`;
+  $('foot').textContent = 'Dữ liệu lấy trực tiếp từ file lịch E-WIT · cập nhật lúc ' + DATA.updated + ' · bấm “Xem” để tải lại.';
+}
+
+document.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { setRange(b.dataset.q); load(); });
+$('btnView').onclick = load;
+$('from').onchange = $('to').onchange = load;
+$('ef').onchange = () => DATA && render();
+$('st').onchange = () => DATA && render();
+$('cl').onchange = () => DATA && render();
+setRange('week'); load();
+</script>
+</body>
+</html>

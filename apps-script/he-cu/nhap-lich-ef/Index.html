@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<base target="_top">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>E-WIT · Nhập lịch EF</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Exo+2:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --pur:#3D0A6E; --grn:#1FAF6E; --lav:#ECE3F6; --pnk:#FBE4EE; --crm:#FFF4DC;
+    --mnt:#E3F6EC; --mntt:#137A4C; --txt:#2B2238; --mut:#6B5E7B; --band:#F7F2FB;
+    --off:#F6B3B3; --exam:#FFE08A; --examt:#8A6100; --line:#E4DAF0; --gry:#E3E0E8;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#fff;color:var(--txt);font:14px/1.45 "Be Vietnam Pro",system-ui,sans-serif;padding-bottom:70px}
+  header{background:var(--pur);color:#fff;padding:14px 16px;display:flex;align-items:center;gap:12px}
+  header h1{margin:0;font:700 20px/1.2 "Exo 2",sans-serif;letter-spacing:.3px}
+  header .tag{color:var(--grn);font:600 12px "Exo 2",sans-serif;letter-spacing:1.5px;margin-top:2px}
+  header .who{margin-left:auto;font-size:12px;opacity:.85;text-align:right}
+  .bar{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;padding:12px 16px;background:var(--band);border-bottom:1px solid var(--line)}
+  .field{display:flex;flex-direction:column;gap:3px;font-size:12px;color:var(--mut);font-weight:600}
+  input[type=date],input[type=search],input[type=text]{font:600 14px "Be Vietnam Pro",sans-serif;color:var(--mntt);background:var(--mnt);border:1px solid #bfe6d1;border-radius:8px;padding:6px 8px;min-height:36px}
+  input[type=search]{min-width:180px}
+  .quick{display:flex;gap:6px;flex-wrap:wrap}
+  button{font:600 13px "Be Vietnam Pro",sans-serif;border:1px solid var(--pur);background:#fff;color:var(--pur);border-radius:999px;padding:7px 12px;cursor:pointer;min-height:36px}
+  button.primary{background:var(--pur);color:#fff}
+  button.green{background:var(--grn);border-color:var(--grn);color:#fff}
+  button.ghost{border-color:transparent;color:var(--mut)}
+  button:disabled{opacity:.45;cursor:default}
+  .msg{padding:10px 16px;font-size:13px;color:var(--mut);display:none}
+  .msg.err{color:#b3261e;background:#fdecea}
+  .msg.ok{color:var(--mntt);background:var(--mnt)}
+  .wrap{overflow:auto;max-height:calc(100vh - 230px);border-top:1px solid var(--line)}
+  table{border-collapse:separate;border-spacing:0;min-width:100%}
+  th,td{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:6px 8px;vertical-align:middle}
+  thead th{position:sticky;top:0;background:var(--pur);color:#fff;font:600 12px "Exo 2",sans-serif;text-align:center;z-index:2;white-space:nowrap}
+  thead th .dow{display:block;font-size:11px;opacity:.85}
+  thead th.today{background:var(--crm);color:var(--pur)}
+  th.c1,td.c1{position:sticky;left:0;z-index:1;min-width:200px;max-width:240px}
+  thead th.c1{z-index:3}
+  td.c1{background:var(--band);font-weight:700;color:var(--pur)}
+  td.c1 small{display:block;font-weight:400;color:var(--mut);font-size:11.5px}
+  tbody tr:nth-child(even) td.c1{background:#efe7f8}
+  td.d{min-width:120px;height:46px;text-align:center;font-size:12.5px;cursor:pointer;position:relative}
+  td.d:hover{outline:2px solid var(--grn);outline-offset:-2px}
+  td.d.today{background:var(--crm)}
+  td.d.noday{background:repeating-linear-gradient(45deg,#fff,#fff 6px,#F4F1F7 6px,#F4F1F7 12px)}
+  td.d.out{background:var(--gry);cursor:not-allowed}
+  td.d.out:hover{outline:none}
+  td.d.off{background:var(--off);font-weight:700}
+  td.d.need{background:var(--exam);color:var(--examt)}
+  td.d.chg{box-shadow:inset 0 0 0 3px var(--grn)}
+  td.d.chg::after{content:"●";position:absolute;top:1px;right:4px;color:var(--grn);font-size:10px}
+  td.d.conf{box-shadow:inset 0 0 0 3px #d93025}
+  tr.grp td{background:var(--lav)!important;color:var(--pur);font:700 12px "Exo 2",sans-serif;text-transform:uppercase;letter-spacing:.6px;padding:5px 8px;height:auto;cursor:default}
+  .st{font-weight:700}
+  .oth{font-style:italic;color:var(--mut)}
+  .chip{display:inline-block;padding:2px 7px;margin:2px 1px;border-radius:999px;font-weight:700;white-space:nowrap}
+  .chip.founder{box-shadow:0 0 0 2px var(--grn)}
+  .legend{display:flex;flex-wrap:wrap;gap:10px 16px;padding:10px 16px;font-size:12px;color:var(--mut)}
+  .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:5px;border:1px solid #0002}
+  .savebar{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:2px solid var(--pur);padding:10px 16px;display:flex;gap:10px;align-items:center;z-index:20;box-shadow:0 -4px 14px #3d0a6e22}
+  .savebar .n{font-weight:700;color:var(--pur)}
+  .savebar .sp{margin-left:auto;display:flex;gap:8px}
+  .spin{display:inline-block;width:14px;height:14px;border:2px solid var(--lav);border-top-color:var(--pur);border-radius:50%;animation:s 1s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes s{to{transform:rotate(360deg)}}
+  /* Hộp chọn */
+  .ov{position:fixed;inset:0;background:#2b223880;display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+  .ov.show{display:flex}
+  .dlg{background:#fff;border-radius:14px;width:min(560px,100%);max-height:92vh;display:flex;flex-direction:column;overflow:hidden}
+  .dlg .hd{background:var(--pur);color:#fff;padding:12px 16px}
+  .dlg .hd b{font:700 16px "Exo 2",sans-serif;display:block}
+  .dlg .hd span{font-size:12px;opacity:.9}
+  .dlg .bd{padding:12px 16px;overflow:auto}
+  .dlg .ft{padding:10px 16px;border-top:1px solid var(--line);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .dlg h3{font:700 13px "Exo 2",sans-serif;color:var(--pur);margin:12px 0 6px;text-transform:uppercase;letter-spacing:.5px}
+  .dlg h3:first-child{margin-top:0}
+  .opts{display:flex;flex-wrap:wrap;gap:6px}
+  .opt{border:1px solid var(--line);border-radius:999px;padding:5px 10px;cursor:pointer;user-select:none;font-size:13px;background:#fff}
+  .opt input{display:none}
+  .opt.on{background:var(--pur);color:#fff;border-color:var(--pur)}
+  .opt.need::after{content:" *";color:var(--examt)}
+  .opt.on.need::after{color:var(--exam)}
+  .plist{max-height:220px;overflow:auto;border:1px solid var(--line);border-radius:10px;padding:6px}
+  .plist label{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:8px;cursor:pointer}
+  .plist label:hover{background:var(--band)}
+  .plist input{width:18px;height:18px;accent-color:var(--pur)}
+  .preview{margin-top:12px;padding:8px 10px;background:var(--band);border-radius:8px;font-size:13px;word-break:break-word}
+  .warn{margin-top:8px;padding:8px 10px;background:var(--exam);color:var(--examt);border-radius:8px;font-size:13px;display:none}
+  .chk{display:flex;gap:8px;align-items:center;font-size:13px;margin-top:10px}
+  .chk input{width:18px;height:18px;accent-color:var(--grn)}
+  @media (max-width:640px){
+    header h1{font-size:17px}
+    header .who{display:none}
+    th.c1,td.c1{min-width:140px;max-width:160px}
+    .wrap{max-height:none}
+    .ov{padding:0;align-items:flex-end}
+    .dlg{border-radius:14px 14px 0 0;max-height:96vh}
+  }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>NHẬP LỊCH EF</h1>
+    <div class="tag">E-WIT · PAY IT FORWARD</div>
+  </div>
+  <div class="who" id="who"></div>
+</header>
+
+<div class="bar">
+  <label class="field">Từ ngày<input type="date" id="from"></label>
+  <label class="field">Đến ngày<input type="date" id="to"></label>
+  <div class="quick">
+    <button class="primary" id="go">Mở</button>
+    <button data-q="this">Tuần này</button>
+    <button data-q="next">Tuần sau</button>
+    <button data-q="two">2 tuần tới</button>
+  </div>
+  <label class="field">Tìm lớp<input type="search" id="q" placeholder="Gõ tên lớp…"></label>
+</div>
+
+<div class="msg" id="msg"></div>
+<div class="wrap"><table id="grid"></table></div>
+
+<div class="legend">
+  <span><i class="sw" style="background:repeating-linear-gradient(45deg,#fff,#fff 3px,#E9E4EF 3px,#E9E4EF 6px)"></i>Không phải ngày học của lớp</span>
+  <span><i class="sw" style="background:var(--gry)"></i>Ngoài thời gian lớp (khóa)</span>
+  <span><i class="sw" style="background:var(--off)"></i>OFF</span>
+  <span><i class="sw" style="background:var(--exam)"></i>Cần ghi tên người</span>
+  <span><i class="sw" style="background:#fff;box-shadow:inset 0 0 0 3px var(--grn)"></i>Đã sửa, chưa lưu</span>
+</div>
+
+<div class="savebar">
+  <span><span class="n" id="nchg">0</span> ô đã sửa, chưa lưu</span>
+  <div class="sp">
+    <button class="ghost" id="undo" disabled>Hoàn tác tất cả</button>
+    <button class="green" id="save" disabled>Lưu vào lịch</button>
+  </div>
+</div>
+
+<!-- Hộp chọn nội dung ô -->
+<div class="ov" id="ov">
+  <div class="dlg">
+    <div class="hd"><b id="dTitle"></b><span id="dSub"></span></div>
+    <div class="bd">
+      <h3>Trạng thái</h3>
+      <div class="opts" id="dStatus"></div>
+      <h3>Người phụ trách (tích chọn 1 hoặc nhiều)</h3>
+      <input type="search" id="dFind" placeholder="Tìm tên EF / thầy cô…" style="width:100%;margin-bottom:6px">
+      <div class="plist" id="dPeople"></div>
+      <div id="dTeamWrap"><h3>Team (không tính công)</h3><div class="opts" id="dTeams"></div></div>
+      <h3>Nội dung khác (nếu có)</h3>
+      <input type="text" id="dOther" placeholder="Để trống nếu không có" style="width:100%">
+      <div class="warn" id="dWarn"></div>
+      <div class="preview"><b>Sẽ ghi vào ô:</b> <span id="dPrev"></span></div>
+      <label class="chk"><input type="checkbox" id="dAll"> <span id="dAllTxt">Điền giống vậy vào các buổi <b>còn trống</b> của lớp này trong khoảng ngày đang mở</span></label>
+    </div>
+    <div class="ft">
+      <button class="ghost" id="dClear">Xóa nội dung ô</button>
+      <span style="margin-left:auto"></span>
+      <button id="dCancel">Hủy</button>
+      <button class="primary" id="dOk">Xong</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DEF_BG = '#F9CBF4', DEF_FG = '#2B2238', FOUNDER = 'Mr. Okie';
+let DATA = null, EDITS = {}, CONFLICT = {}, CUR = null;
+let P = {}, ST = {}, TM = {};   // bảng tra: người, trạng thái, team
+
+/* ---------- ngày ---------- */
+const pad = n => String(n).padStart(2,'0');
+const ymd = d => d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate());
+const parse = s => { const [y,m,d] = s.split('-').map(Number); return new Date(y,m-1,d); };
+const addDays = (d,n) => { const x = new Date(d); x.setDate(x.getDate()+n); return x; };
+const DOW = ['CN','T2','T3','T4','T5','T6','T7'];
+const dowCode = s => { const w = parse(s).getDay(); return w === 0 ? 8 : w + 1; };
+const dm = s => s.slice(8,10)+'/'+s.slice(5,7);
+function setRange(q){
+  const t = new Date(); const mon = addDays(t, -((t.getDay()+6)%7));
+  if (q==='this'){ $('from').value = ymd(mon); $('to').value = ymd(addDays(mon,6)); }
+  if (q==='next'){ $('from').value = ymd(addDays(mon,7)); $('to').value = ymd(addDays(mon,13)); }
+  if (q==='two'){ $('from').value = ymd(t); $('to').value = ymd(addDays(t,13)); }
+}
+
+/* ---------- tải ---------- */
+function msg(html, kind){ const m = $('msg'); m.innerHTML = html; m.className = 'msg' + (kind?' '+kind:''); m.style.display = html ? 'block' : 'none'; }
+function load(){
+  if (Object.keys(EDITS).length && !confirm('Bạn còn ô chưa lưu. Mở khoảng ngày khác sẽ bỏ các thay đổi này. Tiếp tục?')) return;
+  const f = $('from').value, t = $('to').value;
+  if (!f || !t || f > t){ msg('Vui lòng chọn khoảng ngày hợp lệ.', 'err'); return; }
+  msg('<span class="spin"></span>Đang tải lịch…');
+  google.script.run
+    .withSuccessHandler(d => { DATA = d; EDITS = {}; CONFLICT = {}; index(); render(); msg(''); })
+    .withFailureHandler(e => msg('Không tải được dữ liệu: ' + esc(e.message || e), 'err'))
+    .getData(f, t);
+}
+function index(){
+  P = {}; ST = {}; TM = {};
+  DATA.people.forEach(p => P[p.v] = p);
+  DATA.statuses.forEach(s => ST[s.v.toUpperCase()] = s);
+  DATA.teams.forEach(t => TM[t.v] = t);
+  $('who').textContent = DATA.user ? 'Đang nhập bằng: ' + DATA.user : '';
+}
+
+/* ---------- tách / ghép nội dung ô ---------- */
+function split(v){
+  const r = { status:'', people:[], teams:[], other:[] };
+  String(v||'').split(',').map(x => x.trim()).filter(Boolean).forEach(x => {
+    if (P[x]) r.people.push(x);
+    else if (ST[x.toUpperCase()] && !r.status) r.status = ST[x.toUpperCase()].v;
+    else if (TM[x]) r.teams.push(x);
+    else r.other.push(x);
+  });
+  return r;
+}
+function join(r){
+  const order = DATA.people.map(p => p.v);
+  const ppl = r.people.slice().sort((a,b) => order.indexOf(a) - order.indexOf(b));
+  return [r.status].concat(ppl, r.teams, r.other).filter(Boolean).join(', ');
+}
+const base = k => DATA.values[k] || '';
+const cur = k => (k in EDITS) ? EDITS[k] : base(k);
+
+/* ---------- hiển thị ---------- */
+function colorOf(n){ const c = (DATA.efColors||{})[n] || {}; return { bg: c.bg || DEF_BG, fg: c.fg || DEF_FG }; }
+function chip(v){ const p = P[v]; const n = p ? p.label : v; const c = colorOf(n);
+  return `<span class="chip${n===FOUNDER?' founder':''}" style="background:${c.bg};color:${c.fg}">${esc(n)}</span>`; }
+function cellHtml(v){
+  const r = split(v);
+  return (r.status ? `<span class="st">${esc(r.status)}</span> ` : '') + r.people.map(chip).join('')
+    + r.teams.map(t => ` <span class="st">${esc(t)}</span>`).join('')
+    + r.other.map(o => ` <span class="oth">${esc(o)}</span>`).join('');
+}
+function cellState(c, d){
+  if (d < c.from || (c.to && d > c.to)) return 'out';
+  if (c.days && c.days.indexOf(String(dowCode(d))) < 0) return 'noday';
+  return '';
+}
+function render(){
+  if (!DATA) return;
+  const q = $('q').value.trim().toLowerCase();
+  const cls = DATA.classes.filter(c => !q || c.name.toLowerCase().includes(q));
+  let h = '<thead><tr><th class="c1">Lớp · Giờ học</th>';
+  DATA.days.forEach(d => h += `<th class="${d===DATA.today?'today':''}"><span class="dow">${DOW[parse(d).getDay()]}</span>${dm(d)}</th>`);
+  h += '</tr></thead><tbody>';
+  let grp = null;
+  cls.forEach(c => {
+    const g = c.hm ? 'Lớp Hoàng Minh' : 'Các lớp khác';
+    if (g !== grp){ grp = g; h += `<tr class="grp"><td class="c1 grp" colspan="1">${g}</td><td class="grp" colspan="${DATA.days.length}"></td></tr>`; }
+    h += `<tr><td class="c1">${esc(c.name)}<small>${esc(c.time||'')}</small></td>`;
+    DATA.days.forEach(d => {
+      const k = c.name+'|'+d, v = cur(k), stt = cellState(c, d), r = split(v);
+      let cl = 'd ' + stt + (d===DATA.today?' today':'');
+      if (/^OFF\b/i.test(r.status)) cl += ' off';
+      else if (r.status && ST[r.status.toUpperCase()] && ST[r.status.toUpperCase()].need && !r.people.length) cl += ' need';
+      if (k in EDITS) cl += ' chg';
+      if (CONFLICT[k] !== undefined) cl += ' conf';
+      h += `<td class="${cl}" data-k="${esc(k)}" title="${stt==='out'?'Ngoài thời gian học của lớp':''}">${cellHtml(v)}</td>`;
+    });
+    h += '</tr>';
+  });
+  if (!cls.length) h += `<tr><td class="c1" colspan="${DATA.days.length+1}">Không có lớp nào trong khoảng ngày này.</td></tr>`;
+  $('grid').innerHTML = h + '</tbody>';
+  const n = Object.keys(EDITS).length;
+  $('nchg').textContent = n; $('save').disabled = !n; $('undo').disabled = !n;
+}
+
+/* ---------- hộp chọn ---------- */
+function openCell(k){
+  const i = k.lastIndexOf('|'), clsName = k.slice(0,i), d = k.slice(i+1);
+  const c = DATA.classes.find(x => x.name === clsName);
+  if (cellState(c, d) === 'out') return;
+  CUR = { k, c, d, r: split(cur(k)) };
+  $('dTitle').textContent = clsName;
+  $('dSub').textContent = DOW[parse(d).getDay()] + ', ' + d.split('-').reverse().join('/') + (c.time ? ' · ' + c.time : '') + (cellState(c,d)==='noday' ? ' · ⚠ không phải ngày học thường lệ' : '');
+  $('dStatus').innerHTML = [{v:''}].concat(DATA.statuses).map(s =>
+    `<span class="opt${s.need?' need':''}${(CUR.r.status||'')===s.v?' on':''}" data-s="${esc(s.v)}">${s.v ? esc(s.v) : '— Không —'}</span>`).join('');
+  $('dTeamWrap').style.display = DATA.teams.length ? '' : 'none';
+  $('dTeams').innerHTML = DATA.teams.map(t => `<span class="opt${CUR.r.teams.includes(t.v)?' on':''}" data-t="${esc(t.v)}">${esc(t.v)}</span>`).join('');
+  $('dOther').value = CUR.r.other.join(', ');
+  $('dFind').value = ''; $('dAll').checked = false;
+  drawPeople(); preview();
+  $('ov').classList.add('show');
+}
+function drawPeople(){
+  const q = $('dFind').value.trim().toLowerCase();
+  const sel = CUR.r.people;
+  const list = DATA.people.slice().sort((a,b) => (sel.includes(b.v)-sel.includes(a.v)));
+  $('dPeople').innerHTML = list.filter(p => !q || p.label.toLowerCase().includes(q)).map(p => {
+    const c = colorOf(p.label);
+    return `<label><input type="checkbox" data-p="${esc(p.v)}"${sel.includes(p.v)?' checked':''}>`
+      + `<span class="chip${p.label===FOUNDER?' founder':''}" style="background:${c.bg};color:${c.fg}">${esc(p.label)}</span>`
+      + (p.kind==='GV' ? '<small style="color:var(--mut)">giáo viên</small>' : '') + '</label>';
+  }).join('') || '<div style="padding:6px;color:var(--mut)">Không tìm thấy tên.</div>';
+}
+function preview(){
+  CUR.r.other = $('dOther').value.split(',').map(x => x.trim()).filter(Boolean);
+  const v = join(CUR.r);
+  $('dPrev').innerHTML = v ? esc(v) : '<i>(ô trống)</i>';
+  const s = CUR.r.status && ST[CUR.r.status.toUpperCase()];
+  const w = $('dWarn');
+  if (s && s.need && !CUR.r.people.length){ w.style.display = 'block'; w.textContent = '⚠ ' + s.v + ' cần ghi kèm tên người phụ trách. Bạn vẫn có thể lưu, ô sẽ được tô vàng để bổ sung sau.'; }
+  else w.style.display = 'none';
+}
+function closeDlg(){ $('ov').classList.remove('show'); CUR = null; }
+function setVal(k, v){ if (v === base(k)) delete EDITS[k]; else EDITS[k] = v; delete CONFLICT[k]; }
+function applyDlg(clear){
+  const v = clear ? '' : join(CUR.r);
+  if ($('dAll').checked){
+    // chỉ điền vào các buổi còn TRỐNG, không ghi đè ô đã có nội dung
+    DATA.days.forEach(d => { const k = CUR.c.name+'|'+d; if (k !== CUR.k && cellState(CUR.c, d) === '' && !cur(k)) setVal(k, v); });
+    setVal(CUR.k, v);
+  } else setVal(CUR.k, v);
+  closeDlg(); render();
+}
+
+/* ---------- lưu ---------- */
+function save(){
+  const keys = Object.keys(EDITS); if (!keys.length) return;
+  const changes = keys.map(k => { const i = k.lastIndexOf('|'); return { cls: k.slice(0,i), d: k.slice(i+1), oldV: base(k), newV: EDITS[k] }; });
+  $('save').disabled = true;
+  msg('<span class="spin"></span>Đang lưu ' + keys.length + ' ô vào lịch…');
+  google.script.run
+    .withSuccessHandler(res => {
+      const f = $('from').value, t = $('to').value;
+      const kept = {}; const conf = {};
+      (res.conflicts||[]).forEach(c => { const k = c.cls+'|'+c.d; kept[k] = EDITS[k]; conf[k] = c.current; });
+      google.script.run.withSuccessHandler(d => {
+        DATA = d; index(); EDITS = kept; CONFLICT = conf; render();
+        let m = '✓ Đã lưu ' + res.saved + ' ô. Web Lịch và Chấm công sẽ cập nhật sau khi Log tính lại (vài giây).';
+        if (res.conflicts && res.conflicts.length){
+          m += '<br>⚠ ' + res.conflicts.length + ' ô <b>chưa lưu</b> vì vừa có người khác sửa (viền đỏ). Nội dung hiện tại trong lịch: '
+            + res.conflicts.map(c => esc(c.cls) + ' ' + dm(c.d) + ' = "' + esc(c.current||'trống') + '"').join('; ')
+            + '. Hãy kiểm tra lại rồi bấm Lưu nếu vẫn muốn ghi đè.';
+          Object.keys(conf).forEach(k => { DATA.values[k] = conf[k]; });
+        }
+        msg(m, res.conflicts && res.conflicts.length ? 'err' : 'ok');
+      }).withFailureHandler(e => msg('Đã lưu ' + res.saved + ' ô nhưng tải lại lỗi: ' + esc(e.message||e), 'err')).getData(f, t);
+    })
+    .withFailureHandler(e => { $('save').disabled = false; msg('Lưu không thành công: ' + esc(e.message || e), 'err'); })
+    .saveChanges(changes);
+}
+
+/* ---------- sự kiện ---------- */
+$('go').onclick = load;
+document.querySelectorAll('[data-q]').forEach(b => b.onclick = () => { setRange(b.dataset.q); load(); });
+$('q').oninput = render;
+$('grid').onclick = e => { const td = e.target.closest('td.d'); if (td) openCell(td.dataset.k); };
+$('dStatus').onclick = e => { const o = e.target.closest('.opt'); if (!o) return; CUR.r.status = o.dataset.s; $('dStatus').querySelectorAll('.opt').forEach(x => x.classList.toggle('on', x === o)); preview(); };
+$('dTeams').onclick = e => { const o = e.target.closest('.opt'); if (!o) return; const t = o.dataset.t; const a = CUR.r.teams;
+  if (a.includes(t)) a.splice(a.indexOf(t),1); else a.push(t); o.classList.toggle('on'); preview(); };
+$('dPeople').onchange = e => { const v = e.target.dataset.p; if (!v) return; const a = CUR.r.people;
+  if (e.target.checked){ if (!a.includes(v)) a.push(v); } else a.splice(a.indexOf(v),1); preview(); };
+$('dFind').oninput = drawPeople;
+$('dOther').oninput = preview;
+$('dOk').onclick = () => applyDlg(false);
+$('dClear').onclick = () => applyDlg(true);
+$('dCancel').onclick = closeDlg;
+$('ov').onclick = e => { if (e.target === $('ov')) closeDlg(); };
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && CUR) closeDlg(); });
+$('save').onclick = save;
+$('undo').onclick = () => { if (confirm('Bỏ tất cả thay đổi chưa lưu?')){ EDITS = {}; CONFLICT = {}; render(); } };
+window.addEventListener('beforeunload', e => { if (Object.keys(EDITS).length){ e.preventDefault(); e.returnValue = ''; } });
+
+setRange('this'); load();
+</script>
+</body>
+</html>
