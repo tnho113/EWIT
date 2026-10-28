@@ -73,28 +73,28 @@ Vùng dữ liệu duy nhất của dự án là thư mục **EWIT-WORK**:
 
 Được phép: mọi file và thư mục con bên trong, ở mọi cấp, kể cả mục được chia sẻ mà EWIT-WORK trỏ tới bằng lối tắt (shortcut).
 
-Cấu trúc tại 27/10/2026, 21:48 (luôn liệt kê lại trước khi làm):
+Cấu trúc sau khi làm sạch, 28/10/2026 (luôn liệt kê lại trước khi làm; chi tiết ID: `docs/drive-map.md`, lịch sử: `docs/drive-move-log.md`):
 
 ```
 EWIT-WORK (1PGMwpCbG5NjQdPi18xwFaajkJonmOeSc)
-├── EWIT · Hệ thống Lịch & Công (nấc 1)   1TqS_2akpq9AkgW8ASSbIw2QXjXV52wWW
-├── Exam Room                              1mmoSMK4jq0dtGCfD1BUgvBUJ8bUncnYy
-├── Quản trị Zoom                          1LR4nMXhvGdpzHD2f3z3E6ZdIgiSR4Lg1
-│   ├── RollCall Form (thư mục)            1NcZqDl1QycXphv-GJQQj9fpnH-6cGVsx
-│   ├── QUẢN TRỊ VÀ ĐIỀU PHỐI PHÒNG ZOOM (lối tắt, BẢN GỐC)
-│   │                                      1YDbY4NW8Uky6YS4bDOLJ-j9XjN37vXZj
-│   └── QUẢN TRỊ VÀ ĐIỀU PHỐI PHÒNG ZOOM (Google Doc, BẢN SAO của Nery)
-│                                          1WXZ2icb66e4tNEp6GX5TwX_m4RZGARj_ji8XHnfPS00
-├── iME01-Group 6                          17S5Du6l7549EV5fkRzU5DpuDc2_NdIi6
-├── Thay gân đổi cốt                       16fvJYKnKEBl-6TtsufVygqxGB4xqMb3D
-└── Lối tắt tới mục được chia sẻ
-    ├── ChatGPT Connector (HỆ THỐNG CŨ)    1licwpibrb3Qpp9U593msFzXySCGqyVio
-    ├── I-MENTOR E-WIT                     19NgT-Z9bEa4XPZ6zRQE2bzQLG2C4nAk
-    ├── E-WiT ENLISH IN MIND               1Efg2Pn4ueYGa1MALYFgwcobzpEfdQQb5
-    └── Wisdom Three                       1JRaGSUj8BefuvPq0dW-mLuAb07km00o
+├── 00 · Điều hành IT                      1tFr26AYcwHlt67dblLoAMuM-bTQTCMcX   README, Xây dựng Team IT
+├── 10 · Thương hiệu                       1XL3qFItn2lGuVvSfmQW_B9SE6DX664nr
+├── 20 · Website                           1vM7fPvDZS6kyetgWXm-OZssjtFd2JVlp
+├── 30 · Lịch & Công                       14uMM4EN0BwaZ5fKtFhgmL4Ggh2fTvH0N
+│   ├── Nấc 1 (hệ mới)                     1TqS_2akpq9AkgW8ASSbIw2QXjXV52wWW   ① ② ③
+│   ├── Hệ cũ (đang chạy)                  1pMiVq4q9zcHwbsnGtKJ4xzbhWp3KjKN0   Syllabus_schedule, 3 web app, Site
+│   └── Bản thử                            1J7qPVj7jXqqQfBhKvtcBZ3CnjRmpktw5
+├── 40 · Thi                               1mmoSMK4jq0dtGCfD1BUgvBUJ8bUncnYy   Hướng dẫn, Bản thử
+├── 50 · Zoom & Điểm danh                  1LR4nMXhvGdpzHD2f3z3E6ZdIgiSR4Lg1
+│   ├── QUẢN TRỊ VÀ ĐIỀU PHỐI PHÒNG ZOOM (lối tắt, BẢN GỐC)   1YDbY4NW8Uky6YS4bDOLJ-j9XjN37vXZj
+│   └── QUẢN TRỊ VÀ ĐIỀU PHỐI PHÒNG ZOOM (Doc, BẢN SAO)       1WXZ2icb66e4tNEp6GX5TwX_m4RZGARj_ji8XHnfPS00
+├── 60 · Xây kênh                          1Mk6NyaTLn7YGxnnr0tcellJgWdVkDZE-
+├── 70 · Tri thức WIT (bộ não thứ 2)       1fGIOU5zABQT8Fp51iATPKE1UTDqLB4D9   Thay gân đổi cốt, iME01-Group 6, lối tắt Wisdom Three
+├── 80 · Tham chiếu                        1sqyV6w_gyZDCxmtB5Je-kB0SRZ_ap2cI   lối tắt ChatGPT Connector, I-MENTOR E-WIT, E-WiT ENLISH IN MIND
+└── 90 · Lưu trữ                           1pMWI3LRUq1gqV-5fvlhCU-pqW9HsOXmD   Exam Room · K21 (bản cũ), RollCall Form 2025–26
 ```
 
-Trong thư mục nấc 1 có 3 file:
+Trong thư mục `30 · Lịch & Công/Nấc 1 (hệ mới)` có 3 file:
 - ① SYLLABUS: `1AHHWOhe5TWCqE3J4WYOxGZrqOUtRI6i4rcvARE1Pfxs`
 - ② HỆ THỐNG: `1lUlOsdtKL6QbbCqJzrQ4WC_3oPQJBl0nkuTRCN1NmjE`
 - ③ CHẤM CÔNG: `1I_n3q-fkynzeeO0WJVk5ZeetaFjejbvvjUfwZZoX09k`

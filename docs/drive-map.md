@@ -1,5 +1,7 @@
 # Bản đồ Drive · EWIT-WORK
 
+> ⚠️ **28/10/2026: cây đã được sắp xếp lại theo `00`–`90`.** Cây hiện hành nằm trong `CLAUDE.md` (Phần B) và README trên Drive (`00 · Điều hành IT`). ID từng file **không đổi**; vị trí mới của từng mục xem `docs/drive-move-log.md`. Các mục dưới đây là ảnh chụp trước khi sắp xếp, vẫn đúng về ID, chủ sở hữu, vai trò.
+
 - Khảo sát: 27/10/2026, chỉ đọc, qua Google Drive connector (MCP) của tài khoản Nery.
 - Phạm vi: chỉ truy vấn `parentId = …` trong cây, đã lật hết `nextPageToken`. Không tìm kiếm toàn Drive.
 - Chủ sở hữu mọi mục liệt kê dưới đây: **Nery** (tài khoản Gmail cá nhân). Thời gian theo UTC, định dạng YYYY-MM-DD.

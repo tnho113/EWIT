@@ -1,6 +1,6 @@
 # Kế hoạch làm sạch thư mục EWIT-WORK · v2
 
-- Trạng thái: **ĐÃ DUYỆT (27/10/2026)**. GĐ1 xong (xem `docs/gd1-ra-soat-script.md`). Chờ Nery cho chạy GĐ2–5.
+- Trạng thái: **HOÀN TẤT GĐ1–5 (28/10/2026)**. Nhật ký thao tác + ID: `docs/drive-move-log.md`. Còn GĐ6 (xem lại `90 · Lưu trữ` sau 2–4 tuần).
 - Điều chỉnh sau duyệt: `EF-CountingBoard-IT`, `EF-ReportBoard-Full`, `EstimateSalary` **còn dùng** → chuyển vào `30 · Lịch & Công/Hệ cũ (đang chạy)` thay vì `90 · Lưu trữ`. Thư mục nấc 1: move nhưng **chưa đổi tên** (chờ kiểm tra `ewit-nac1`). `BẢN THỬ web nhập liệu` đang được web Nhập lịch dùng.
 - v2 (27/10/2026, tối): cập nhật theo trả lời của Nery (WD-07, WD-08) và 11 mục mới xuất hiện ở gốc.
 - Dữ liệu nền: `docs/drive-map.md`.
