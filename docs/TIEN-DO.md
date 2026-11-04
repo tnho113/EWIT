@@ -16,7 +16,7 @@
 3. B7: thử với lớp **G1-K23** (khai giảng 02/11/2026; K22 đã kết thúc) trong 2–4 tuần.
 
 ## Câu hỏi chờ Nery
-- Có thêm 266 người EF_LIST vào ⓐ.ef? PME-3.2 (NOT START, chưa có ngày) — thêm trạng thái NOT_STARTED? PME-3A/3B giờ 21:00 hay 21:15; PP-C26/T26 có ngày kết thúc 31/12/2026 không?
+- PME-3.2 (NOT START, chưa có ngày) — thêm trạng thái NOT_STARTED? PME-2A/2B có đổi mã thành PME-2.1/2.2 cho khớp EWT-CLASSES không?
 - Màu trạng thái BINH_THUONG, REVISION đang trống (không tô); màu EF mặc định hồng như web cũ — giữ hay điền?
 - Người phụ trách lớp hiện **không** tự có quyền xem web Lịch (cần thêm dòng XEM trong `quyen`) — giữ vậy hay tự cấp?
 - (Không gấp) Lý do gốc WD-01→05; tên miền chính; ba điểm website. GĐ6 xem lại `90 · Lưu trữ`.
@@ -28,6 +28,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-11-04 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-22: giờ học chính thức, PP theo năm, EF_LIST ≠ ⓐ.ef; ME02 → SPM-01 (21:15) |
 | 2026-11-04 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | Nery xác nhận TEA=TEACHER, Hoàng Mỹ=PIONEER; cập nhật ⓐ.lop theo EWT-CLASSES: K22/PME-2B/ME02 COMPLETED, thêm KEM-01, KES-02, IME-02, G1-K23; lớp thử chuyển sang G1-K23 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | Đối chiếu EWIT_LIST; tạo sẵn ô chọn + màu cho ⓐ; điền mẫu bước 0 (18 EF, 17 ef_level) |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-21: hướng dẫn qua chat/Google Docs kèm link; tạo Docs hướng dẫn triển khai v2 |
