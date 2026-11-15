@@ -56,9 +56,18 @@ const bang = taoBang({
   THANH_VIEN: [['Email', 'Họ tên', 'Mã nhóm', 'Loại nhóm', 'Vai trong nhóm', 'Quyền', 'Trạng thái', 'Ngày thêm', 'Cập nhật', 'Nguồn', 'Lịch sử', 'Kết quả Drive']],
   NHAT_KY: [['Thời gian', 'Lệnh', 'Phần', 'Việc', 'Đối tượng']]
 });
-const themNhap = rows => rows.forEach(r => bang.tabs.NHAP.v.push([r[0], r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '', r[6] || '', r[7] || '', '', '', '', '']));
-const chay = ai => moiTruong(bang, ai).sdDuaVaoTong();
-const kqNhap = () => bang.tabs.NHAP.v.slice(1).map(r => r[10]);
+const N = bang.tabs.NHAP;
+/** Ghi các dòng vào NHAP từ dòng 2 (như người nhập trên tab trống), giữ dòng lỗi còn lại ở trên. */
+const themNhap = rows => {
+  let i = 1; while (i < N.v.length && N.v[i][0]) i++;
+  rows.forEach(r => { N.v[i] = [r[0], r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '', r[6] || '', r[7] || '', '', '', '', '']; i++; });
+};
+let lsTruoc = 0;
+const chay = ai => { lsTruoc = (bang.tabs.LS_NHAP ? bang.tabs.LS_NHAP.v.length : 0); moiTruong(bang, ai).sdDuaVaoTong(); };
+/** Kết quả của lần chạy vừa rồi: dòng ✔ (từ LS_NHAP) + dòng còn ở NHAP (lỗi). */
+const lsMoi = () => bang.tabs.LS_NHAP ? bang.tabs.LS_NHAP.v.slice(Math.max(1, lsTruoc)).map(r => r[10]) : [];
+const conLai = () => N.v.slice(1).filter(r => r[0]).map(r => r[10]);
+const coKq = re => lsMoi().concat(conLai()).some(x => re.test(x));
 const tvMap = () => { const v = bang.tabs.THANH_VIEN.v; const h = v[0]; const m = {}; v.slice(1).forEach(r => { const o = {}; h.forEach((c, i) => o[c] = r[i]); m[o['Email'] + '|' + o['Mã nhóm']] = o; }); return m; };
 const nguoiMap = () => { const v = bang.tabs.NGUOI.v; const h = v[0]; const m = {}; v.slice(1).forEach(r => { const o = {}; h.forEach((c, i) => o[c] = r[i]); m[o['Email']] = o; }); return m; };
 
@@ -69,36 +78,38 @@ nhom('1. Chỉ admin chạy được', () => {
   themNhap([['hv1@example.com', 'HV Một', 'K22-901', 'HV', 'ME02-08']]);
   chay('ai@example.com');
   assert.strictEqual(bang.tabs.THANH_VIEN.v.length, 1, 'không được ghi gì');
+  assert.strictEqual(N.v[1][0], 'hv1@example.com', 'NHAP giữ nguyên');
   assert(bang.tabs.NHAT_KY.v.some(r => /Chỉ admin@example.com/.test(r[4])));
 });
 
-nhom('2. Người mới + nhóm nhỏ tự vào lớp', () => {
+nhom('2. Người mới + nhóm nhỏ tự vào lớp; NHAP được dọn trống, lịch sử sang LS_NHAP', () => {
   chay();
-  assert(/^✔ người mới, thêm vào ME02-08 \(tự vào lớp ME02\)$/.test(kqNhap()[0]), kqNhap()[0]);
+  assert(coKq(/^✔ người mới, thêm vào ME02-08 \(tự vào lớp ME02\)$/), lsMoi().join(' | '));
+  assert(!N.v.slice(1).some(r => r.slice(0, 9).join('') !== '' || r[10] !== ''), 'NHAP phải trống');
+  assert.strictEqual(bang.tabs.LS_NHAP.v[0][0], 'Thời gian xử lý');
+  assert.strictEqual(bang.tabs.LS_NHAP.v[1][1], 'hv1@example.com');
   const m = tvMap();
-  assert.strictEqual(m['hv1@example.com|ME02-08']['Trạng thái'], 'Đang');
   assert.strictEqual(m['hv1@example.com|ME02']['Nguồn'], 'tự thêm từ nhóm nhỏ ME02-08');
   assert.strictEqual(nguoiMap()['hv1@example.com']['Mã người'], 'K22-901');
 });
 
-nhom('3. Dòng đã ✔ không xử lý lại; trùng hoàn toàn thì bỏ qua', () => {
+nhom('3. Chạy khi NHAP trống: không đổi gì; trùng hoàn toàn thì bỏ qua', () => {
   const truoc = JSON.stringify(bang.tabs.THANH_VIEN.v);
   chay();
-  assert.strictEqual(JSON.stringify(bang.tabs.THANH_VIEN.v), truoc, 'chạy lại không được đổi gì');
+  assert.strictEqual(JSON.stringify(bang.tabs.THANH_VIEN.v), truoc);
   themNhap([['HV1@example.com', '', '', '', 'me02-08']]);
   chay();
-  assert(/đã có trong ME02-08, bỏ qua/.test(kqNhap()[1]), kqNhap()[1]);
+  assert(coKq(/đã có trong ME02-08, bỏ qua/), lsMoi().join(' | '));
 });
 
 nhom('4. Cùng nhóm khác quyền: cập nhật dòng cũ, ghi lịch sử', () => {
   themNhap([['ef1@example.com', 'EF Một', '', 'EF', 'KIND', '', 'Xem'], ['ef1@example.com', '', '', '', 'KIND', '', 'Sửa']]);
   chay();
-  const k = kqNhap();
-  assert(/thêm vào KIND/.test(k[2]) && /cập nhật KIND: Xem→Sửa/.test(k[3]), k.join(' | '));
+  assert(coKq(/thêm vào KIND/) && coKq(/cập nhật KIND: Xem→Sửa/), lsMoi().join(' | '));
   const t = tvMap()['ef1@example.com|KIND'];
   assert.strictEqual(t['Quyền'], 'Sửa');
   assert(/Xem→Sửa/.test(t['Lịch sử']));
-  assert.strictEqual(bang.tabs.THANH_VIEN.v.filter(r => r[0] === 'ef1@example.com' && r[2] === 'KIND').length, 1, 'chỉ một dòng');
+  assert.strictEqual(bang.tabs.THANH_VIEN.v.filter(r => r[0] === 'ef1@example.com' && r[2] === 'KIND').length, 1);
 });
 
 nhom('5. EF lên cấp: tự rời cấp cũ', () => {
@@ -108,7 +119,7 @@ nhom('5. EF lên cấp: tự rời cấp cũ', () => {
   assert.strictEqual(m['ef1@example.com|L3']['Trạng thái'], 'Gỡ');
   assert.strictEqual(m['ef1@example.com|L2']['Trạng thái'], 'Đang');
   assert.strictEqual(nguoiMap()['ef1@example.com']['Cấp'], 'L2');
-  assert(/rời cấp L3/.test(kqNhap()[5]));
+  assert(coKq(/rời cấp L3/));
 });
 
 nhom('6. Chuyển nhóm nhỏ cùng lớp; phụ trách nhiều nhóm không bị gỡ', () => {
@@ -120,7 +131,7 @@ nhom('6. Chuyển nhóm nhỏ cùng lớp; phụ trách nhiều nhóm không b�
   assert.strictEqual(m['hv1@example.com|ME02-07']['Trạng thái'], 'Đang');
   assert.strictEqual(m['gv1@example.com|ME02-07']['Trạng thái'], 'Đang');
   assert.strictEqual(m['gv1@example.com|ME02-08']['Trạng thái'], 'Đang');
-  assert(!m['gv1@example.com|ME02'], 'phụ trách nhóm nhỏ không tự vào lớp');
+  assert(!m['gv1@example.com|ME02']);
 });
 
 nhom('7. Gỡ khỏi lớp thì gỡ luôn nhóm nhỏ', () => {
@@ -129,7 +140,7 @@ nhom('7. Gỡ khỏi lớp thì gỡ luôn nhóm nhỏ', () => {
   const m = tvMap();
   assert.strictEqual(m['hv1@example.com|ME02']['Trạng thái'], 'Gỡ');
   assert.strictEqual(m['hv1@example.com|ME02-07']['Trạng thái'], 'Gỡ');
-  assert(/gỡ luôn 1 nhóm nhỏ/.test(kqNhap().slice(-1)[0]));
+  assert(coKq(/gỡ luôn 1 nhóm nhỏ/));
 });
 
 nhom('8. Nghỉ rồi quay lại', () => {
@@ -140,50 +151,40 @@ nhom('8. Nghỉ rồi quay lại', () => {
   themNhap([['ef1@example.com', '', '', '', 'RAW', '', 'Sửa']]);
   chay();
   assert.strictEqual(nguoiMap()['ef1@example.com']['Trạng thái'], 'Đang');
-  assert(/quay lại/.test(kqNhap().slice(-1)[0]));
+  assert(coKq(/quay lại/));
 });
 
-nhom('9. Báo lỗi theo dòng, không tạo người khi lỗi', () => {
-  themNhap([['sai-email', 'X', '', 'HV', 'ME02'], ['moi@example.com', '', '', '', 'ME02'], ['moi2@example.com', 'Mới Hai', '', 'HV', 'XX'],
-    ['moi3@example.com', 'Mới Ba', '', 'HV', 'L3'], ['moi4@example.com', 'Mới Bốn', '', 'EF', 'CU'], ['moi5@example.com', 'Mới Năm', '', 'EF', 'BTC', 'Phụ trách'],
-    ['hv1@example.com', '', '', '', 'KIND', '', '', 'Gỡ']]);
+nhom('9. Báo lỗi: dòng lỗi ở lại NHAP (dồn lên đầu), dòng ✔ sang LS_NHAP; không tạo người khi lỗi', () => {
+  themNhap([['sai-email', 'X', '', 'HV', 'ME02'], ['moi@example.com', '', '', '', 'ME02'], ['ok@example.com', 'Ổn', '', 'HV', 'ME02'],
+    ['moi2@example.com', 'Mới Hai', '', 'HV', 'XX'], ['moi3@example.com', 'Mới Ba', '', 'HV', 'L3'], ['moi4@example.com', 'Mới Bốn', '', 'EF', 'CU'],
+    ['moi5@example.com', 'Mới Năm', '', 'EF', 'BTC', 'Phụ trách'], ['hv1@example.com', '', '', '', 'KIND', '', '', 'Gỡ']]);
   chay();
-  const k = kqNhap().slice(-7);
+  const k = conLai();
+  assert.strictEqual(k.length, 6, k.join(' | '));
   assert(/LỖI: email không hợp lệ/.test(k[0]));
   assert(/LỖI: người mới cần Họ tên và Vai trò/.test(k[1]));
   assert(/LỖI: chưa có nhóm XX/.test(k[2]));
   assert(/LỖI: chỉ EF mới vào nhóm Cấp/.test(k[3]));
   assert(/LỖI: nhóm CU đang "Ngừng"/.test(k[4]));
   assert(/LỖI: nhóm loại Tổ chức không có vai Phụ trách/.test(k[5]));
-  assert(/không có trong KIND, bỏ qua/.test(k[6]));
+  assert(coKq(/người mới, thêm vào ME02/) && coKq(/không có trong KIND, bỏ qua/));
+  assert(!N.v.slice(7).some(r => r[0]), 'phần dưới NHAP phải trống');
   const n = nguoiMap();
   ['moi@example.com', 'moi2@example.com', 'moi3@example.com', 'moi4@example.com', 'moi5@example.com'].forEach(e => assert(!n[e], 'không được tạo ' + e));
 });
 
-nhom('10. Sửa dòng lỗi rồi xóa ô Kết quả thì chạy lại được', () => {
-  const v = bang.tabs.NHAP.v; const i = v.length - 6; // dòng moi@example.com
-  v[i][1] = 'Mới Một'; v[i][3] = 'HV'; v[i][10] = '';
+nhom('10. Sửa dòng lỗi rồi chạy lại: tự xử lý, chuyển sang LS_NHAP', () => {
+  N.v[2][1] = 'Mới Một'; N.v[2][3] = 'HV';      // dòng moi@example.com
   chay();
-  assert(/^✔ người mới, thêm vào ME02$/.test(v[i][10]), v[i][10]);
+  assert(coKq(/^✔ người mới, thêm vào ME02$/), lsMoi().join(' | '));
+  assert.strictEqual(conLai().length, 5);
 });
 
-nhom('11. Ghi đè dòng cũ (còn ✔) bằng nội dung mới: tự xử lý lại', () => {
-  const v = bang.tabs.NHAP.v;
-  const i = 2; // dòng hv1 · ME02-08 cũ (dòng 3 trên bảng là ef1? lấy dòng 2)
-  v[1] = ['ef1@example.com', '', '', '', 'KIND', '', 'Xem', 'Thêm', '', '', v[1][10], v[1][11]];
-  const truocLS = tvMap()['ef1@example.com|KIND']['Lịch sử'];
+nhom('11. Dòng chỉ còn chữ ở cột khác, không Email: bỏ qua và xóa', () => {
+  let i = 1; while (N.v[i] && N.v[i][0]) i++;
+  N.v[i] = ['', '', '', '', '', '', '', '', 'ghi chú lạc', '', '', ''];
   chay();
-  assert(/cập nhật KIND/.test(v[1][10]), v[1][10]);
-  assert.strictEqual(tvMap()['ef1@example.com|KIND']['Quyền'], 'Xem');
-  const sau = JSON.stringify(bang.tabs.THANH_VIEN.v);
-  chay();
-  assert.strictEqual(JSON.stringify(bang.tabs.THANH_VIEN.v), sau, 'nội dung không đổi thì không xử lý lại');
-});
-
-nhom('12. Dòng chỉ còn Kết quả cũ, không có Email: bỏ qua, không báo lỗi', () => {
-  bang.tabs.NHAP.v.push(['', '', '', '', '', '', '', '', '', '', '✔ kết quả cũ', '']);
-  chay();
-  assert.strictEqual(bang.tabs.NHAP.v.slice(-1)[0][10], '✔ kết quả cũ', 'dòng không email phải được bỏ qua');
+  assert(!N.v.slice(1).some(r => r[8] === 'ghi chú lạc'));
 });
 
 console.log(truot ? `\n${truot} TRƯỢT / ${dat + truot}` : `\nTẤT CẢ ĐẠT (${dat}/${dat})`);

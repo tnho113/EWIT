@@ -5,12 +5,13 @@
  */
 var TAB = {
   CAI_DAT: 'CAI_DAT', NHOM: 'NHOM', NHAP: 'NHAP', NGUOI: 'NGUOI', THANH_VIEN: 'THANH_VIEN',
-  VAI_TRO: 'VAI_TRO', CAU_TRUC: 'CAU_TRUC', XEM_NHOM: 'XEM_NHOM', NHAT_KY: 'NHAT_KY'
+  VAI_TRO: 'VAI_TRO', CAU_TRUC: 'CAU_TRUC', XEM_NHOM: 'XEM_NHOM', NHAT_KY: 'NHAT_KY', LS_NHAP: 'LS_NHAP'
 };
 var COT = {
   NGUOI: ['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Cấp', 'Trạng thái', 'Ngày vào', 'Cập nhật', 'ID ổ', 'Kết quả Drive'],
   THANH_VIEN: ['Email', 'Họ tên', 'Mã nhóm', 'Loại nhóm', 'Vai trong nhóm', 'Quyền', 'Trạng thái', 'Ngày thêm', 'Cập nhật', 'Nguồn', 'Lịch sử', 'Kết quả Drive']
 };
+COT.LS_NHAP = ['Thời gian xử lý', 'Email', 'Họ tên', 'Mã người', 'Vai trò', 'Mã nhóm', 'Vai trong nhóm', 'Quyền', 'Việc', 'Ghi chú', 'Kết quả'];
 var DS = {
   LOAI_NHOM: ['Cấp', 'Lớp', 'Nhóm nhỏ', 'Dự án', 'Ban', 'Tri thức', 'Dữ liệu', 'Tổ chức'],
   TT_NHOM: ['Đang', 'Kết thúc', 'Đóng', 'Ngừng'],

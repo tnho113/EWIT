@@ -1,8 +1,9 @@
 /**
  * MLWIT · SHARED DRIVE BOARD v2 · ĐƯA VÀO DANH SÁCH TỔNG
  * Đọc sổ việc NHAP, cập nhật NGUOI và THANH_VIEN. Không chạm Drive.
- * Dòng đã xử lý (✔) được bỏ qua nếu nội dung không đổi; sửa nội dung dòng thì script tự xử lý lại
- * (so với "dấu vân tay" ở cột ẩn "Mã xử lý"). Dòng không có Email: bỏ qua.
+ * Sau khi chạy: dòng ✔ chuyển sang tab LS_NHAP (lịch sử nhập) và bị xóa khỏi NHAP;
+ * dòng LỖI ở lại NHAP (dồn lên đầu) để sửa rồi chạy lại. NHAP luôn trống cho lần nhập sau.
+ * Dòng không có Email: bỏ qua và xóa.
  *
  * Quy tắc:
  *  - Khóa của THANH_VIEN là Email + Mã nhóm.
@@ -34,9 +35,8 @@ function duaVaoTong_(cd) {
 
   ghiDeTab_(TAB.NGUOI, COT.NGUOI, nguoi.ds);
   ghiDeTab_(TAB.THANH_VIEN, COT.THANH_VIEN, tv.ds);
-  ghiCot_(nhap, 'Kết quả', kq);
-  if (coDau) ghiCot_(nhap, 'Mã xử lý', dau);
   P.tomTat = dem.xong + ' dòng xong, ' + dem.loi + ' dòng lỗi.';
+  donNhap_(nhap, kq, dau);
   ghi_('Thành viên', 'Đưa vào danh sách tổng', P.tomTat);
 }
 
@@ -72,6 +72,36 @@ function docThanhVien_() {
     m[o['Email'] + '|' + o['Mã nhóm']] = o; ds.push(o);
   });
   return { m: m, ds: ds };
+}
+
+/** Chuyển dòng ✔ sang LS_NHAP, giữ dòng LỖI ở NHAP (dồn lên đầu), xóa phần còn lại. */
+function donNhap_(nhap, kq, dau) {
+  var giu = [], ls = [], luc = bayGio_(), dongCuoi = 1;
+  nhap.dong.forEach(function (d) {
+    dongCuoi = Math.max(dongCuoi, d._dong);
+    if (!chuan_(d['Email'])) return;
+    var r = kq[d._dong] !== undefined ? kq[d._dong] : chuan_(d['Kết quả']);
+    var o = {}; nhap.tieuDe.forEach(function (td) { if (td) o[td] = d[td] !== undefined ? d[td] : ''; });
+    o['Kết quả'] = r;
+    if (dau[d._dong] !== undefined) o['Mã xử lý'] = dau[d._dong];
+    if (r.indexOf('✔') === 0) { o['Thời gian xử lý'] = luc; ls.push(o); } else giu.push(o);
+  });
+  if (ls.length) {
+    var tabLs = P.ss.getSheetByName(TAB.LS_NHAP);
+    if (!tabLs) { tabLs = P.ss.insertSheet(TAB.LS_NHAP); tabLs.appendRow(COT.LS_NHAP); }
+    var tdLs = tabLs.getRange(1, 1, 1, Math.max(tabLs.getLastColumn(), 1)).getValues()[0].map(chuan_);
+    var v = ls.map(function (o) { return tdLs.map(function (td) { return o[td] !== undefined ? o[td] : ''; }); });
+    tabLs.getRange(tabLs.getLastRow() + 1, 1, v.length, tdLs.length).setValues(v);
+  }
+  var soDong = dongCuoi - 1;
+  if (soDong < 1) return;
+  nhap.tieuDe.forEach(function (td, c) {
+    if (!td || td === 'Tình trạng') return;                 // cột công thức: không ghi
+    var cot = [];
+    for (var i = 0; i < soDong; i++) cot.push([i < giu.length ? giu[i][td] : '']);
+    nhap.tab.getRange(2, c + 1, soDong, 1).setValues(cot);
+  });
+  P.tomTat += ' Đã chuyển ' + ls.length + ' dòng sang LS_NHAP' + (giu.length ? ', ' + giu.length + ' dòng lỗi ở lại NHAP.' : '.');
 }
 
 /** Dấu vân tay nội dung một dòng NHAP: đổi bất kỳ ô nhập nào thì dấu đổi. */
