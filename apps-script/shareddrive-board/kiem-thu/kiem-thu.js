@@ -42,7 +42,7 @@ function moiTruong(bang, nguoiChay = ADMIN) {
   return ctx;
 }
 
-const NHAP_COT = ['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Mã nhóm', 'Vai trong nhóm', 'Quyền', 'Việc', 'Ghi chú', 'Tình trạng', 'Kết quả'];
+const NHAP_COT = ['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Mã nhóm', 'Vai trong nhóm', 'Quyền', 'Việc', 'Ghi chú', 'Tình trạng', 'Kết quả', 'Mã xử lý'];
 const bang = taoBang({
   CAI_DAT: [['Nhãn', 'Giá trị'], ['Email admin', ADMIN]],
   NHOM: [['Mã nhóm', 'Tên nhóm', 'Loại', 'Thuộc', 'Nhánh', 'Thương hiệu', 'Trạng thái', 'Email nhóm', 'ID thư mục', 'Kết quả'],
@@ -56,7 +56,7 @@ const bang = taoBang({
   THANH_VIEN: [['Email', 'Họ tên', 'Mã nhóm', 'Loại nhóm', 'Vai trong nhóm', 'Quyền', 'Trạng thái', 'Ngày thêm', 'Cập nhật', 'Nguồn', 'Lịch sử', 'Kết quả Drive']],
   NHAT_KY: [['Thời gian', 'Lệnh', 'Phần', 'Việc', 'Đối tượng']]
 });
-const themNhap = rows => rows.forEach(r => bang.tabs.NHAP.v.push([r[0], r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '', r[6] || '', r[7] || '', '', '', '']));
+const themNhap = rows => rows.forEach(r => bang.tabs.NHAP.v.push([r[0], r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '', r[6] || '', r[7] || '', '', '', '', '']));
 const chay = ai => moiTruong(bang, ai).sdDuaVaoTong();
 const kqNhap = () => bang.tabs.NHAP.v.slice(1).map(r => r[10]);
 const tvMap = () => { const v = bang.tabs.THANH_VIEN.v; const h = v[0]; const m = {}; v.slice(1).forEach(r => { const o = {}; h.forEach((c, i) => o[c] = r[i]); m[o['Email'] + '|' + o['Mã nhóm']] = o; }); return m; };
@@ -165,6 +165,25 @@ nhom('10. Sửa dòng lỗi rồi xóa ô Kết quả thì chạy lại được
   v[i][1] = 'Mới Một'; v[i][3] = 'HV'; v[i][10] = '';
   chay();
   assert(/^✔ người mới, thêm vào ME02$/.test(v[i][10]), v[i][10]);
+});
+
+nhom('11. Ghi đè dòng cũ (còn ✔) bằng nội dung mới: tự xử lý lại', () => {
+  const v = bang.tabs.NHAP.v;
+  const i = 2; // dòng hv1 · ME02-08 cũ (dòng 3 trên bảng là ef1? lấy dòng 2)
+  v[1] = ['ef1@example.com', '', '', '', 'KIND', '', 'Xem', 'Thêm', '', '', v[1][10], v[1][11]];
+  const truocLS = tvMap()['ef1@example.com|KIND']['Lịch sử'];
+  chay();
+  assert(/cập nhật KIND/.test(v[1][10]), v[1][10]);
+  assert.strictEqual(tvMap()['ef1@example.com|KIND']['Quyền'], 'Xem');
+  const sau = JSON.stringify(bang.tabs.THANH_VIEN.v);
+  chay();
+  assert.strictEqual(JSON.stringify(bang.tabs.THANH_VIEN.v), sau, 'nội dung không đổi thì không xử lý lại');
+});
+
+nhom('12. Dòng chỉ còn Kết quả cũ, không có Email: bỏ qua, không báo lỗi', () => {
+  bang.tabs.NHAP.v.push(['', '', '', '', '', '', '', '', '', '', '✔ kết quả cũ', '']);
+  chay();
+  assert.strictEqual(bang.tabs.NHAP.v.slice(-1)[0][10], '✔ kết quả cũ', 'dòng không email phải được bỏ qua');
 });
 
 console.log(truot ? `\n${truot} TRƯỢT / ${dat + truot}` : `\nTẤT CẢ ĐẠT (${dat}/${dat})`);

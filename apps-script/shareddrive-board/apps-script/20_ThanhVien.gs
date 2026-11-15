@@ -1,7 +1,8 @@
 /**
  * MLWIT · SHARED DRIVE BOARD v2 · ĐƯA VÀO DANH SÁCH TỔNG
- * Đọc sổ việc NHAP (dòng chưa có dấu ✔ ở cột Kết quả), cập nhật NGUOI và THANH_VIEN.
- * Không chạm Drive. Muốn chạy lại một dòng: xóa ô Kết quả của dòng đó.
+ * Đọc sổ việc NHAP, cập nhật NGUOI và THANH_VIEN. Không chạm Drive.
+ * Dòng đã xử lý (✔) được bỏ qua nếu nội dung không đổi; sửa nội dung dòng thì script tự xử lý lại
+ * (so với "dấu vân tay" ở cột ẩn "Mã xử lý"). Dòng không có Email: bỏ qua.
  *
  * Quy tắc:
  *  - Khóa của THANH_VIEN là Email + Mã nhóm.
@@ -17,19 +18,24 @@ function duaVaoTong_(cd) {
   var nhom = docNhom_();
   var nguoi = docNguoi_();
   var tv = docThanhVien_();
-  var kq = {}, dem = { xong: 0, loi: 0, boQua: 0 };
+  var kq = {}, dau = {}, dem = { xong: 0, loi: 0 };
+  var coDau = nhap.tieuDe.indexOf('Mã xử lý') >= 0;
 
   nhap.dong.forEach(function (d) {
-    var daCo = chuan_(d['Kết quả']);
-    if (daCo.indexOf('✔') === 0) return;                    // dòng đã xử lý
+    if (!chuan_(d['Email'])) return;                         // dòng trống hoặc chỉ còn kết quả cũ
+    var vanTay = vanTayNhap_(d);
+    var daXong = chuan_(d['Kết quả']).indexOf('✔') === 0;
+    if (daXong && (!coDau || chuan_(d['Mã xử lý']) === vanTay)) return;   // đã xử lý, nội dung không đổi
     var r = xuLyDongNhap_(d, nhom, nguoi, tv);
     kq[d._dong] = r;
+    dau[d._dong] = r.indexOf('LỖI') === 0 ? '' : vanTay;
     if (r.indexOf('LỖI') === 0) { dem.loi++; P.loi++; } else { dem.xong++; }
   });
 
   ghiDeTab_(TAB.NGUOI, COT.NGUOI, nguoi.ds);
   ghiDeTab_(TAB.THANH_VIEN, COT.THANH_VIEN, tv.ds);
   ghiCot_(nhap, 'Kết quả', kq);
+  if (coDau) ghiCot_(nhap, 'Mã xử lý', dau);
   P.tomTat = dem.xong + ' dòng xong, ' + dem.loi + ' dòng lỗi.';
   ghi_('Thành viên', 'Đưa vào danh sách tổng', P.tomTat);
 }
@@ -66,6 +72,12 @@ function docThanhVien_() {
     m[o['Email'] + '|' + o['Mã nhóm']] = o; ds.push(o);
   });
   return { m: m, ds: ds };
+}
+
+/** Dấu vân tay nội dung một dòng NHAP: đổi bất kỳ ô nhập nào thì dấu đổi. */
+function vanTayNhap_(d) {
+  return [email_(d['Email']), chuan_(d['Họ tên']), chuan_(d['Mã người']), chuan_(d['Vai trò']), maNhom_(d['Mã nhóm']),
+    chuan_(d['Vai trong nhóm']), chuan_(d['Quyền']), chuan_(d['Việc']) || 'Thêm'].join('|');
 }
 
 /* ---------- Xử lý một dòng ---------- */
