@@ -5,6 +5,7 @@
 > Nhánh bàn giao: **`main`** (WD-09, Nery xác nhận 28/10/2026).
 
 ## Đang làm
+- **Quản trị Google Workspace (Shared Drive Board, WD-23)**: phương án đã chốt 15/11/2026 → `docs/quan-tri-gw/shareddrive-board.md`. Bản thử v1 có bảng + script trên Drive (chưa chạy thật). Chờ Nery: cho bắt đầu xây v2, gửi mẫu Nhật ký trưởng thành, tắt trình kích hoạt Toolkit cũ trước khi xóa ổ/nhóm cũ.
 - **Lịch & Công v2**: B0–B3 ✅ · **B4–B6 code xong** (5 phiên phụ song song; 66/66 test logic đạt; đã rà và sửa điểm ghép: Buổi/Thứ dùng công thức thay onEdit). **Chưa chạy trên Google thật.**
   - ⓐ đã có sẵn ô chọn (kiểu mũi tên như Nery làm ở `quyen`) + tô màu cho 9 tab, 999 dòng; tab ẩn `_dm_nhom_lop`. Ô kiểm email chưa tạo (locale vi_VN dùng `;`) → để `caiDatDinhDang` tạo. `caiDatDinhDang` giờ **giữ và kéo dài** ô chọn có sẵn.
   - Bước 0 mẫu: điền họ tên + email 18 EF khớp chắc từ `EWIT_LIST` (1XWTPbZx87RKNIGOtZhHo9yGJvPMV24AesWZ-QfxC_U8), 17 dòng `ef_level` (từ 01/10/2026). Đối chiếu đầy đủ: 13 khớp nghi, 266 người EF_LIST chưa có trong ⓐ, lớp lệch (G1-K22 COMPLETED ở EWT, PME-3A/3B giờ, 4 lớp mới).
@@ -28,6 +29,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-11-15 | Cloud | `claude/charming-noether-yucytx` | WD-23: chốt mô hình "mỗi người một ổ" cho Google Workspace MLWIT; tạo bản thử v1 (bảng + script, kiểm thử giả lập 9/9) trong `Tool_Quan_Tri` |
 | 2026-11-04 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-22: giờ học chính thức, PP theo năm, EF_LIST ≠ ⓐ.ef; ME02 → SPM-01 (21:15) |
 | 2026-11-04 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | Nery xác nhận TEA=TEACHER, Hoàng Mỹ=PIONEER; cập nhật ⓐ.lop theo EWT-CLASSES: K22/PME-2B/ME02 COMPLETED, thêm KEM-01, KES-02, IME-02, G1-K23; lớp thử chuyển sang G1-K23 |
 | 2026-10-28 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | Đối chiếu EWIT_LIST; tạo sẵn ô chọn + màu cho ⓐ; điền mẫu bước 0 (18 EF, 17 ef_level) |
