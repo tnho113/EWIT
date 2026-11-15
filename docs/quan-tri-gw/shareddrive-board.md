@@ -18,7 +18,7 @@
 - **Chia sẻ theo vai trò (15/11)**: hạn chế đặt theo từng ổ cá nhân. Tab `VAI_TRO` (Vai trò | Được chia sẻ). Mặc định **Có**: Pioneer, GV, vai trò tổ chức (BTC, IT…); **Không**: HV, Candidate, L3, L2, L1, TOR. Ổ "Không" → `driveMembersOnly=true` (không gian kín). Đổi vai trò/cấp → script mở/khóa lại.
 - **Bài nộp chuyển sang ổ gốc `EWIT · Nộp bài`** (thư mục theo người `{Mã} · {Họ tên}/<mã lớp>/`); ổ HV có lối tắt `20 · Nộp bài`. Người phụ trách nhóm nhỏ (nhóm `sd-pt-<nhóm nhỏ>`) chỉ được cấp Nhận xét trên thư mục lớp của đúng HV trong nhóm mình; không là thành viên ổ Nộp bài nên không duyệt/thấy bài của nhóm khác.
 - **Quét toàn Drive + đề xuất dọn dẹp**: menu riêng, chạy tay; phạm vi mọi ổ dùng chung của tổ chức + Drive admin@; kết quả ghi file riêng "SD · Báo cáo" trong ổ Quản trị (cây, thống kê, ngoài cấu hình, tệp lớn/cũ/trùng, thư mục rỗng, link công khai, audio/video trong Raw, ổ > 80%); dùng lại logic 60_BaoCao.gs; tự hẹn chạy tiếp khi hết giờ rồi tự xóa lịch.
-- **Menu**: Thành viên › Đưa vào danh sách tổng · Drive › Xem trước / Áp dụng · Quét & dọn dẹp › Quét toàn Drive / Mở báo cáo.
+- **Menu**: Thành viên › Đưa vào danh sách tổng · Drive › Xem trước / Áp dụng · Quét & dọn dẹp › Quét toàn Drive / Mở báo cáo / Xem trước thu ổ / Thu ổ người nghỉ.
 - Hoàng Minh (offline): mặc định làm EWIT trước; thêm cột "Thương hiệu" sau, không làm lại.
 
 ## 1b. Hiệu chỉnh sau đánh giá chuyên gia (15/11, Nery chốt)
@@ -26,8 +26,8 @@
 - **Ổ `EWIT · Nộp bài` đổi thành `EWIT · Hồ sơ học tập`**: mỗi người một thư mục gồm bài nộp theo lớp + **Nhật ký trưởng thành** (chuyển khỏi ổ cá nhân vì ổ cá nhân khóa kín thì người phụ trách không vào được). Nhật ký xử lý như **dữ liệu cá nhân**; điều khoản đồng ý gắn vào Form đăng ký.
 - **Mô hình nhóm thống nhất**: tab `NHOM` (mỗi dòng = cấp/lớp/nhóm nhỏ/dự án/ban/tri thức/dữ liệu… = 1 Google Group + 1 chỗ trên Drive; có cột Thương hiệu). Tab `NHAP` là sổ việc (Email · Họ tên · Mã nhóm · Vai: Thành viên/Phụ trách · Quyền · Thêm/Gỡ/Nghỉ). **Bỏ tab PHU_TRACH.** NGUOI, THANH_VIEN ẩn, script ghi. Email mới lần đầu ở NHAP → tự tạo người.
 - **Menu giữ bước riêng** "Đưa vào danh sách tổng" (menu riêng), rồi Drive › Xem trước / Áp dụng (có bảng tóm tắt).
-- **Hạn mức dung lượng theo cấu hình** (cột "Hạn mức GB" theo vai trò; trống = không giới hạn). Drive API không đặt được hạn mức ổ → script áp **hạn mức mềm**: ổ vượt → hạ quyền tải lên `90_CA-NHAN` về Xem + báo; xuống dưới → mở lại. OU trong Admin console là lớp cứng tùy chọn.
-- **Người nghỉ**: HV nghỉ → **thu ổ cá nhân** (dữ liệu chính ở ổ gốc): gỡ thành viên, chuyển tệp `90_CA-NHAN` (nếu có) sang thư mục người đó ở Hồ sơ học tập, bỏ lối tắt, xóa ổ rỗng. Đây là ngoại lệ của quy tắc "không xóa", chạy bằng lệnh riêng có Xem trước + xác nhận. Cột "Khi nghỉ" theo vai trò (mặc định HV: Thu ổ; EF/GV: Giữ ổ, khóa).
+- **Bỏ hạn mức dung lượng trong bảng** (Nery chốt: script không đặt được hạn mức cứng → không thêm cột cho bớt nhập). Nếu cần thì đặt OU trong Admin console. Báo cáo quét vẫn liệt kê dung lượng từng ổ.
+- **Người nghỉ**: HV nghỉ → **thu ổ cá nhân** (dữ liệu chính ở ổ gốc): gỡ thành viên, chuyển tệp `90_CA-NHAN` (nếu có) sang thư mục người đó ở Hồ sơ học tập, bỏ lối tắt, xóa ổ rỗng. Đây là ngoại lệ của quy tắc "không xóa", chạy bằng lệnh riêng **trong menu Quét & dọn dẹp** (Xem trước thu ổ · Thu ổ người nghỉ, hỏi xác nhận). Cột "Khi nghỉ" theo vai trò (mặc định HV: Thu ổ; EF/GV: Giữ ổ, khóa).
 - **Ổ cá nhân chỉ tạo khi có thành viên mới**, không tạo sẵn.
 - Nhóm `sd-…`: script đặt không ai gửi thư vào được, chỉ quản lý xem danh sách. Script gửi **thư chào** kèm link ổ khi tạo ổ. Chạy tiếp nhiều lượt (6 phút/lượt), chỉ xử lý dòng thay đổi.
 - Khi HV tăng: đề nghị mua thêm giấy phép (mỗi giấy phép Business Standard cộng thêm dung lượng chung, có thêm tài khoản quản trị dự phòng).
