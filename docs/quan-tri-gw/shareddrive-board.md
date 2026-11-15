@@ -35,7 +35,8 @@
 
 ## 2. Hiện trạng
 - Bản thử v1 (1 ổ gốc, cấp quyền từng người, chưa có CAU_TRUC/nhóm): bảng `MLWIT-SharedDrive-Board` 15DvLmbVA9nqAe1TMggy4KYtdxNPXoadcVhZvYlGNXO8; script `Tool_Quan_Tri/shareddrive-kit/SharedDrive.gs` (1sQPzWs3YoSrY8TYC9dPfWeMJqmgjy7u_); kiểm thử giả lập `kiem-thu.js` 9/9 đạt. **Chưa chạy trên Google thật.** Bảng đang do Gmail cá nhân của Nery sở hữu → khi dùng thật, admin@ tạo bản sao để làm chủ.
-- Bản v2 (theo mục 1): **chưa xây**, chờ Nery cho bắt đầu.
+- **Bản v2 · Đợt 1 (15/11) xong phía Claude**: cùng bảng `MLWIT-SharedDrive-Board` (đã bỏ tab v1), tab: HUONG_DAN, NHAP (cột Tình trạng = ARRAYFORMULA ở J1), NHOM, XEM_NHOM (QUERY theo nhóm/email), THANH_VIEN, NGUOI, VAI_TRO, CAU_TRUC (51 dòng mặc định, dùng từ Đợt 2), CAI_DAT, NHAT_KY. Script 3 tệp trên Drive `Tool_Quan_Tri/shareddrive-kit/v2 (Board mới)` (00_Menu 1cbD5OL8GtkxTohqDQI1cs84o_ig-jfKM, 10_Chung 1dazzYJDxHY31KBBFL8qRh3MXGoPqAZfV, 20_ThanhVien 1DtoK8W5SdGmfIFdaFv61KsOhMGiK-weH); bản sao trong repo `apps-script/shareddrive-board/`; kiểm thử 10/10. Dòng NHAP đã xử lý có dấu ✔ ở Kết quả, xóa ô để chạy lại. **Chờ Nery dán script và thử theo HUONG_DAN mục C.**
+- Đợt 2 (chưa làm): Drive › Xem trước / Áp dụng theo CAU_TRUC + nhóm sd- + ổ cá nhân + lối tắt + thư chào + khóa/mở chia sẻ theo VAI_TRO. Đợt 3: Quét & dọn dẹp + thu ổ người nghỉ + nhật ký mẫu.
 
 ## 3. Cần thử thật (chưa kiểm chứng)
 - Gỡ quyền trực tiếp ở thư mục khi người đó còn quyền thừa kế từ ổ (đã có phương án hạ về Xem).
