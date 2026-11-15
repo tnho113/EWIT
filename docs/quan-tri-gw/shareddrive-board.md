@@ -43,6 +43,14 @@
 - **Bản v2 · Đợt 1 (15/11) xong phía Claude**: cùng bảng `MLWIT-SharedDrive-Board` (đã bỏ tab v1), tab: HUONG_DAN, NHAP (cột Tình trạng = ARRAYFORMULA ở J1), NHOM, XEM_NHOM (QUERY theo nhóm/email), THANH_VIEN, NGUOI, VAI_TRO, CAU_TRUC (51 dòng mặc định, dùng từ Đợt 2), CAI_DAT, NHAT_KY. Script 3 tệp trên Drive `Tool_Quan_Tri/shareddrive-kit/v2 (Board mới)` (00_Menu 1cbD5OL8GtkxTohqDQI1cs84o_ig-jfKM, 10_Chung 1dazzYJDxHY31KBBFL8qRh3MXGoPqAZfV, 20_ThanhVien 1DtoK8W5SdGmfIFdaFv61KsOhMGiK-weH); bản sao trong repo `apps-script/shareddrive-board/`; kiểm thử 10/10. Dòng NHAP đã xử lý có dấu ✔ ở Kết quả, xóa ô để chạy lại. **Nery đã thử trên Google thật 15/11: bước 1–7 ĐẠT** (người mới, tự vào lớp, cập nhật quyền + lịch sử, đổi Level, chuyển nhóm nhỏ, dòng lỗi ở lại, XEM_NHOM).
 - **Đợt 2 + 3 code xong (15/11)**, theo đặc tả `docs/quan-tri-gw/dot2-dac-ta.md`; 3 phiên phụ song song: `25_Nhom.gs` (Sonnet), `30_Drive.gs` (Opus), `50_Quet.gs` (Sonnet); điều phối viết `15_DuLieu.gs` + `kiem-thu/gia-lap.js`, ghép: menu đủ 3 nhóm lệnh, `chayPhien_(ten, viec, henLai)` tự hẹn lại khi bận, `P.goiTuDrive` để chỉ Drive hẹn chạy tiếp, tiêu đề thư chào lấy CAI_DAT "Tên hiển thị". Kiểm thử giả lập: 11 + 4 + 10 + 17 + 10 = 52 nhóm ĐẠT. **Chưa chạy trên Google thật.** Cần thử thật: fileOrganizer cấp thư mục, chuyển thư mục giữa 2 ổ khi thu ổ, Gmail ngoài vào ổ/nhóm qua API, sendNotificationEmail=false khi thêm thành viên ổ, người Sửa ở ổ gốc có chia sẻ tiếp được không.
 
+## 2b. Kết quả thử thật Đợt 2 (15/11, 3 Gmail thử)
+- Áp dụng tạo đúng 9 ổ gốc, 50 thư mục, 3 ổ cá nhân, 10 lối tắt, 3 thư chào. Nhóm: lỗi NONE_CAN_POST (Google đòi archiveOnly → đổi ALL_MANAGERS_CAN_POST) và "Resource Not Found: groupKey" ngay sau khi tạo nhóm (thêm chờ/thử lại 3 lần); lần 2 không lỗi; cài đặt nhóm đúng (Allow external = Yes).
+- Cần cấp lại quyền script sau khi bật dịch vụ nâng cao (myaccount.google.com/permissions → Delete all → chạy hàm trong editor).
+- **Quyền qua nhóm có hiệu lực chậm (vài chục phút)**; giao diện Drive giữ trạng thái cũ "You need permission" trên lối tắt; người dùng dễ bấm Request access (→ dặn đừng bấm, chờ 30 phút, tải lại).
+- **"Được chia sẻ với tôi" chỉ hiện quyền cấp trực tiếp cho email** (90_CA-NHAN, thư mục RAW_NG); mục cấp qua nhóm không hiện kể cả sau khi mở.
+- **Người có quyền Sửa (không là thành viên ổ gốc) chia sẻ tiếp được từng tệp** ra ngoài (chỉ cảnh báo).
+- Đề xuất chờ Nery: (a) nhóm riêng `sd-u-<email>` cho quyền theo người; (b) chủ ổ cá nhân = Người đóng góp cả ổ; (c) chia sẻ lạ: A1 quét tự gỡ hằng đêm / A2 khi bấm / C chỉ báo cáo. Đã giao chuyên gia GW rà logic nhập liệu.
+
 ## 3. Cần thử thật (chưa kiểm chứng)
 - Gỡ quyền trực tiếp ở thư mục khi người đó còn quyền thừa kế từ ổ (đã có phương án hạ về Xem).
 - Tổ chức có cho Gmail ngoài làm thành viên ổ dùng chung qua API.
