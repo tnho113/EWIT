@@ -5,7 +5,7 @@
 > Nhánh bàn giao: **`main`** (WD-09, Nery xác nhận 28/10/2026).
 
 ## Đang làm
-- **Quản trị Google Workspace (Shared Drive Board, WD-23)**: phương án đã chốt 15/11/2026 → `docs/quan-tri-gw/shareddrive-board.md`. **Đợt 1 v2 xong phía Claude** (bảng nâng cấp, 3 tệp script, kiểm thử 10/10). Chờ Nery: dán script + thử theo HUONG_DAN mục C, gửi ảnh; gửi mẫu Nhật ký trưởng thành; tắt trình kích hoạt Toolkit cũ trước khi xóa ổ/nhóm cũ.
+- **Quản trị Google Workspace (Shared Drive Board, WD-23)**: phương án đã chốt 15/11/2026 → `docs/quan-tri-gw/shareddrive-board.md`. **Đợt 1 v2 ĐẠT trên Google thật** (15/11). Tiếp: Đợt 2 (Áp dụng lên Drive). Chờ Nery: gửi mẫu Nhật ký trưởng thành; tắt trình kích hoạt Toolkit cũ trước khi xóa ổ/nhóm cũ.
 - **Lịch & Công v2**: B0–B3 ✅ · **B4–B6 code xong** (5 phiên phụ song song; 66/66 test logic đạt; đã rà và sửa điểm ghép: Buổi/Thứ dùng công thức thay onEdit). **Chưa chạy trên Google thật.**
   - ⓐ đã có sẵn ô chọn (kiểu mũi tên như Nery làm ở `quyen`) + tô màu cho 9 tab, 999 dòng; tab ẩn `_dm_nhom_lop`. Ô kiểm email chưa tạo (locale vi_VN dùng `;`) → để `caiDatDinhDang` tạo. `caiDatDinhDang` giờ **giữ và kéo dài** ô chọn có sẵn.
   - Bước 0 mẫu: điền họ tên + email 18 EF khớp chắc từ `EWIT_LIST` (1XWTPbZx87RKNIGOtZhHo9yGJvPMV24AesWZ-QfxC_U8), 17 dòng `ef_level` (từ 01/10/2026). Đối chiếu đầy đủ: 13 khớp nghi, 266 người EF_LIST chưa có trong ⓐ, lớp lệch (G1-K22 COMPLETED ở EWT, PME-3A/3B giờ, 4 lớp mới).
