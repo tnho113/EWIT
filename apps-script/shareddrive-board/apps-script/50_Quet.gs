@@ -33,7 +33,7 @@ var QT_COT_TAM = ['o', 'id', 'ten', 'mime', 'cha', 'size', 'quota', 'sua', 'sdma
 /* ---------- Lệnh menu ---------- */
 
 function sdQuet() { chayPhien_('Quét & dọn dẹp', function () { qtQuet_(false); }); }
-function sdQuetTiep() { chayPhien_('Quét & dọn dẹp (tiếp)', function () { qtQuet_(true); }); }
+function sdQuetTiep() { chayPhien_('Quét & dọn dẹp (tiếp)', function () { qtQuet_(true); }, 'sdQuetTiep'); }
 function sdMoBaoCao() { chayPhien_('Mở báo cáo', qtMoBaoCao_); }
 function sdThuOXemTruoc() { chayPhien_('Thu ổ người nghỉ · Xem trước', function () { P.thu = true; qtThuO_(); }); }
 function sdThuOApDung() {

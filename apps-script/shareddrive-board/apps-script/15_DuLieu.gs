@@ -23,6 +23,7 @@ function taiDuLieu_() {
       mien: chuan_(cdTab['Tên miền']),
       tienTo: chuan_(cdTab['Tiền tố nhóm']) || 'sd-',
       thuongHieu: chuan_(cdTab['Thương hiệu mặc định']) || 'EWIT',
+      tenHienThi: chuan_(cdTab['Tên hiển thị']) || chuan_(cdTab['Thương hiệu mặc định']) || 'EWIT',
       guiThuChao: chuan_(cdTab['Gửi thư chào']) !== 'Không'
     },
     nhom: {}, dsNhom: [], nguoi: {}, dsNguoi: [], tv: [], vaiTro: {}, cauTruc: [], bang: {}

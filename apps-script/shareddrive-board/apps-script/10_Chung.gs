@@ -31,10 +31,17 @@ function emailHopLe_(e) { return /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e); }
 function bayGio_() { return Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'dd/MM/yyyy HH:mm'); }
 function homNay_() { return Utilities.formatDate(new Date(), 'Asia/Ho_Chi_Minh', 'dd/MM/yyyy'); }
 
-/** Chạy một việc trong phiên có khóa, kiểm tra admin, ghi nhật ký. */
-function chayPhien_(ten, viec) {
+/**
+ * Chạy một việc trong phiên có khóa, kiểm tra admin, ghi nhật ký.
+ * henLai: tên hàm chạy tiếp (dùng cho lượt do trình kích hoạt gọi) — nếu đang bận thì tự hẹn lại sau 1 phút.
+ */
+function chayPhien_(ten, viec, henLai) {
   var khoa = LockService.getScriptLock();
-  if (!khoa.tryLock(5000)) { thongBao_('Đang có một lượt chạy khác. Đợi 1 phút rồi thử lại.'); return; }
+  if (!khoa.tryLock(5000)) {
+    if (henLai) { try { ScriptApp.newTrigger(henLai).timeBased().after(60000).create(); } catch (e) { /* bỏ qua */ } }
+    thongBao_('Đang có một lượt chạy khác. Đợi 1 phút rồi thử lại.');
+    return;
+  }
   P = { ten: ten, ss: SpreadsheetApp.getActiveSpreadsheet(), nk: [], loi: 0, tomTat: '' };
   try {
     var cd = docCaiDat_();

@@ -59,7 +59,8 @@ function dongBoNhom_(C) {
   nhGhiBang_(C, kqNhom, thu);
   if (chuaXong) {
     ghi_('Nhóm', 'Chưa xong, sẽ chạy tiếp', thu ? 'hết giờ (Xem trước)' : 'hẹn chạy lại sau 1 phút');
-    if (!thu) ScriptApp.newTrigger('sdNhomApDung').timeBased().after(60000).create();
+    // Chỉ tự hẹn khi chạy riêng lệnh Nhóm; khi Drive gọi, Drive tự hẹn chạy tiếp cả hai.
+    if (!thu && !P.goiTuDrive) ScriptApp.newTrigger('sdNhomApDung').timeBased().after(60000).create();
   } else if (!thu) {
     nhXoaHenGio_();
   }
