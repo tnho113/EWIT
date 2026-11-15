@@ -21,7 +21,7 @@
  */
 var NH_GIOI_HAN = 270000;   // 4,5 phút
 var NH_CAI_DAT = {
-  allowExternalMembers: 'true', whoCanJoin: 'INVITED_CAN_JOIN', whoCanPostMessage: 'NONE_CAN_POST',
+  allowExternalMembers: 'true', whoCanJoin: 'INVITED_CAN_JOIN', whoCanPostMessage: 'ALL_MANAGERS_CAN_POST',  // NONE_CAN_POST bị Google từ chối nếu nhóm không ở chế độ lưu trữ
   whoCanViewMembership: 'ALL_MANAGERS_CAN_VIEW', whoCanViewGroup: 'ALL_MANAGERS_CAN_VIEW',
   whoCanDiscoverGroup: 'ALL_MEMBERS_CAN_DISCOVER', whoCanContactOwner: 'ALL_MANAGERS_CAN_CONTACT'
 };
@@ -155,7 +155,7 @@ function nhXuLyMuc_(C, m, thu) {
   them.forEach(function (e) {
     ghi_('Nhóm', (thu ? 'Sẽ thêm vào ' : 'Thêm vào ') + m.email, e);
     if (thu) return;
-    try { AdminDirectory.Members.insert({ email: e, role: 'MEMBER' }, m.email); }
+    try { nhThemThanhVien_(e, m.email); }
     catch (err) {
       if (/already exist|duplicate|409/i.test(String(err.message))) return;
       ghi_('LỖI', 'Thêm vào ' + m.email, e + ' · ' + err.message); phan.push('LỖI thêm ' + e);
@@ -178,6 +178,17 @@ function nhXuLyMuc_(C, m, thu) {
 }
 
 /** Ghi "Email nhóm" và "Kết quả" ở NHOM (theo tên cột), cả Xem trước lẫn Áp dụng. */
+/** Thêm thành viên; nhóm vừa tạo có thể chưa "thấy" được ngay → chờ rồi thử lại tối đa 3 lần. */
+function nhThemThanhVien_(e, emailNhom) {
+  for (var i = 0; i < 3; i++) {
+    try { return AdminDirectory.Members.insert({ email: e, role: 'MEMBER' }, emailNhom); }
+    catch (err) {
+      if (i === 2 || !nhKhongTimThay_(err)) throw err;
+      Utilities.sleep(3000 * (i + 1));
+    }
+  }
+}
+
 function nhGhiBang_(C, kqNhom, thu) {
   var email = {}, ketQua = {};
   Object.keys(kqNhom).forEach(function (ma) {

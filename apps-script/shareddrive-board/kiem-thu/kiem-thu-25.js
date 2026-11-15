@@ -22,7 +22,9 @@ function taoGiaLap(nhomCoSan = {}) {
         if (dau + trang < ds.length) kq.nextPageToken = String(dau + trang);
         return kq;
       },
-      insert: (r, e) => { g.ghi.push(['Members.insert', e, r.email, r.role]); nhom[e].thanhVien[r.email] = r.role; return r; },
+      insert: (r, e) => {
+        if (g.chuaThay && g.chuaThay[e] > 0) { g.chuaThay[e]--; throw new Error('Resource Not Found: groupKey'); }
+        g.ghi.push(['Members.insert', e, r.email, r.role]); nhom[e].thanhVien[r.email] = r.role; return r; },
       remove: (e, x) => { g.ghi.push(['Members.remove', e, x]); delete nhom[e].thanhVien[x]; }
     }
   };
@@ -96,7 +98,7 @@ thu('Áp dụng: tạo đúng nhóm theo hậu tố, chỉ khi có người', ()
     'sd-me02-08-pt@example.com', 'sd-me02-08-sua@example.com', 'sd-me02-08@example.com']);
   assert.strictEqual(g.nhom['sd-me02-08-pt@example.com'].name, 'Nhóm 08 · Phụ trách');
   assert.strictEqual(g.nhom['sd-me02-08-sua@example.com'].name, 'Nhóm 08 · Sửa');
-  assert.strictEqual(g.cdOk['sd-l3@example.com'].whoCanPostMessage, 'NONE_CAN_POST');
+  assert.strictEqual(g.cdOk['sd-l3@example.com'].whoCanPostMessage, 'ALL_MANAGERS_CAN_POST');
   assert.strictEqual(g.cdOk['sd-l3@example.com'].allowExternalMembers, 'true');
   assert.strictEqual(cot(bang, 'NHOM', 'Email nhóm', 'ME02-08'), 'sd-me02-08@example.com');
   assert.strictEqual(cot(bang, 'NHOM', 'Email nhóm', 'ME02'), '', 'lớp không ai trực tiếp: không có nhóm');
@@ -138,6 +140,14 @@ thu('Đổi quyền Xem → Sửa: chuyển nhóm; người lạ giữ; thêm th
   assert.ok(!g.ghi.some(x => x[0] === 'Members.remove' && x[2] === 'la@gmail.com'));
   assert.ok(/−1/.test(cot(bang, 'NHOM', 'Kết quả', 'ME02-08')) && /ngoài bảng 1/.test(cot(bang, 'NHOM', 'Kết quả', 'ME02-08')));
   assert.strictEqual(g.nhom['sd-me02-08@example.com'].thanhVien['hv1@example.com'], 'MEMBER');
+});
+
+thu('Nhóm vừa tạo chưa thấy ngay: chờ rồi thêm thành viên được, không báo lỗi', () => {
+  const bang = taoCanh(), g = taoGiaLap();
+  g.chuaThay = { 'sd-l3@example.com': 2 };            // 2 lần đầu Google báo "không tìm thấy nhóm"
+  chay(bang, g, 'sdNhomApDung');
+  assert.deepStrictEqual(tv(g, 'sd-l3@example.com'), ['ef1@example.com']);
+  assert.ok(!bang.tabs.NHAT_KY.v.some(r => r[2] === 'LỖI'), 'không được có LỖI');
 });
 
 thu('Phân trang Members.list (nhóm >2 người) đọc đủ', () => {
