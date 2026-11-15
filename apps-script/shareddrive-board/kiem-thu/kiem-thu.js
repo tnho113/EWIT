@@ -42,17 +42,17 @@ function moiTruong(bang, nguoiChay = ADMIN) {
   return ctx;
 }
 
-const NHAP_COT = ['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Mã nhóm', 'Vai trong nhóm', 'Quyền', 'Việc', 'Ghi chú', 'Tình trạng', 'Kết quả', 'Mã xử lý'];
+const NHAP_COT = ['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Mã nhóm', 'Vai trong nhóm', 'Quyền', 'Việc', 'Ghi chú', 'Tình trạng', 'Lỗi'];
 const bang = taoBang({
   CAI_DAT: [['Nhãn', 'Giá trị'], ['Email admin', ADMIN]],
   NHOM: [['Mã nhóm', 'Tên nhóm', 'Loại', 'Thuộc', 'Nhánh', 'Thương hiệu', 'Trạng thái', 'Email nhóm', 'ID thư mục', 'Kết quả'],
-    ['L3', 'EF cấp L3', 'Cấp', '', '', 'EWIT', 'Đang'], ['L2', 'EF cấp L2', 'Cấp', '', '', 'EWIT', 'Đang'],
+    ['L3', 'EF Level 3', 'Level', '', '', 'EWIT', 'Đang'], ['L2', 'EF Level 2', 'Level', '', '', 'EWIT', 'Đang'],
     ['ME02', 'IELTS Mentor 02', 'Lớp', '', 'ME', 'EWIT', 'Đang'],
     ['ME02-07', 'Nhóm 07', 'Nhóm nhỏ', 'ME02', '', 'EWIT', 'Đang'], ['ME02-08', 'Nhóm 08', 'Nhóm nhỏ', 'ME02', '', 'EWIT', 'Đang'],
     ['KIND', 'Kind English', 'Dự án', '', '', 'EWIT', 'Đang'], ['CU', 'Dự án cũ', 'Dự án', '', '', 'EWIT', 'Ngừng'],
     ['RAW', 'Tri thức Raw', 'Tri thức', '', '', 'MLWIT', 'Đang'], ['BTC', 'Ban tổ chức', 'Tổ chức', '', '', 'EWIT', 'Đang']],
   NHAP: [NHAP_COT],
-  NGUOI: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Cấp', 'Trạng thái', 'Ngày vào', 'Cập nhật', 'ID ổ', 'Kết quả Drive']],
+  NGUOI: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Level', 'Trạng thái', 'Ngày vào', 'Cập nhật', 'ID ổ', 'Kết quả Drive']],
   THANH_VIEN: [['Email', 'Họ tên', 'Mã nhóm', 'Loại nhóm', 'Vai trong nhóm', 'Quyền', 'Trạng thái', 'Ngày thêm', 'Cập nhật', 'Nguồn', 'Lịch sử', 'Kết quả Drive']],
   NHAT_KY: [['Thời gian', 'Lệnh', 'Phần', 'Việc', 'Đối tượng']]
 });
@@ -60,7 +60,7 @@ const N = bang.tabs.NHAP;
 /** Ghi các dòng vào NHAP từ dòng 2 (như người nhập trên tab trống), giữ dòng lỗi còn lại ở trên. */
 const themNhap = rows => {
   let i = 1; while (i < N.v.length && N.v[i][0]) i++;
-  rows.forEach(r => { N.v[i] = [r[0], r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '', r[6] || '', r[7] || '', '', '', '', '']; i++; });
+  rows.forEach(r => { N.v[i] = [r[0], r[1] || '', r[2] || '', r[3] || '', r[4] || '', r[5] || '', r[6] || '', r[7] || '', '', '', '']; i++; });
 };
 let lsTruoc = 0;
 const chay = ai => { lsTruoc = (bang.tabs.LS_NHAP ? bang.tabs.LS_NHAP.v.length : 0); moiTruong(bang, ai).sdDuaVaoTong(); };
@@ -112,14 +112,14 @@ nhom('4. Cùng nhóm khác quyền: cập nhật dòng cũ, ghi lịch sử', ()
   assert.strictEqual(bang.tabs.THANH_VIEN.v.filter(r => r[0] === 'ef1@example.com' && r[2] === 'KIND').length, 1);
 });
 
-nhom('5. EF lên cấp: tự rời cấp cũ', () => {
+nhom('5. EF lên Level: tự rời Level cũ', () => {
   themNhap([['ef1@example.com', '', '', '', 'L3'], ['ef1@example.com', '', '', '', 'L2']]);
   chay();
   const m = tvMap();
   assert.strictEqual(m['ef1@example.com|L3']['Trạng thái'], 'Gỡ');
   assert.strictEqual(m['ef1@example.com|L2']['Trạng thái'], 'Đang');
-  assert.strictEqual(nguoiMap()['ef1@example.com']['Cấp'], 'L2');
-  assert(coKq(/rời cấp L3/));
+  assert.strictEqual(nguoiMap()['ef1@example.com']['Level'], 'L2');
+  assert(coKq(/rời Level L3/));
 });
 
 nhom('6. Chuyển nhóm nhỏ cùng lớp; phụ trách nhiều nhóm không bị gỡ', () => {
@@ -164,7 +164,7 @@ nhom('9. Báo lỗi: dòng lỗi ở lại NHAP (dồn lên đầu), dòng ✔ s
   assert(/LỖI: email không hợp lệ/.test(k[0]));
   assert(/LỖI: người mới cần Họ tên và Vai trò/.test(k[1]));
   assert(/LỖI: chưa có nhóm XX/.test(k[2]));
-  assert(/LỖI: chỉ EF mới vào nhóm Cấp/.test(k[3]));
+  assert(/LỖI: Level chỉ dành cho EF/.test(k[3]));
   assert(/LỖI: nhóm CU đang "Ngừng"/.test(k[4]));
   assert(/LỖI: nhóm loại Tổ chức không có vai Phụ trách/.test(k[5]));
   assert(coKq(/người mới, thêm vào ME02/) && coKq(/không có trong KIND, bỏ qua/));
@@ -182,7 +182,7 @@ nhom('10. Sửa dòng lỗi rồi chạy lại: tự xử lý, chuyển sang LS_
 
 nhom('11. Dòng chỉ còn chữ ở cột khác, không Email: bỏ qua và xóa', () => {
   let i = 1; while (N.v[i] && N.v[i][0]) i++;
-  N.v[i] = ['', '', '', '', '', '', '', '', 'ghi chú lạc', '', '', ''];
+  N.v[i] = ['', '', '', '', '', '', '', '', 'ghi chú lạc', '', ''];
   chay();
   assert(!N.v.slice(1).some(r => r[8] === 'ghi chú lạc'));
 });

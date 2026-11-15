@@ -3,13 +3,13 @@
  * Đọc sổ việc NHAP, cập nhật NGUOI và THANH_VIEN. Không chạm Drive.
  * Sau khi chạy: dòng ✔ chuyển sang tab LS_NHAP (lịch sử nhập) và bị xóa khỏi NHAP;
  * dòng LỖI ở lại NHAP (dồn lên đầu) để sửa rồi chạy lại. NHAP luôn trống cho lần nhập sau.
- * Dòng không có Email: bỏ qua và xóa.
+ * Dòng không có Email: bỏ qua và xóa. Cột "Lỗi" của NHAP chỉ có chữ ở dòng cần sửa.
  *
  * Quy tắc:
  *  - Khóa của THANH_VIEN là Email + Mã nhóm.
  *  - Thêm trùng hoàn toàn: bỏ qua. Cùng nhóm, khác Vai/Quyền: cập nhật dòng cũ, ghi Lịch sử.
  *  - Email mới lần đầu: tự tạo người ở NGUOI (cần Họ tên và Vai trò).
- *  - Thêm vào một Cấp: tự gỡ cấp cũ (mỗi EF một cấp đang).
+ *  - Thêm vào một Level: tự rời Level cũ (mỗi EF một Level đang).
  *  - Thêm vào Nhóm nhỏ (vai Thành viên): tự vào Lớp chứa nó; tự rời nhóm nhỏ khác cùng lớp.
  *  - Gỡ khỏi Lớp: tự gỡ các nhóm nhỏ của lớp đó.
  *  - Nghỉ: người chuyển "Nghỉ", gỡ mọi nhóm. Thêm lại sau này: người "Đang" lại.
@@ -19,24 +19,19 @@ function duaVaoTong_(cd) {
   var nhom = docNhom_();
   var nguoi = docNguoi_();
   var tv = docThanhVien_();
-  var kq = {}, dau = {}, dem = { xong: 0, loi: 0 };
-  var coDau = nhap.tieuDe.indexOf('Mã xử lý') >= 0;
+  var kq = {}, dem = { xong: 0, loi: 0 };
 
   nhap.dong.forEach(function (d) {
-    if (!chuan_(d['Email'])) return;                         // dòng trống hoặc chỉ còn kết quả cũ
-    var vanTay = vanTayNhap_(d);
-    var daXong = chuan_(d['Kết quả']).indexOf('✔') === 0;
-    if (daXong && (!coDau || chuan_(d['Mã xử lý']) === vanTay)) return;   // đã xử lý, nội dung không đổi
+    if (!chuan_(d['Email'])) return;                         // dòng trống: bỏ qua
     var r = xuLyDongNhap_(d, nhom, nguoi, tv);
     kq[d._dong] = r;
-    dau[d._dong] = r.indexOf('LỖI') === 0 ? '' : vanTay;
     if (r.indexOf('LỖI') === 0) { dem.loi++; P.loi++; } else { dem.xong++; }
   });
 
   ghiDeTab_(TAB.NGUOI, COT.NGUOI, nguoi.ds);
   ghiDeTab_(TAB.THANH_VIEN, COT.THANH_VIEN, tv.ds);
   P.tomTat = dem.xong + ' dòng xong, ' + dem.loi + ' dòng lỗi.';
-  donNhap_(nhap, kq, dau);
+  donNhap_(nhap, kq);
   ghi_('Thành viên', 'Đưa vào danh sách tổng', P.tomTat);
 }
 
@@ -75,16 +70,15 @@ function docThanhVien_() {
 }
 
 /** Chuyển dòng ✔ sang LS_NHAP, giữ dòng LỖI ở NHAP (dồn lên đầu), xóa phần còn lại. */
-function donNhap_(nhap, kq, dau) {
+function donNhap_(nhap, kq) {
   var giu = [], ls = [], luc = bayGio_(), dongCuoi = 1;
   nhap.dong.forEach(function (d) {
     dongCuoi = Math.max(dongCuoi, d._dong);
     if (!chuan_(d['Email'])) return;
-    var r = kq[d._dong] !== undefined ? kq[d._dong] : chuan_(d['Kết quả']);
+    var r = kq[d._dong] || '';
     var o = {}; nhap.tieuDe.forEach(function (td) { if (td) o[td] = d[td] !== undefined ? d[td] : ''; });
-    o['Kết quả'] = r;
-    if (dau[d._dong] !== undefined) o['Mã xử lý'] = dau[d._dong];
-    if (r.indexOf('✔') === 0) { o['Thời gian xử lý'] = luc; ls.push(o); } else giu.push(o);
+    if (r.indexOf('✔') === 0) { o['Kết quả'] = r; o['Thời gian xử lý'] = luc; ls.push(o); }
+    else { o['Lỗi'] = r; giu.push(o); }
   });
   if (ls.length) {
     var tabLs = P.ss.getSheetByName(TAB.LS_NHAP);
@@ -97,17 +91,12 @@ function donNhap_(nhap, kq, dau) {
   if (soDong < 1) return;
   nhap.tieuDe.forEach(function (td, c) {
     if (!td || td === 'Tình trạng') return;                 // cột công thức: không ghi
+    if (td === 'Kết quả' || td === 'Mã xử lý') return;      // cột cũ (nếu còn): không dùng
     var cot = [];
     for (var i = 0; i < soDong; i++) cot.push([i < giu.length ? giu[i][td] : '']);
     nhap.tab.getRange(2, c + 1, soDong, 1).setValues(cot);
   });
   P.tomTat += ' Đã chuyển ' + ls.length + ' dòng sang LS_NHAP' + (giu.length ? ', ' + giu.length + ' dòng lỗi ở lại NHAP.' : '.');
-}
-
-/** Dấu vân tay nội dung một dòng NHAP: đổi bất kỳ ô nhập nào thì dấu đổi. */
-function vanTayNhap_(d) {
-  return [email_(d['Email']), chuan_(d['Họ tên']), chuan_(d['Mã người']), chuan_(d['Vai trò']), maNhom_(d['Mã nhóm']),
-    chuan_(d['Vai trong nhóm']), chuan_(d['Quyền']), chuan_(d['Việc']) || 'Thêm'].join('|');
 }
 
 /* ---------- Xử lý một dòng ---------- */
@@ -123,7 +112,7 @@ function xuLyDongNhap_(d, nhom, nguoi, tv) {
   if (viec === 'Nghỉ') {
     if (!ng) return 'LỖI: chưa có người này ở danh sách tổng';
     if (ng['Trạng thái'] === 'Nghỉ') return '✔ đã ghi nghỉ trước đó';
-    ng['Trạng thái'] = 'Nghỉ'; ng['Cấp'] = ''; ng['Cập nhật'] = bayGio_();
+    ng['Trạng thái'] = 'Nghỉ'; ng['Level'] = ''; ng['Cập nhật'] = bayGio_();
     var soGo = 0;
     tv.ds.forEach(function (t) {
       if (t['Email'] === email && t['Trạng thái'] === 'Đang') { datTrangThai_(t, 'Gỡ', 'nghỉ', nguon); soGo++; }
@@ -142,7 +131,7 @@ function xuLyDongNhap_(d, nhom, nguoi, tv) {
     if (!t || t['Trạng thái'] !== 'Đang') return '✔ không có trong ' + ma + ', bỏ qua';
     datTrangThai_(t, 'Gỡ', 'gỡ', nguon);
     var them = '';
-    if (n.loai === 'Cấp' && ng && ng['Cấp'] === ma) ng['Cấp'] = '';
+    if (n.loai === 'Level' && ng && ng['Level'] === ma) ng['Level'] = '';
     if (n.loai === 'Lớp') {
       var soNho = 0;
       tv.ds.forEach(function (x) {
@@ -164,14 +153,14 @@ function xuLyDongNhap_(d, nhom, nguoi, tv) {
   if (vai === 'Phụ trách' && DS.CO_PHU_TRACH.indexOf(n.loai) < 0) return 'LỖI: nhóm loại ' + n.loai + ' không có vai Phụ trách';
 
   var vaiTroMoi = chuan_(d['Vai trò']) || (ng ? ng['Vai trò'] : '');
-  if (n.loai === 'Cấp' && vaiTroMoi !== 'EF') return 'LỖI: chỉ EF mới vào nhóm Cấp' + (vaiTroMoi ? ' (người này là ' + vaiTroMoi + ')' : '');
+  if (n.loai === 'Level' && vaiTroMoi !== 'EF') return 'LỖI: Level chỉ dành cho EF' + (vaiTroMoi ? ' (người này là ' + vaiTroMoi + ')' : '');
 
   var ghiChuNguoi = '';
   if (!ng) {
     var ten = chuan_(d['Họ tên']), vt = chuan_(d['Vai trò']);
     if (!ten || !vt) return 'LỖI: người mới cần Họ tên và Vai trò';
     if (DS.VAI_TRO.indexOf(vt) < 0) return 'LỖI: Vai trò phải là HV, EF, GV hoặc Tổ chức';
-    ng = { 'Email': email, 'Họ tên': ten, 'Mã người': chuan_(d['Mã người']), 'Vai trò': vt, 'Cấp': '', 'Trạng thái': 'Đang',
+    ng = { 'Email': email, 'Họ tên': ten, 'Mã người': chuan_(d['Mã người']), 'Vai trò': vt, 'Level': '', 'Trạng thái': 'Đang',
       'Ngày vào': homNay_(), 'Cập nhật': bayGio_(), 'ID ổ': '', 'Kết quả Drive': '' };
     nguoi.m[email] = ng; nguoi.ds.push(ng);
     ghiChuNguoi = 'người mới, ';
@@ -186,12 +175,12 @@ function xuLyDongNhap_(d, nhom, nguoi, tv) {
   var phu = [];
   if (n.tt === 'Kết thúc') phu.push('lưu ý: nhóm đã Kết thúc');
 
-  if (n.loai === 'Cấp') {
+  if (n.loai === 'Level') {
     tv.ds.forEach(function (x) {
       var nx = nhom[x['Mã nhóm']];
-      if (x['Email'] === email && x['Mã nhóm'] !== ma && x['Trạng thái'] === 'Đang' && nx && nx.loai === 'Cấp') { datTrangThai_(x, 'Gỡ', 'lên/đổi cấp ' + ma, nguon); phu.push('rời cấp ' + x['Mã nhóm']); }
+      if (x['Email'] === email && x['Mã nhóm'] !== ma && x['Trạng thái'] === 'Đang' && nx && nx.loai === 'Level') { datTrangThai_(x, 'Gỡ', 'đổi Level ' + ma, nguon); phu.push('rời Level ' + x['Mã nhóm']); }
     });
-    ng['Cấp'] = ma;
+    ng['Level'] = ma;
   }
   if (n.loai === 'Nhóm nhỏ' && vai === 'Thành viên') {
     tv.ds.forEach(function (x) {
