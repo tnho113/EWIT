@@ -21,6 +21,18 @@
 - **Menu**: Thành viên › Đưa vào danh sách tổng · Drive › Xem trước / Áp dụng · Quét & dọn dẹp › Quét toàn Drive / Mở báo cáo.
 - Hoàng Minh (offline): mặc định làm EWIT trước; thêm cột "Thương hiệu" sau, không làm lại.
 
+## 1b. Hiệu chỉnh sau đánh giá chuyên gia (15/11, Nery chốt)
+- Đánh giá đầy đủ: scratchpad `danh-gia-mo-hinh-moi.md` (phiên cloud 15/11; có thể mất khi container bị thu hồi).
+- **Ổ `EWIT · Nộp bài` đổi thành `EWIT · Hồ sơ học tập`**: mỗi người một thư mục gồm bài nộp theo lớp + **Nhật ký trưởng thành** (chuyển khỏi ổ cá nhân vì ổ cá nhân khóa kín thì người phụ trách không vào được). Nhật ký xử lý như **dữ liệu cá nhân**; điều khoản đồng ý gắn vào Form đăng ký.
+- **Mô hình nhóm thống nhất**: tab `NHOM` (mỗi dòng = cấp/lớp/nhóm nhỏ/dự án/ban/tri thức/dữ liệu… = 1 Google Group + 1 chỗ trên Drive; có cột Thương hiệu). Tab `NHAP` là sổ việc (Email · Họ tên · Mã nhóm · Vai: Thành viên/Phụ trách · Quyền · Thêm/Gỡ/Nghỉ). **Bỏ tab PHU_TRACH.** NGUOI, THANH_VIEN ẩn, script ghi. Email mới lần đầu ở NHAP → tự tạo người.
+- **Menu giữ bước riêng** "Đưa vào danh sách tổng" (menu riêng), rồi Drive › Xem trước / Áp dụng (có bảng tóm tắt).
+- **Hạn mức dung lượng theo cấu hình** (cột "Hạn mức GB" theo vai trò; trống = không giới hạn). Drive API không đặt được hạn mức ổ → script áp **hạn mức mềm**: ổ vượt → hạ quyền tải lên `90_CA-NHAN` về Xem + báo; xuống dưới → mở lại. OU trong Admin console là lớp cứng tùy chọn.
+- **Người nghỉ**: HV nghỉ → **thu ổ cá nhân** (dữ liệu chính ở ổ gốc): gỡ thành viên, chuyển tệp `90_CA-NHAN` (nếu có) sang thư mục người đó ở Hồ sơ học tập, bỏ lối tắt, xóa ổ rỗng. Đây là ngoại lệ của quy tắc "không xóa", chạy bằng lệnh riêng có Xem trước + xác nhận. Cột "Khi nghỉ" theo vai trò (mặc định HV: Thu ổ; EF/GV: Giữ ổ, khóa).
+- **Ổ cá nhân chỉ tạo khi có thành viên mới**, không tạo sẵn.
+- Nhóm `sd-…`: script đặt không ai gửi thư vào được, chỉ quản lý xem danh sách. Script gửi **thư chào** kèm link ổ khi tạo ổ. Chạy tiếp nhiều lượt (6 phút/lượt), chỉ xử lý dòng thay đổi.
+- Khi HV tăng: đề nghị mua thêm giấy phép (mỗi giấy phép Business Standard cộng thêm dung lượng chung, có thêm tài khoản quản trị dự phòng).
+- Thử đầu tiên khi chạy thật: người có quyền Sửa (không phải thành viên ổ gốc) có chia sẻ tiếp từng tệp được không.
+
 ## 2. Hiện trạng
 - Bản thử v1 (1 ổ gốc, cấp quyền từng người, chưa có CAU_TRUC/nhóm): bảng `MLWIT-SharedDrive-Board` 15DvLmbVA9nqAe1TMggy4KYtdxNPXoadcVhZvYlGNXO8; script `Tool_Quan_Tri/shareddrive-kit/SharedDrive.gs` (1sQPzWs3YoSrY8TYC9dPfWeMJqmgjy7u_); kiểm thử giả lập `kiem-thu.js` 9/9 đạt. **Chưa chạy trên Google thật.** Bảng đang do Gmail cá nhân của Nery sở hữu → khi dùng thật, admin@ tạo bản sao để làm chủ.
 - Bản v2 (theo mục 1): **chưa xây**, chờ Nery cho bắt đầu.
