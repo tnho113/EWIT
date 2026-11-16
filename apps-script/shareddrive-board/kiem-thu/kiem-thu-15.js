@@ -48,5 +48,20 @@ nhom('Tên ổ và dòng cấu trúc áp cho ổ', () => {
   assert.strictEqual(ctx.apChoO_(C, ctx.dongCauTruc_(C, 'CN_ALL'), hv), true);
   assert.strictEqual(ctx.dienMau_('{Nhánh}/{Mã nhóm} · {Tên nhóm}', null, C.nhom['ME02-08']), 'KHAC/ME02-08 · Nhóm 08');
 });
+nhom('Đợt 2b: Thứ tự Level, nhóm riêng, lớp Đóng, người học', () => {
+  T.NHOM.v[1][10] = 5; T.NHOM.v[2][10] = 3; T.NHOM.v[3][10] = 9;   // L3=5, L2=3, PIONEER=9 → L2 thấp nhất
+  T.NGUOI.v[1][10] = 'U00001';
+  const C2 = ctx.taiDuLieu_();
+  assert.deepStrictEqual(Array.from(ctx.dsLevel_(C2)), ['L2', 'L3', 'PIONEER']);
+  assert.strictEqual(ctx.emailNhomRieng_(C2, C2.nguoi['ef1@example.com']), 'sd-u-u00001@example.com');
+  assert.strictEqual(ctx.emailNhomRieng_(C2, C2.nguoi['hv1@example.com']), null);
+  T.NHOM.v.push(['DONG', 'Lớp đóng', 'Lớp', '', '', 'EWIT', 'Đóng']);
+  T.NGUOI.v.push(['hv7@example.com', 'HV Bảy', '', 'HV', '', 'Đang']);
+  T.THANH_VIEN.v.push(['hv7@example.com', 'HV Bảy', 'DONG', 'Lớp', 'Thành viên', 'Xem', 'Đang'], ['ef1@example.com', 'EF Một', 'ME02-08', 'Nhóm nhỏ', 'Thành viên', 'Xem', 'Đang']);
+  const C3 = ctx.taiDuLieu_();
+  assert.strictEqual(ctx.coOCaNhan_(C3, C3.nguoi['hv7@example.com']), false, 'chỉ còn lớp Đóng thì không có ổ');
+  assert.strictEqual(ctx.laNguoiHoc_(C3, C3.nguoi['ef1@example.com']), true, 'EF đi học');
+  assert.strictEqual(ctx.laNguoiHoc_(C3, C3.nguoi['ef9@example.com']), false);
+});
 console.log(truot ? `\n${truot} TRƯỢT / ${dat + truot}` : `\nTẤT CẢ ĐẠT (${dat}/${dat})`);
 process.exit(truot ? 1 : 0);

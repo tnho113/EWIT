@@ -9,6 +9,7 @@
  *   sd-<mã>-pt@miền     Phụ trách
  *   sd-all-ef@miền      mọi người Đang có vai trò EF, GV, Tổ chức
  *   sd-all-hv@miền      mọi HV Đang
+ *   sd-u-<mã hệ thống>@miền   nhóm riêng của MỘT người (Đợt 2b) — mọi quyền "theo người" cấp qua nhóm này
  *   (sd- là "Tiền tố nhóm" ở CAI_DAT; <mã> = slug_ của Mã nhóm)
  */
 
@@ -35,7 +36,8 @@ function taiDuLieu_() {
     if (!ma) return;
     var n = { ma: ma, ten: chuan_(d['Tên nhóm']), loai: chuan_(d['Loại']), thuoc: maNhom_(d['Thuộc']), nhanh: chuan_(d['Nhánh']),
       thuongHieu: chuan_(d['Thương hiệu']) || C.cd.thuongHieu, tt: chuan_(d['Trạng thái']) || 'Đang',
-      emailNhom: chuan_(d['Email nhóm']), idThuMuc: chuan_(d['ID thư mục']), dong: d._dong };
+      emailNhom: chuan_(d['Email nhóm']), idThuMuc: chuan_(d['ID thư mục']), dong: d._dong,
+      thuTu: (d['Thứ tự'] === '' || d['Thứ tự'] == null || isNaN(Number(d['Thứ tự']))) ? null : Number(d['Thứ tự']) };
     C.nhom[ma] = n; C.dsNhom.push(n);
   });
 
@@ -44,7 +46,7 @@ function taiDuLieu_() {
     var e = email_(d['Email']);
     if (!e) return;
     var n = { email: e, ten: chuan_(d['Họ tên']), ma: chuan_(d['Mã người']), vaiTro: chuan_(d['Vai trò']), level: maNhom_(d['Level']),
-      tt: chuan_(d['Trạng thái']) || 'Đang', idO: chuan_(d['ID ổ']), dong: d._dong };
+      tt: chuan_(d['Trạng thái']) || 'Đang', idO: chuan_(d['ID ổ']), dong: d._dong, maHT: chuan_(d['Mã hệ thống']) };
     C.nguoi[e] = n; C.dsNguoi.push(n);
   });
 
@@ -95,6 +97,11 @@ function hauToCua_(t) {
 
 function emailTong_(C, loai) { return C.cd.tienTo + 'all-' + loai + '@' + C.cd.mien; }   // loai: 'ef' | 'hv'
 
+/** Nhóm riêng của một người (theo Mã hệ thống, không đổi khi đổi email). null nếu chưa có Mã hệ thống. */
+function emailNhomRieng_(C, n) {
+  return n && n.maHT ? C.cd.tienTo + 'u-' + slug_(n.maHT) + '@' + C.cd.mien : null;
+}
+
 /* ---------- Truy vấn ---------- */
 
 function dangHoatDong_(n) { return n.tt === 'Đang'; }
@@ -109,9 +116,17 @@ function thanhVienNhom_(C, ma, vai) {
   return C.tv.filter(function (t) { return t.ma === ma && t.tt === 'Đang' && (!vai || t.vai === vai); });
 }
 
-/** Mã các Level theo thứ tự hàng trong NHOM (trên = thấp). */
+/** Mã các Level từ thấp đến cao: theo cột "Thứ tự" (số nhỏ = thấp); không có thì theo thứ tự hàng trong NHOM. */
 function dsLevel_(C) {
-  return C.dsNhom.filter(function (n) { return n.loai === 'Level'; }).map(function (n) { return n.ma; });
+  var ds = C.dsNhom.filter(function (n) { return n.loai === 'Level'; }).map(function (n, i) { return { n: n, i: i }; });
+  ds.sort(function (a, b) {
+    var ta = a.n.thuTu, tb = b.n.thuTu;
+    if (ta !== null && tb !== null && ta !== tb) return ta - tb;
+    if (ta !== null && tb === null) return -1;
+    if (ta === null && tb !== null) return 1;
+    return a.i - b.i;
+  });
+  return ds.map(function (x) { return x.n.ma; });
 }
 
 /** Level được xem thư mục của Level `ma`: chính nó và mọi Level cao hơn. */
@@ -143,9 +158,24 @@ function khiNghi_(C, n) {
   return (vt && vt.khiNghi) || 'Giữ ổ';
 }
 
-/** Có ổ cá nhân khi: người Đang và có ít nhất một nhóm đang hiệu lực. */
+/** Nhóm còn hiệu lực (không Đóng, không Ngừng). */
+function nhomConHieuLuc_(C, ma) {
+  var g = C.nhom[ma];
+  return !!g && g.tt !== 'Đóng' && g.tt !== 'Ngừng';
+}
+
+/** Có ổ cá nhân khi: người Đang và có ít nhất một nhóm đang hiệu lực (nhóm không Đóng/Ngừng). */
 function coOCaNhan_(C, n) {
-  return n.tt === 'Đang' && nhomCuaNguoi_(C, n.email).length > 0;
+  return n.tt === 'Đang' && nhomCuaNguoi_(C, n.email).some(function (t) { return nhomConHieuLuc_(C, t.ma); });
+}
+
+/** Người này có đang học không (Vai trò HV, HOẶC là Thành viên Đang của một Lớp/Nhóm nhỏ) — dùng cho EF/GV đi học. */
+function laNguoiHoc_(C, n) {
+  if (n.vaiTro === 'HV') return true;
+  return nhomCuaNguoi_(C, n.email).some(function (t) {
+    var g = C.nhom[t.ma];
+    return t.vai === 'Thành viên' && g && (g.loai === 'Lớp' || g.loai === 'Nhóm nhỏ');
+  });
 }
 
 /** Dòng CAU_TRUC có áp cho ổ của người này không (cột "Ổ" của dòng ổ cá nhân). */

@@ -47,3 +47,16 @@
 
 ## Thứ tự làm đề xuất
 0 → 2 → 3 → 1 → 4 → 5 → 6. Có thể song song: (0+2+3 trong 30_Drive/50_Quet) · (4 trong 20_ThanhVien + công thức) · (6 trong 50_Quet sau khi 0 xong). Mỗi phần có kiểm thử giả lập; giả lập Drive phải mô phỏng appProperties riêng theo dự án và properties công khai.
+
+## Hợp đồng chung đã có trong 15_DuLieu.gs (điều phối viết 16/11)
+- `C.nguoi[e].maHT` (cột NGUOI "Mã hệ thống"), `C.nhom[ma].thuTu` (cột NHOM "Thứ tự").
+- `dsLevel_` sắp theo Thứ tự (rồi theo hàng). `emailNhomRieng_(C,n)` → `sd-u-<slug maHT>@miền` hoặc null.
+- `nhomConHieuLuc_(C,ma)` (không Đóng/Ngừng); `coOCaNhan_` chỉ tính nhóm còn hiệu lực.
+- `laNguoiHoc_(C,n)`: HV hoặc Thành viên Đang của Lớp/Nhóm nhỏ → dùng cho HS_NG, lối tắt lớp, Hồ sơ (EF/GV đi học).
+- gia-lap.bangMau có thêm cột: NHOM "Thứ tự", NHAP "Email mới", NGUOI "Mã hệ thống".
+
+## Chia việc song song (16/11)
+- **Phiên X (30_Drive.gs + 25_Nhom.gs):** mục 0, 1, 2 (nhóm riêng: 25_Nhom tạo/đồng bộ `sd-u-…` cho mọi người có coOCaNhan_ hoặc có thư mục theo người; thành viên = email hiện tại), 3 (ổ cá nhân writer, bỏ CN_CA_NHAN + gỡ quyền cũ, HS_TL `00_TAI-LIEU-CUA-TOI`), 5 (laNguoiHoc_, lớp Đóng, trùng email nhóm → LỖI, thư chào hàng đợi ~60 phút + lệnh `sdGuiLaiThuChao`), tiêu đề/nội dung thư mới.
+- **Phiên Y (20_ThanhVien.gs + tệp mới 05_NangCap.gs + 10_Chung.gs nếu cần cột):** mục 4: Mã hệ thống tự sinh `U00001…` (tiếp số lớn nhất ở NGUOI) khi tạo người; Việc "Sửa thông tin", "Đổi email" (cột "Email mới"; đổi khóa ở NGUOI và mọi dòng THANH_VIEN; ghi Lịch sử; LS_NHAP); Thêm không đổi thông tin người cũ (ghi chú "bỏ qua phần khác — dùng Sửa thông tin"); lệnh `sdNangCapBang()` thêm cột/tab/dòng CAU_TRUC còn thiếu (NGUOI Mã hệ thống, NHAP Email mới, NHOM Thứ tự + điền 1..n cho Level hiện có, CAU_TRUC HS_TL, CN_CA_NHAN chuyển ghi chú "bỏ"), cấp Mã hệ thống cho người cũ chưa có; trả về công thức Tình trạng mới (chuỗi, locale vi_VN dùng ';', LET tên biến dài) để điều phối ghi.
+- **Phiên Z (50_Quet.gs):** mục 0 phần Quét (properties thay appProperties), Thu ổ cứu mọi tệp (mục 3), mục 6 tab CHIA_SE_LA + cột Gỡ + lệnh `sdGoChiaSeDanhDau()`.
+- Menu (00_Menu) và ghép: điều phối làm sau.

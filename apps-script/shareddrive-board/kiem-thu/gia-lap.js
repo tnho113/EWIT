@@ -61,9 +61,9 @@ function taoMoiTruong(bang, them = {}, nguoiChay = 'admin@example.com') {
 function bangMau() {
   return taoBang({
     CAI_DAT: [['Nhãn', 'Giá trị'], ['Email admin', 'admin@example.com'], ['Tên miền', 'example.com'], ['Tiền tố nhóm', 'sd-'], ['Thương hiệu mặc định', 'EWIT'], ['Gửi thư chào', 'Có']],
-    NHOM: [['Mã nhóm', 'Tên nhóm', 'Loại', 'Thuộc', 'Nhánh', 'Thương hiệu', 'Trạng thái', 'Email nhóm', 'ID thư mục', 'Kết quả']],
-    NHAP: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Mã nhóm', 'Vai trong nhóm', 'Quyền', 'Việc', 'Ghi chú', 'Tình trạng', 'Lỗi']],
-    NGUOI: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Level', 'Trạng thái', 'Ngày vào', 'Cập nhật', 'ID ổ', 'Kết quả Drive']],
+    NHOM: [['Mã nhóm', 'Tên nhóm', 'Loại', 'Thuộc', 'Nhánh', 'Thương hiệu', 'Trạng thái', 'Email nhóm', 'ID thư mục', 'Kết quả', 'Thứ tự']],
+    NHAP: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Mã nhóm', 'Vai trong nhóm', 'Quyền', 'Việc', 'Ghi chú', 'Tình trạng', 'Lỗi', 'Email mới']],
+    NGUOI: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Level', 'Trạng thái', 'Ngày vào', 'Cập nhật', 'ID ổ', 'Kết quả Drive', 'Mã hệ thống']],
     THANH_VIEN: [['Email', 'Họ tên', 'Mã nhóm', 'Loại nhóm', 'Vai trong nhóm', 'Quyền', 'Trạng thái', 'Ngày thêm', 'Cập nhật', 'Nguồn', 'Lịch sử', 'Kết quả Drive']],
     VAI_TRO: [['Vai trò / Level', 'Loại', 'Được chia sẻ', 'Khi nghỉ', 'Khuôn ổ cá nhân', 'Ghi chú'],
       ['HV', 'Vai trò', 'Không', 'Thu ổ', 'Ổ HV'], ['EF', 'Vai trò', 'Không', 'Giữ ổ', 'Ổ EF'], ['GV', 'Vai trò', 'Có', 'Giữ ổ', 'Ổ GV'],
