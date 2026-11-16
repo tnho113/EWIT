@@ -218,7 +218,87 @@ thu('Lỗi tạo nhóm: ghi LỖI, nhóm đó không vào nhomCo; hết giờ �
   ctx.NH_GIOI_HAN = -1;                                       // hết giờ ngay
   ctx.chayPhien_('t', () => { ctx.P.thu = false; kq = ctx.dongBoNhom_(ctx.taiDuLieu_()); });
   assert.strictEqual(kq.chuaXong, true);
-  assert.deepStrictEqual(hen, ['sdNhomApDung']);
+  // Đợt 2b: hẹn hàm chạy tiếp riêng (giữ con trỏ), Áp dụng tay luôn chạy lại từ đầu.
+  assert.deepStrictEqual(hen, ['sdNhomTiep']);
+});
+
+
+/* ================= Đợt 2b ================= */
+const maHT = (bang, e, ma) => { const v = bang.tabs.NGUOI.v, c = v[0].indexOf('Mã hệ thống'), r = v.find(x => x[0] === e); while (r.length <= c) r.push(''); r[c] = ma; };
+const nk = bang => bang.tabs.NHAT_KY.v;
+
+thu('2b · Nhóm riêng sd-u-: tạo cho người có ổ + Mã hệ thống; chưa có mã → không tạo, ghi chú', () => {
+  const bang = taoCanh(), g = taoGiaLap();
+  maHT(bang, 'hv1@example.com', 'U00001'); maHT(bang, 'ef0@example.com', 'U00002'); maHT(bang, 'hv9@example.com', 'U00003');
+  const ctx = taoMoiTruong(bang, { AdminDirectory: g.AdminDirectory, AdminGroupsSettings: g.AdminGroupsSettings });
+  let kq; ctx.chayPhien_('t', () => { ctx.P.thu = false; kq = ctx.dongBoNhom_(ctx.taiDuLieu_()); });
+  assert.deepStrictEqual(tv(g, 'sd-u-u00001@example.com'), ['hv1@example.com']);
+  assert.ok(kq.nhomCo['sd-u-u00001@example.com']);
+  assert.ok(!g.nhom['sd-u-u00002@example.com'], 'ef0 không có ổ: không tạo');
+  assert.ok(!g.nhom['sd-u-u00003@example.com'], 'hv9 nghỉ: không tạo');
+  assert.ok(!Object.keys(g.nhom).some(e => /^sd-u-/.test(e) && e !== 'sd-u-u00001@example.com'));
+  assert.ok(nk(bang).some(r => /Chưa có Mã hệ thống/.test(r[3]) && r[4] === 'hv2@example.com'), 'ghi chú chưa có mã');
+  assert.ok(!nk(bang).some(r => r[2] === 'LỖI'));
+});
+
+thu('2b · Đổi email: nhóm riêng gỡ email cũ (không còn ở NGUOI), thêm email mới; giữ OWNER/admin', () => {
+  const bang = taoCanh();
+  maHT(bang, 'hv1@example.com', 'U00001');
+  bang.tabs.NGUOI.v.find(r => r[0] === 'hv1@example.com')[0] = 'hv1moi@example.com';
+  bang.tabs.THANH_VIEN.v.forEach(r => { if (r[0] === 'hv1@example.com') r[0] = 'hv1moi@example.com'; });
+  const g = taoGiaLap({ 'sd-u-u00001@example.com': { 'hv1@example.com': 'MEMBER', 'admin@example.com': 'OWNER' } });
+  chay(bang, g, 'sdNhomApDung');
+  assert.deepStrictEqual(tv(g, 'sd-u-u00001@example.com'), ['admin@example.com', 'hv1moi@example.com']);
+});
+
+thu('2b · Trùng email nhóm (ME02-PT ↔ ME02 -pt; mã ALL-EF ↔ sd-all-ef) → LỖI ở NHOM, không tạo, không vào nhomCo', () => {
+  const bang = taoCanh();
+  bang.tabs.NHOM.v.push(['ME02-PT', 'Nhóm lạ', 'Nhóm nhỏ', 'ME02', '', 'EWIT', 'Đang'], ['ALL-EF', 'Lạ 2', 'Dự án', '', '', 'EWIT', 'Đang']);
+  bang.tabs.THANH_VIEN.v.push(['hv2@example.com', 'HV Hai', 'ME02-PT', 'Nhóm nhỏ', 'Thành viên', 'Xem', 'Đang'],
+    ['ef1@example.com', 'EF Một', 'ME02', 'Lớp', 'Phụ trách', 'Xem', 'Đang']);
+  const g = taoGiaLap();
+  const ctx = taoMoiTruong(bang, { AdminDirectory: g.AdminDirectory, AdminGroupsSettings: g.AdminGroupsSettings });
+  let kq; ctx.chayPhien_('t', () => { ctx.P.thu = false; kq = ctx.dongBoNhom_(ctx.taiDuLieu_()); });
+  assert.ok(!g.nhom['sd-me02-pt@example.com'] && !kq.nhomCo['sd-me02-pt@example.com']);
+  assert.ok(!g.nhom['sd-all-ef@example.com'] && !kq.nhomCo['sd-all-ef@example.com'], 'sd-all-ef trùng mã ALL-EF');
+  assert.ok(/LỖI trùng email sd-me02-pt@example.com/.test(cot(bang, 'NHOM', 'Kết quả', 'ME02-PT')));
+  assert.ok(/LỖI trùng email sd-me02-pt@example.com/.test(cot(bang, 'NHOM', 'Kết quả', 'ME02')));
+  assert.ok(nk(bang).some(r => r[2] === 'LỖI' && /Trùng email nhóm/.test(r[3]) && /sd-me02-pt/.test(r[4])));
+  assert.ok(g.nhom['sd-me02-08@example.com'], 'nhóm khác vẫn chạy');
+});
+
+thu('2b · Con trỏ: hết giờ giữa chừng → sdNhomTiep chạy tiếp, không làm lại nhóm đã xong', () => {
+  const bang = taoCanh(), g = taoGiaLap(), hen = [];
+  const ScriptApp = { newTrigger: ten => ({ timeBased() { return this; }, after() { return this; }, create() { hen.push(ten); } }), getProjectTriggers: () => [], deleteTrigger() {} };
+  const ctx = taoMoiTruong(bang, { AdminDirectory: g.AdminDirectory, AdminGroupsSettings: g.AdminGroupsSettings, ScriptApp });
+  let goi = 0; const get = g.AdminDirectory.Groups.get;
+  g.AdminDirectory.Groups.get = e => { goi++; return get(e); };
+  const DateCtx = require('vm').runInContext('Date', ctx), now = DateCtx.now; let t = 0;
+  DateCtx.now = () => (t += 30000);                         // mỗi lần hỏi giờ +30 s → hết giờ sau ~9 lần
+  ctx.sdNhomApDung();
+  assert.deepStrictEqual(hen, ['sdNhomTiep']);
+  const lan1 = goi;
+  assert.ok(lan1 > 0 && lan1 < 20, 'lượt 1 dừng giữa chừng: ' + lan1);
+  DateCtx.now = now;
+  ctx.sdNhomTiep();
+  // số mục = 6 nhóm × 3 + 2 nhóm tổng = 20
+  assert.strictEqual(goi, 20, 'tổng số nhóm đã đọc đúng một lần mỗi nhóm');
+  assert.deepStrictEqual(tv(g, 'sd-me02-08@example.com'), ['hv1@example.com']);
+  assert.strictEqual(ctx.PropertiesService.getScriptProperties().getProperty('SD_CT_NHOM_n'), null, 'xong thì xóa con trỏ');
+});
+
+thu('2b · Chế độ thay đổi: nhóm không đổi bỏ qua (không gọi Groups), nhóm đổi thì đồng bộ', () => {
+  const bang = taoCanh(), g = taoGiaLap();
+  const ctx = taoMoiTruong(bang, { AdminDirectory: g.AdminDirectory, AdminGroupsSettings: g.AdminGroupsSettings });
+  ctx.sdNhomApDung();
+  let goi = 0; const get = g.AdminDirectory.Groups.get;
+  g.AdminDirectory.Groups.get = e => { goi++; return get(e); };
+  bang.tabs.THANH_VIEN.v.push(['gv1@example.com', 'GV Một', 'L3', 'Level', 'Thành viên', 'Xem', 'Đang']);
+  let kq; ctx.chayPhien_('t', () => { ctx.P.thu = false; kq = ctx.dongBoNhom_(ctx.taiDuLieu_(), { cheDo: 'thay-doi' }); });
+  assert.strictEqual(goi, 1, 'chỉ đọc nhóm sd-l3');
+  assert.deepStrictEqual(tv(g, 'sd-l3@example.com'), ['ef1@example.com', 'gv1@example.com']);
+  assert.ok(kq.nhomCo['sd-me02-08@example.com'] && kq.nhomCo['sd-all-hv@example.com'], 'nhóm bỏ qua vẫn có trong nhomCo');
+  assert.ok(!kq.nhomCo['sd-me02@example.com'], 'nhóm chưa có vẫn không có');
 });
 
 console.log(truot ? `\n${truot} TRƯỢT / ${dat + truot}` : `\nTẤT CẢ ĐẠT (${dat}/${dat})`);
