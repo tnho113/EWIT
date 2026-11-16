@@ -22,6 +22,8 @@ function taoBang(duLieu) {
         getValues: () => { const o = []; for (let i = 0; i < nr; i++) { o.push([]); for (let j = 0; j < nc; j++) o[i].push(((t.v[r - 1 + i] || [])[c - 1 + j]) ?? ''); } return o; },
         setValues: vals => vals.forEach((row, i) => row.forEach((val, j) => dat(r + i, c + j, val))),
         setValue: val => dat(r, c, val),
+        getFormula: () => (t.f && t.f[r + ':' + c]) || '',
+        setFormula: val => { t.f = t.f || {}; t.f[r + ':' + c] = val; dat(r, c, 'Tình trạng'); },
         clearContent: () => { for (let i = 0; i < nr; i++) for (let j = 0; j < nc; j++) if (t.v[r - 1 + i]) t.v[r - 1 + i][c - 1 + j] = ''; }
       }),
       appendRow: row => t.v.push(row.slice()),

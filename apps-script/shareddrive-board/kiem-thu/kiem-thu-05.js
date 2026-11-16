@@ -178,6 +178,9 @@ nhom('8. sdNangCapBang: thêm cột, Thứ tự, HS_TL, bỏ CN_CA_NHAN, cấp M
   assert.strictEqual(cn[3], 'BỎ'); assert(/^BỎ \(Đợt 2b\)/.test(cn[6]));
   assert.strictEqual(goi.length, 1); assert.deepStrictEqual(Array.from(goi[0].v.dsach), ['Thêm', 'Gỡ', 'Nghỉ', 'Sửa thông tin', 'Đổi email']);
   assert(b.tabs.NHAT_KY.v.some(r => r[2] === 'Nâng cấp' && /HS_TL/.test(r[3])));
+  const cTT = b.tabs.NHAP.v[0].indexOf('Tình trạng') + 1;
+  assert(cTT > 0 && /^=\{"Tình trạng";ARRAYFORMULA\(LET\(/.test(b.tabs.NHAP.getRange(1, cTT).getFormula()), 'phải ghi công thức Tình trạng');
+  assert(b.tabs.NHAT_KY.v.some(r => r[2] === 'Nâng cấp' && /công thức Tình trạng/.test(r[3])));
   // idempotent
   const anh = JSON.stringify(Object.keys(b.tabs).map(k => b.tabs[k].v));
   const nkTruoc = b.tabs.NHAT_KY.v.length;

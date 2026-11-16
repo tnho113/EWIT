@@ -7,7 +7,7 @@
  *  - Mã hệ thống: cấp cho người ở NGUOI chưa có (U + 5 chữ số, tiếp sau số lớn nhất).
  *  - CAU_TRUC: thêm HS_TL (thư mục 00_TAI-LIEU-CUA-TOI trong Hồ sơ học tập); CN_CA_NHAN chuyển thành "BỎ".
  *  - Ô chọn (data validation) cho cột Việc của NHAP.
- * Không chạm Drive, không đụng ô công thức Tình trạng.
+ * Không chạm Drive. Ghi công thức Tình trạng mới vào ô tiêu đề cột "Tình trạng" của NHAP nếu khác.
  */
 function sdNangCapBang() { chayPhien_('Nâng cấp bảng', nangCapBang_); }
 
@@ -28,6 +28,8 @@ function nangCapBang_(cd) {
   if (nMa) ghiThem('cấp Mã hệ thống cho ' + nMa + ' người');
 
   if (gatOChonViec_()) ghiThem('gắn ô chọn cho cột Việc ở NHAP');
+
+  if (ghiCongThucTinhTrang_()) ghiThem('cập nhật công thức Tình trạng ở NHAP');
 
   P.tomTat = them.length ? 'Đã nâng cấp: ' + them.length + ' thay đổi.' : 'Bảng đã đủ, không đổi gì.';
 }
@@ -114,6 +116,20 @@ function gatOChonViec_() {
     tab.getRange(2, c + 1, soDong, 1).setDataValidation(luat);
     return true;
   } catch (e) { ghi_('Nâng cấp', 'Không gắn được ô chọn Việc: ' + e.message, ''); return false; }
+}
+
+/** Ghi công thức Tình trạng vào ô tiêu đề cột "Tình trạng" của NHAP nếu khác bản mới. Trả về true nếu đã ghi. */
+function ghiCongThucTinhTrang_() {
+  var tab = P.ss.getSheetByName(TAB.NHAP);
+  if (!tab) return false;
+  var tieuDe = tab.getRange(1, 1, 1, tab.getLastColumn()).getValues()[0].map(chuan_);
+  var c = tieuDe.indexOf('Tình trạng');
+  if (c < 0) { ghi_('Nâng cấp', 'NHAP không có cột "Tình trạng": bỏ qua công thức', ''); return false; }
+  var o = tab.getRange(1, c + 1), moi = congThucTinhTrang_();
+  var gon = function (x) { return String(x || '').replace(/\s*\n\s*/g, ''); };
+  if (gon(o.getFormula()) === gon(moi)) return false;
+  o.setFormula(moi);
+  return true;
 }
 
 /**
