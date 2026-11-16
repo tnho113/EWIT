@@ -25,7 +25,8 @@ function taiDuLieu_() {
       tienTo: chuan_(cdTab['Tiền tố nhóm']) || 'sd-',
       thuongHieu: chuan_(cdTab['Thương hiệu mặc định']) || 'EWIT',
       tenHienThi: chuan_(cdTab['Tên hiển thị']) || chuan_(cdTab['Thương hiệu mặc định']) || 'EWIT',
-      guiThuChao: chuan_(cdTab['Gửi thư chào']) !== 'Không'
+      guiThuChao: chuan_(cdTab['Gửi thư chào']) !== 'Không',
+      giaLap: chuan_(cdTab['Chế độ']) === 'Giả lập'      // Giả lập: tên ổ có [THỬ], ghi sổ _GIA_LAP, cho phép Dọn sạch
     },
     nhom: {}, dsNhom: [], nguoi: {}, dsNguoi: [], tv: [], vaiTro: {}, cauTruc: [], bang: {}
   };
@@ -70,7 +71,9 @@ function taiDuLieu_() {
   bCt.dong.forEach(function (d) {
     var ma = chuan_(d['Mã']);
     if (!ma) return;
-    C.cauTruc.push({ ma: ma, o: chuan_(d['Ổ']), duong: chuan_(d['Đường dẫn']), loai: chuan_(d['Loại']),
+    var duong = chuan_(d['Đường dẫn']);
+    if (C.cd.giaLap && chuan_(d['Loại']) === 'Ổ' && duong.indexOf('[THỬ] ') !== 0) duong = '[THỬ] ' + duong;
+    C.cauTruc.push({ ma: ma, o: chuan_(d['Ổ']), duong: duong, loai: chuan_(d['Loại']),
       nguon: chuan_(d['Nguồn / Đích / Áp cho']), quyen: chuan_(d['Quyền chủ ổ / người dùng']), id: chuan_(d['ID']), dong: d._dong });
   });
   return C;

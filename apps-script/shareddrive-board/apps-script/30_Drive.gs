@@ -373,7 +373,7 @@ function drGuiThu_(C, n, id) {
   var tenO = tenOCaNhan_(C, n), hoc = laNguoiHoc_(C, n);
   var dHs = dongCauTruc_(C, 'CN_HS'), dTl = dongCauTruc_(C, 'HS_TL');
   var tenTl = dTl ? drDoan_(dTl.duong).slice(-1)[0] : '00_TAI-LIEU-CUA-TOI';
-  var tieuDe = 'Ổ làm việc của bạn trên ' + ten + ' đã sẵn sàng';
+  var tieuDe = (C.cd.giaLap ? '[THỬ] ' : '') + 'Ổ làm việc của bạn trên ' + ten + ' đã sẵn sàng';
   var than = 'Chào ' + n.ten + ',\n\n' +
     'Ổ làm việc mang tên bạn trên ' + ten + ' đã sẵn sàng: "' + tenO + '"\n' + link + '\n\n' +
     'Cách dùng:\n' +
@@ -442,6 +442,7 @@ function drTaoO_(S, ten, hanChe) {
   var d = Drive.Drives.create({ name: ten }, Utilities.getUuid());
   drThuLai_(function () { Drive.Drives.update({ restrictions: hanChe }, d.id); });
   S.dem.o++;
+  if (typeof glGhiSo_ === 'function') glGhiSo_(S.C, 'Ổ', d.id, ten);
   return d.id;
 }
 

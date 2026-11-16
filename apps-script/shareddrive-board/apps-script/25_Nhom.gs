@@ -192,6 +192,7 @@ function nhXuLyMuc_(C, m, thu) {
     if (!thu) {
       try {
         AdminDirectory.Groups.insert({ email: m.email, name: m.ten, description: 'Tự động theo bảng Shared Drive. Không sửa thành viên bằng tay.' });
+        if (typeof glGhiSo_ === 'function') glGhiSo_(C, 'Nhóm', m.email, m.ten);
       } catch (e) {
         ghi_('LỖI', 'Tạo nhóm', m.email + ' · ' + e.message);
         r.tomTat = 'LỖI tạo: ' + e.message; r.loi = true; return r;

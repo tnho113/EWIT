@@ -27,6 +27,7 @@ function taoBang(duLieu) {
         clearContent: () => { for (let i = 0; i < nr; i++) for (let j = 0; j < nc; j++) if (t.v[r - 1 + i]) t.v[r - 1 + i][c - 1 + j] = ''; }
       }),
       appendRow: row => t.v.push(row.slice()),
+      deleteRow: r => { t.v.splice(r - 1, 1); }, hideSheet: () => {},
       clear: () => { t.v = []; },
       setFrozenRows: () => {}
     });
@@ -50,7 +51,7 @@ function taoMoiTruong(bang, them = {}, nguoiChay = 'admin@example.com') {
     Session: { getEffectiveUser: () => ({ getEmail: () => nguoiChay }), getScriptTimeZone: () => 'Asia/Ho_Chi_Minh' },
     LockService: { getScriptLock: () => ({ tryLock: () => true, releaseLock: () => {} }) },
     Utilities: { formatDate: (d, tz, f) => f === 'dd/MM/yyyy' ? '15/11/2026' : '15/11/2026 10:00', sleep: () => {}, getUuid: () => 'u' + Math.random() },
-    PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] ?? null, setProperty: (k, v) => { props[k] = String(v); }, deleteProperty: k => { delete props[k]; } }) },
+    PropertiesService: { getScriptProperties: () => ({ getProperty: k => props[k] ?? null, setProperty: (k, v) => { props[k] = String(v); }, deleteProperty: k => { delete props[k]; }, getKeys: () => Object.keys(props) }) },
     ScriptApp: { newTrigger: () => ({ timeBased() { return this; }, after() { return this; }, create() { return { getUniqueId: () => 't1' }; } }),
       getProjectTriggers: () => [], deleteTrigger: () => {} },
     MailApp: { sendEmail: () => {} }

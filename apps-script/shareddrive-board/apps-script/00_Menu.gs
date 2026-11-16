@@ -23,6 +23,15 @@ function onOpen() {
       .addItem('Thu ổ người nghỉ', 'sdThuOApDung'))
     .addSubMenu(ui.createMenu('Cài đặt')
       .addItem('Nâng cấp bảng (thêm cột/tab còn thiếu)', 'sdNangCapBang'))
+    .addSubMenu(ui.createMenu('Giả lập')
+      .addItem('Nhận hiện trạng vào giả lập', 'sdGiaLapNhanHienTrang')
+      .addItem('Tạo nội dung thử', 'sdGiaLapTaoNoiDung')
+      .addSeparator()
+      .addItem('Xem trước dọn sạch', 'sdGiaLapXemTruocDon')
+      .addItem('Dọn sạch giả lập (xóa hết đồ thử)', 'sdGiaLapDonSach')
+      .addSeparator()
+      .addItem('Chuyển sang Chạy thật', 'sdChuyenChayThat')
+      .addItem('Chuyển sang Giả lập', 'sdChuyenGiaLap'))
     .addToUi();
 }
 

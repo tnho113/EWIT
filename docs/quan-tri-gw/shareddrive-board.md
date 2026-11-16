@@ -38,6 +38,12 @@
 - **NHAP luôn trống**: sau khi chạy, dòng ✔ chuyển sang tab `LS_NHAP` (lịch sử nhập) và bị xóa khỏi NHAP; dòng lỗi ở lại (dồn lên đầu), cột **"Lỗi"** (thay "Kết quả") ghi lý do. Bỏ cơ chế dấu vân tay/cột "Mã xử lý".
 - Cột **Tình trạng** (ARRAYFORMULA + LET ở NHAP!J1) kiểm tra trước: thiếu Mã nhóm, nhóm không có, nhóm Đóng/Ngừng, người mới thiếu Họ tên/Vai trò, Level chỉ cho EF, nhóm không có vai Phụ trách, khác quyền/vai, đã có/chưa đưa vào. Lưu ý: tên biến LET dùng dạng `vEmail`…; đếm ngoặc trước khi ghi công thức dài.
 
+## 1d. Chế độ Giả lập / Chạy thật (Nery duyệt 16/11)
+- CAI_DAT "Chế độ" = Giả lập | Chạy thật (`90_GiaLap.gs`, menu Giả lập). Giả lập: tạo thật, tên ổ có `[THỬ]`, thư chào `[THỬ]`, mọi ổ/nhóm script tạo ghi vào tab ẩn `_GIA_LAP`. "Dọn sạch giả lập" (gõ XOA HET): xóa mọi ổ (kể cả 9 ổ gốc — Nery chốt xóa hết) và nhóm trong sổ, làm trống NGUOI/THANH_VIEN/LS_NHAP/NHAP + cột ID, xóa dấu vết script; giữ NHOM/CAU_TRUC/VAI_TRO.
+- Khóa: sang Chạy thật chỉ khi sổ trống; sang Giả lập chỉ khi bảng chưa có người/ID ổ; "Nhận hiện trạng vào giả lập" (gõ GIA LAP) chỉ khi chưa từng ghi "Chạy thật"; không xóa ổ chứa Board.
+- Kế hoạch: nhận hiện trạng (3 Gmail thử + 9 ổ gốc hiện có) → thử 18 tình huống với 5 Gmail → buổi chạy thử với BTC bằng email thật của họ → Dọn sạch → Chuyển sang Chạy thật → nhập dữ liệu chính thức.
+- Đã biết (thử thật 16/11): "Được chia sẻ với tôi" vẫn có thể hiện mục cấp qua nhóm → không bảo đảm trống; hướng dẫn người dùng làm việc trong ổ của mình, Remove from view nếu muốn. 90_CA-NHAN cũ script không xóa (admin xóa tay).
+
 ## 2. Hiện trạng
 - **Bảng chính thức từ 15/11/2026 (admin@ sở hữu)**: `19avp1IU1SKRW8yN6sXWZi93yOeqAd31RhwTgyNE8sm4` (thư mục Tool_Quan_Tri). Bảng cũ `15DvLmbVA9nqAe1TMggy4KYtdxNPXoadcVhZvYlGNXO8` (Gmail Nery sở hữu) chỉ còn để tham chiếu, không chạy menu. Claude chỉ có quyền XEM bảng mới → thay đổi cấu trúc bảng (cột/tab) phải do script tự làm (lệnh nâng cấp bảng) hoặc Nery mở quyền sửa tạm.
 - **Mã hệ thống** (vd `U00001`, script tự sinh, không đổi) là khóa nội bộ (nhóm riêng `sd-u-<mã hệ thống>`); **Mã người** (mã EWIT) chỉ để hiển thị, không bắt buộc (Nery chốt 15/11).
