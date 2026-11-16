@@ -113,102 +113,114 @@ function taoDrive() {
 }
 
 /* ---------- Bảng mẫu ---------- */
-const bang = bangMau();
-const T = bang.tabs;
-T.NHOM.v.push(
-  ['L3', 'EF Level 3', 'Level', '', '', 'EWIT', 'Đang'], ['L2', 'EF Level 2', 'Level', '', '', 'EWIT', 'Đang'], ['L1', 'EF Level 1', 'Level', '', '', 'EWIT', 'Đang'],
-  ['ME02', 'IELTS Mentor 02', 'Lớp', '', 'ME', 'EWIT', 'Đang'],
-  ['ME02-07', 'Nhóm 07', 'Nhóm nhỏ', 'ME02', '', 'EWIT', 'Đang'], ['ME02-08', 'Nhóm 08', 'Nhóm nhỏ', 'ME02', '', 'EWIT', 'Đang'],
-  ['PA03', 'Phát âm 03', 'Lớp', '', 'PA', 'EWIT', 'Đang'], ['PA03-01', 'Nhóm PA 01', 'Nhóm nhỏ', 'PA03', '', 'EWIT', 'Đang'],
-  ['KIND', 'Kind English', 'Dự án', '', '', 'EWIT', 'Đang'], ['DAO-TAO', 'Ban Đào tạo', 'Ban', '', '', 'EWIT', 'Đang'],
-  ['CU', 'Dự án cũ', 'Dự án', '', '', 'EWIT', 'Ngừng'],
-  ['RAW', 'Tri thức Raw', 'Tri thức', '', '', 'MLWIT', 'Đang'], ['WIKI', 'Tri thức Wiki', 'Tri thức', '', '', 'MLWIT', 'Đang'],
-  ['DULIEU', 'Dữ liệu học viên', 'Dữ liệu', '', '', 'MLWIT', 'Đang']);
 const ng = (e, ten, ma, vai, lv, tt, maHT) => [e, ten, ma, vai, lv, tt, '', '', '', '', maHT || ''];
-T.NGUOI.v.push(
-  ng('ef1@example.com', 'EF Một', '', 'EF', 'L2', 'Đang', 'U00001'), ng('ef2@example.com', 'EF Hai', '', 'EF', 'L3', 'Đang', 'U00002'),
-  ng('gv1@example.com', 'GV Một', '', 'GV', '', 'Đang', 'U00003'), ng('hv1@example.com', 'HV Một', 'K22-901', 'HV', '', 'Đang', 'U00004'),
-  ng('hv2@example.com', 'HV Hai', 'K22-902', 'HV', '', 'Đang', 'U00005'), ng('dl1@example.com', 'Dữ Liệu Một', '', 'Tổ chức', '', 'Đang', 'U00006'));
 const tv = (e, ma, loai, vai = 'Thành viên', quyen = 'Xem', tt = 'Đang') => [e, '', ma, loai, vai, quyen, tt];
-T.THANH_VIEN.v.push(
-  tv('ef1@example.com', 'L2', 'Level'), tv('ef1@example.com', 'ME02', 'Lớp', 'Phụ trách'), tv('ef1@example.com', 'ME02-08', 'Nhóm nhỏ', 'Phụ trách'),
-  tv('ef1@example.com', 'KIND', 'Dự án', 'Thành viên', 'Sửa'), tv('ef1@example.com', 'RAW', 'Tri thức'),
-  tv('ef2@example.com', 'L3', 'Level'), tv('ef2@example.com', 'ME02-07', 'Nhóm nhỏ', 'Phụ trách'), tv('ef2@example.com', 'DAO-TAO', 'Ban'),
-  tv('gv1@example.com', 'PA03', 'Lớp', 'Phụ trách'), tv('gv1@example.com', 'PA03-01', 'Nhóm nhỏ', 'Phụ trách'), tv('gv1@example.com', 'KIND', 'Dự án'),
-  tv('gv1@example.com', 'WIKI', 'Tri thức'),
-  tv('hv1@example.com', 'ME02', 'Lớp'), tv('hv1@example.com', 'ME02-08', 'Nhóm nhỏ'), tv('hv1@example.com', 'PA03', 'Lớp'),
-  tv('hv1@example.com', 'PA03-01', 'Nhóm nhỏ'), tv('hv1@example.com', 'RAW', 'Tri thức'),
-  tv('hv2@example.com', 'ME02', 'Lớp'), tv('hv2@example.com', 'ME02-07', 'Nhóm nhỏ'),
-  tv('dl1@example.com', 'DULIEU', 'Dữ liệu', 'Phụ trách'));
-const ct = (ma, o, duong, loai, nguon = '', quyen = '') => [ma, o, duong, loai, nguon, quyen, '', ''];
-T.CAU_TRUC.v.push(
-  ct('O_QT', 'Quản trị', 'MLWIT · Quản trị', 'Ổ'), ct('O_DL', 'Dữ liệu học viên', 'MLWIT · Dữ liệu học viên', 'Ổ'),
-  ct('O_RAW', 'Tri thức – Raw', 'MLWIT · Tri thức – Raw', 'Ổ'), ct('O_WIKI', 'Tri thức – Wiki', 'MLWIT · Tri thức – Wiki', 'Ổ'),
-  ct('O_TTC', 'Thông tin chung', 'EWIT · Thông tin chung', 'Ổ'), ct('O_TV', 'Thư viện EF', 'EWIT · Thư viện EF', 'Ổ'),
-  ct('O_DA', 'Dự án & Ban', 'EWIT · Dự án & Ban', 'Ổ'), ct('O_LOP', 'Lớp học', 'EWIT · Lớp học', 'Ổ'),
-  ct('O_HS', 'Hồ sơ học tập', 'EWIT · Hồ sơ học tập', 'Ổ'),
-  ct('CN_TEN', 'Ổ cá nhân', 'MLWIT · {Mã người} · {Họ tên}', 'Ổ'),
-  ct('QT_BANG', 'Quản trị', '00_BANG', 'Thư mục'), ct('QT_BC', 'Quản trị', '10_BAO-CAO', 'Thư mục'),
-  ct('QT_MAU', 'Quản trị', '20_MAU', 'Thư mục'), ct('QT_SL', 'Quản trị', '90_SAO-LUU', 'Thư mục'),
-  ct('TTC_EF', 'Thông tin chung', 'EF', 'Thư mục'),
-  ct('TTC_EF_1', 'Thông tin chung', 'EF/01_GIOI-THIEU', 'Thư mục'), ct('TTC_EF_2', 'Thông tin chung', 'EF/02_QUY-TRINH', 'Thư mục'),
-  ct('TTC_EF_3', 'Thông tin chung', 'EF/03_BIEU-MAU', 'Thư mục'), ct('TTC_EF_4', 'Thông tin chung', 'EF/04_DAO-TAO', 'Thư mục'),
-  ct('TTC_EF_5', 'Thông tin chung', 'EF/05_THONG-BAO', 'Thư mục'),
-  ct('TTC_HV', 'Thông tin chung', 'HOC-VIEN', 'Thư mục'),
-  ct('TTC_HV_1', 'Thông tin chung', 'HOC-VIEN/01_GIOI-THIEU', 'Thư mục'), ct('TTC_HV_2', 'Thông tin chung', 'HOC-VIEN/02_NOI-QUY', 'Thư mục'),
-  ct('TTC_HV_3', 'Thông tin chung', 'HOC-VIEN/03_THONG-BAO', 'Thư mục'),
-  ct('TV_CAP', 'Thư viện EF', '{Mã nhóm}', 'Thư mục theo nhóm', 'Nhóm loại: Level'),
-  ct('DA_NHOM', 'Dự án & Ban', '{Mã nhóm} · {Tên nhóm}', 'Thư mục theo nhóm', 'Nhóm loại: Dự án, Ban'),
-  ct('DA_K1', 'Dự án & Ban', '{nhóm}/10_KE-HOACH', 'Thư mục con của nhóm'), ct('DA_K2', 'Dự án & Ban', '{nhóm}/20_TAI-LIEU', 'Thư mục con của nhóm'),
-  ct('DA_K3', 'Dự án & Ban', '{nhóm}/30_SAN-PHAM', 'Thư mục con của nhóm'), ct('DA_K4', 'Dự án & Ban', '{nhóm}/40_BIEN-BAN-HOP', 'Thư mục con của nhóm'),
-  ct('LOP_NHOM', 'Lớp học', '{Nhánh}/{Mã nhóm} · {Tên nhóm}', 'Thư mục theo nhóm', 'Nhóm loại: Lớp'),
-  ct('LOP_VIDEO', 'Lớp học', '{nhóm}/VIDEO', 'Thư mục con của nhóm'), ct('LOP_TL', 'Lớp học', '{nhóm}/TAI-LIEU', 'Thư mục con của nhóm'),
-  ct('RAW_NG', 'Tri thức – Raw', '{Mã người} · {Họ tên}', 'Thư mục theo người', 'Nhóm: RAW'),
-  ct('WIKI_NG', 'Tri thức – Wiki', '{Mã người} · {Họ tên}', 'Thư mục theo người', 'Nhóm: WIKI'),
-  ct('HS_NG', 'Hồ sơ học tập', '{Mã người} · {Họ tên}', 'Thư mục theo người', 'Vai trò: HV'),
-  ct('HS_NOP', 'Hồ sơ học tập', '{người}/{Mã lớp}', 'Thư mục con theo lớp'),
-  ct('HS_NK', 'Hồ sơ học tập', '{người}/Nhật ký trưởng thành', 'Tệp mẫu'),
-  ct('HS_TL', 'Hồ sơ học tập', '{người}/00_TAI-LIEU-CUA-TOI', 'Thư mục con theo người', '', 'Tải lên'),
-  ct('CN_TTC_EF', 'Ổ EF, Ổ GV', '00 · Thông tin chung', 'Lối tắt', '→ TTC_EF'),
-  ct('CN_TTC_HV', 'Ổ HV', '00 · Thông tin học viên', 'Lối tắt', '→ TTC_HV'),
-  ct('CN_RAW', 'Mọi ổ cá nhân', '05 · Tri thức Raw', 'Lối tắt', '→ RAW_NG (nếu tham gia)'),
-  ct('CN_WIKI', 'Mọi ổ cá nhân', '06 · Tri thức Wiki', 'Lối tắt', '→ WIKI_NG (nếu tham gia)'),
-  ct('CN_CAP', 'Ổ EF', '10_LEVEL', 'Chỗ đặt lối tắt', 'Nguồn: Level'),
-  ct('CN_LOP_DANG', 'Ổ HV', '10_LOP-DANG-HOC', 'Chỗ đặt lối tắt', 'Nguồn: Lớp đang học'),
-  ct('CN_LOP_DA', 'Ổ HV', '11_LOP-DA-HOC', 'Chỗ đặt lối tắt', 'Nguồn: Lớp đã học'),
-  ct('CN_DA', 'Ổ EF, Ổ GV', '20_DU-AN', 'Chỗ đặt lối tắt', 'Nguồn: Dự án tham gia'),
-  ct('CN_HS', 'Ổ HV', '20 · Hồ sơ học tập', 'Lối tắt', '→ HS_NG của chính người đó'),
-  ct('CN_LOP_PT', 'Ổ EF, Ổ GV', '30_LOP-PHU-TRACH', 'Chỗ đặt lối tắt', 'Nguồn: Lớp phụ trách'),
-  ct('CN_HV_PT', 'Ổ EF, Ổ GV', '40_HOC-VIEN-PHU-TRACH', 'Chỗ đặt lối tắt', 'Nguồn: Học viên phụ trách'),
-  ct('CN_CA_NHAN', 'Mọi ổ cá nhân', '90_CA-NHAN', 'Thư mục', '', 'Tải lên'));
+function dungBang() {
+  const bang = bangMau();
+  const T = bang.tabs;
+  T.NHOM.v.push(
+    ['L3', 'EF Level 3', 'Level', '', '', 'EWIT', 'Đang'], ['L2', 'EF Level 2', 'Level', '', '', 'EWIT', 'Đang'], ['L1', 'EF Level 1', 'Level', '', '', 'EWIT', 'Đang'],
+    ['ME02', 'IELTS Mentor 02', 'Lớp', '', 'ME', 'EWIT', 'Đang'],
+    ['ME02-07', 'Nhóm 07', 'Nhóm nhỏ', 'ME02', '', 'EWIT', 'Đang'], ['ME02-08', 'Nhóm 08', 'Nhóm nhỏ', 'ME02', '', 'EWIT', 'Đang'],
+    ['PA03', 'Phát âm 03', 'Lớp', '', 'PA', 'EWIT', 'Đang'], ['PA03-01', 'Nhóm PA 01', 'Nhóm nhỏ', 'PA03', '', 'EWIT', 'Đang'],
+    ['KIND', 'Kind English', 'Dự án', '', '', 'EWIT', 'Đang'], ['DAO-TAO', 'Ban Đào tạo', 'Ban', '', '', 'EWIT', 'Đang'],
+    ['CU', 'Dự án cũ', 'Dự án', '', '', 'EWIT', 'Ngừng'],
+    ['RAW', 'Tri thức Raw', 'Tri thức', '', '', 'MLWIT', 'Đang'], ['WIKI', 'Tri thức Wiki', 'Tri thức', '', '', 'MLWIT', 'Đang'],
+    ['DULIEU', 'Dữ liệu học viên', 'Dữ liệu', '', '', 'MLWIT', 'Đang']);
+  T.NGUOI.v.push(
+    ng('ef1@example.com', 'EF Một', '', 'EF', 'L2', 'Đang', 'U00001'), ng('ef2@example.com', 'EF Hai', '', 'EF', 'L3', 'Đang', 'U00002'),
+    ng('gv1@example.com', 'GV Một', '', 'GV', '', 'Đang', 'U00003'), ng('hv1@example.com', 'HV Một', 'K22-901', 'HV', '', 'Đang', 'U00004'),
+    ng('hv2@example.com', 'HV Hai', 'K22-902', 'HV', '', 'Đang', 'U00005'), ng('dl1@example.com', 'Dữ Liệu Một', '', 'Tổ chức', '', 'Đang', 'U00006'));
+  T.THANH_VIEN.v.push(
+    tv('ef1@example.com', 'L2', 'Level'), tv('ef1@example.com', 'ME02', 'Lớp', 'Phụ trách'), tv('ef1@example.com', 'ME02-08', 'Nhóm nhỏ', 'Phụ trách'),
+    tv('ef1@example.com', 'KIND', 'Dự án', 'Thành viên', 'Sửa'), tv('ef1@example.com', 'RAW', 'Tri thức'),
+    tv('ef2@example.com', 'L3', 'Level'), tv('ef2@example.com', 'ME02-07', 'Nhóm nhỏ', 'Phụ trách'), tv('ef2@example.com', 'DAO-TAO', 'Ban'),
+    tv('gv1@example.com', 'PA03', 'Lớp', 'Phụ trách'), tv('gv1@example.com', 'PA03-01', 'Nhóm nhỏ', 'Phụ trách'), tv('gv1@example.com', 'KIND', 'Dự án'),
+    tv('gv1@example.com', 'WIKI', 'Tri thức'),
+    tv('hv1@example.com', 'ME02', 'Lớp'), tv('hv1@example.com', 'ME02-08', 'Nhóm nhỏ'), tv('hv1@example.com', 'PA03', 'Lớp'),
+    tv('hv1@example.com', 'PA03-01', 'Nhóm nhỏ'), tv('hv1@example.com', 'RAW', 'Tri thức'),
+    tv('hv2@example.com', 'ME02', 'Lớp'), tv('hv2@example.com', 'ME02-07', 'Nhóm nhỏ'),
+    tv('dl1@example.com', 'DULIEU', 'Dữ liệu', 'Phụ trách'));
+  const ct = (ma, o, duong, loai, nguon = '', quyen = '') => [ma, o, duong, loai, nguon, quyen, '', ''];
+  T.CAU_TRUC.v.push(
+    ct('O_QT', 'Quản trị', 'MLWIT · Quản trị', 'Ổ'), ct('O_DL', 'Dữ liệu học viên', 'MLWIT · Dữ liệu học viên', 'Ổ'),
+    ct('O_RAW', 'Tri thức – Raw', 'MLWIT · Tri thức – Raw', 'Ổ'), ct('O_WIKI', 'Tri thức – Wiki', 'MLWIT · Tri thức – Wiki', 'Ổ'),
+    ct('O_TTC', 'Thông tin chung', 'EWIT · Thông tin chung', 'Ổ'), ct('O_TV', 'Thư viện EF', 'EWIT · Thư viện EF', 'Ổ'),
+    ct('O_DA', 'Dự án & Ban', 'EWIT · Dự án & Ban', 'Ổ'), ct('O_LOP', 'Lớp học', 'EWIT · Lớp học', 'Ổ'),
+    ct('O_HS', 'Hồ sơ học tập', 'EWIT · Hồ sơ học tập', 'Ổ'),
+    ct('CN_TEN', 'Ổ cá nhân', 'MLWIT · {Mã người} · {Họ tên}', 'Ổ'),
+    ct('QT_BANG', 'Quản trị', '00_BANG', 'Thư mục'), ct('QT_BC', 'Quản trị', '10_BAO-CAO', 'Thư mục'),
+    ct('QT_MAU', 'Quản trị', '20_MAU', 'Thư mục'), ct('QT_SL', 'Quản trị', '90_SAO-LUU', 'Thư mục'),
+    ct('TTC_EF', 'Thông tin chung', 'EF', 'Thư mục'),
+    ct('TTC_EF_1', 'Thông tin chung', 'EF/01_GIOI-THIEU', 'Thư mục'), ct('TTC_EF_2', 'Thông tin chung', 'EF/02_QUY-TRINH', 'Thư mục'),
+    ct('TTC_EF_3', 'Thông tin chung', 'EF/03_BIEU-MAU', 'Thư mục'), ct('TTC_EF_4', 'Thông tin chung', 'EF/04_DAO-TAO', 'Thư mục'),
+    ct('TTC_EF_5', 'Thông tin chung', 'EF/05_THONG-BAO', 'Thư mục'),
+    ct('TTC_HV', 'Thông tin chung', 'HOC-VIEN', 'Thư mục'),
+    ct('TTC_HV_1', 'Thông tin chung', 'HOC-VIEN/01_GIOI-THIEU', 'Thư mục'), ct('TTC_HV_2', 'Thông tin chung', 'HOC-VIEN/02_NOI-QUY', 'Thư mục'),
+    ct('TTC_HV_3', 'Thông tin chung', 'HOC-VIEN/03_THONG-BAO', 'Thư mục'),
+    ct('TV_CAP', 'Thư viện EF', '{Mã nhóm}', 'Thư mục theo nhóm', 'Nhóm loại: Level'),
+    ct('DA_NHOM', 'Dự án & Ban', '{Mã nhóm} · {Tên nhóm}', 'Thư mục theo nhóm', 'Nhóm loại: Dự án, Ban'),
+    ct('DA_K1', 'Dự án & Ban', '{nhóm}/10_KE-HOACH', 'Thư mục con của nhóm'), ct('DA_K2', 'Dự án & Ban', '{nhóm}/20_TAI-LIEU', 'Thư mục con của nhóm'),
+    ct('DA_K3', 'Dự án & Ban', '{nhóm}/30_SAN-PHAM', 'Thư mục con của nhóm'), ct('DA_K4', 'Dự án & Ban', '{nhóm}/40_BIEN-BAN-HOP', 'Thư mục con của nhóm'),
+    ct('LOP_NHOM', 'Lớp học', '{Nhánh}/{Mã nhóm} · {Tên nhóm}', 'Thư mục theo nhóm', 'Nhóm loại: Lớp'),
+    ct('LOP_VIDEO', 'Lớp học', '{nhóm}/VIDEO', 'Thư mục con của nhóm'), ct('LOP_TL', 'Lớp học', '{nhóm}/TAI-LIEU', 'Thư mục con của nhóm'),
+    ct('RAW_NG', 'Tri thức – Raw', '{Mã người} · {Họ tên}', 'Thư mục theo người', 'Nhóm: RAW'),
+    ct('WIKI_NG', 'Tri thức – Wiki', '{Mã người} · {Họ tên}', 'Thư mục theo người', 'Nhóm: WIKI'),
+    ct('HS_NG', 'Hồ sơ học tập', '{Mã người} · {Họ tên}', 'Thư mục theo người', 'Vai trò: HV'),
+    ct('HS_NOP', 'Hồ sơ học tập', '{người}/{Mã lớp}', 'Thư mục con theo lớp'),
+    ct('HS_NK', 'Hồ sơ học tập', '{người}/Nhật ký trưởng thành', 'Tệp mẫu'),
+    ct('HS_TL', 'Hồ sơ học tập', '{người}/00_TAI-LIEU-CUA-TOI', 'Thư mục con theo người', '', 'Tải lên'),
+    ct('CN_TTC_EF', 'Ổ EF, Ổ GV', '00 · Thông tin chung', 'Lối tắt', '→ TTC_EF'),
+    ct('CN_TTC_HV', 'Ổ HV', '00 · Thông tin học viên', 'Lối tắt', '→ TTC_HV'),
+    ct('CN_RAW', 'Mọi ổ cá nhân', '05 · Tri thức Raw', 'Lối tắt', '→ RAW_NG (nếu tham gia)'),
+    ct('CN_WIKI', 'Mọi ổ cá nhân', '06 · Tri thức Wiki', 'Lối tắt', '→ WIKI_NG (nếu tham gia)'),
+    ct('CN_CAP', 'Ổ EF', '10_LEVEL', 'Chỗ đặt lối tắt', 'Nguồn: Level'),
+    ct('CN_LOP_DANG', 'Ổ HV', '10_LOP-DANG-HOC', 'Chỗ đặt lối tắt', 'Nguồn: Lớp đang học'),
+    ct('CN_LOP_DA', 'Ổ HV', '11_LOP-DA-HOC', 'Chỗ đặt lối tắt', 'Nguồn: Lớp đã học'),
+    ct('CN_DA', 'Ổ EF, Ổ GV', '20_DU-AN', 'Chỗ đặt lối tắt', 'Nguồn: Dự án tham gia'),
+    ct('CN_HS', 'Ổ HV', '20 · Hồ sơ học tập', 'Lối tắt', '→ HS_NG của chính người đó'),
+    ct('CN_LOP_PT', 'Ổ EF, Ổ GV', '30_LOP-PHU-TRACH', 'Chỗ đặt lối tắt', 'Nguồn: Lớp phụ trách'),
+    ct('CN_HV_PT', 'Ổ EF, Ổ GV', '40_HOC-VIEN-PHU-TRACH', 'Chỗ đặt lối tắt', 'Nguồn: Học viên phụ trách'),
+    ct('CN_CA_NHAN', 'Mọi ổ cá nhân', '90_CA-NHAN', 'Thư mục', '', 'Tải lên'));
+
+  return bang;
+}
 
 /* ---------- Môi trường ---------- */
-const D = taoDrive();
-const thu = [], hen = [];
-const ScriptApp = {
-  newTrigger: fn => ({ timeBased() { return this; }, after() { return this; }, everyDays() { return this; }, atHour() { return this; },
-    nearMinute() { return this; }, inTimezone() { return this; }, create() { const t = { fn, getHandlerFunction: () => fn }; hen.push(t); return t; } }),
-  getProjectTriggers: () => hen.slice(),
-  deleteTrigger: t => { const i = hen.indexOf(t); if (i >= 0) hen.splice(i, 1); }
-};
-const ctx = taoMoiTruong(bang, { Drive: D.Drive, GmailApp: { sendEmail: (to, tieuDe, than, opt) => thu.push({ to, tieuDe, than, opt }) },
-  MailApp: { sendEmail: () => { throw new Error('phải dùng GmailApp khi có'); } }, ScriptApp }, ADMIN);
-let lech = 0;                                                  // giả thời gian trôi cho hàng đợi thư chào
-ctx.drBayGioMs_ = () => Date.now() + lech;
-const quaGio = () => { lech += 61 * 60000; ctx.sdThuChaoDenHan(); };
-ctx.dongBoNhom_ = C => {
-  const co = {};
-  C.dsNhom.forEach(g => {
-    if (g.tt === 'Đóng' || g.tt === 'Ngừng') return;
-    ctx.thanhVienNhom_(C, g.ma).forEach(t => { co[ctx.emailNhom_(C, g.ma, ctx.hauToCua_(t))] = true; });
-  });
-  const dang = n => n.tt === 'Đang' && ctx.coOCaNhan_(C, n);
-  if (C.dsNguoi.some(n => dang(n) && ['EF', 'GV', 'Tổ chức'].includes(n.vaiTro))) co[ctx.emailTong_(C, 'ef')] = true;
-  if (C.dsNguoi.some(n => dang(n) && n.vaiTro === 'HV')) co[ctx.emailTong_(C, 'hv')] = true;
-  C.dsNguoi.forEach(n => { if (dang(n) && n.maHT) co[ctx.emailNhomRieng_(C, n)] = true; });
-  return { nhomCo: co, chuaXong: false };
-};
-const goc_drHetGio_ = ctx.drHetGio_;
+function dungMoiTruong(bang) {
+  const T = bang.tabs;
+  const D = taoDrive();
+  const thu = [], hen = [];
+  const ScriptApp = {
+    newTrigger: fn => ({ timeBased() { return this; }, after() { return this; }, everyDays() { return this; }, atHour() { return this; },
+      nearMinute() { return this; }, inTimezone() { return this; }, create() { const t = { fn, getHandlerFunction: () => fn }; hen.push(t); return t; } }),
+    getProjectTriggers: () => hen.slice(),
+    deleteTrigger: t => { const i = hen.indexOf(t); if (i >= 0) hen.splice(i, 1); }
+  };
+  const ctx = taoMoiTruong(bang, { Drive: D.Drive, GmailApp: { sendEmail: (to, tieuDe, than, opt) => thu.push({ to, tieuDe, than, opt }) },
+    MailApp: { sendEmail: () => { throw new Error('phải dùng GmailApp khi có'); } }, ScriptApp }, ADMIN);
+  let lech = 0;                                                  // giả thời gian trôi cho hàng đợi thư chào
+  ctx.drBayGioMs_ = () => Date.now() + lech;
+  const quaGio = () => { lech += 61 * 60000; ctx.sdThuChaoDenHan(); };
+  ctx.dongBoNhom_ = C => {
+    const co = {};
+    C.dsNhom.forEach(g => {
+      if (g.tt === 'Đóng' || g.tt === 'Ngừng') return;
+      ctx.thanhVienNhom_(C, g.ma).forEach(t => { co[ctx.emailNhom_(C, g.ma, ctx.hauToCua_(t))] = true; });
+    });
+    const dang = n => n.tt === 'Đang' && ctx.coOCaNhan_(C, n);
+    if (C.dsNguoi.some(n => dang(n) && ['EF', 'GV', 'Tổ chức'].includes(n.vaiTro))) co[ctx.emailTong_(C, 'ef')] = true;
+    if (C.dsNguoi.some(n => dang(n) && n.vaiTro === 'HV')) co[ctx.emailTong_(C, 'hv')] = true;
+    C.dsNguoi.forEach(n => { if (dang(n) && n.maHT) co[ctx.emailNhomRieng_(C, n)] = true; });
+    return { nhomCo: co, chuaXong: false };
+  };
+  const goc_drHetGio_ = ctx.drHetGio_;
+  return { D, thu, hen, ctx, quaGio, goc_drHetGio_, datLech: v => { lech = v; } };
+}
+
+if (require.main !== module) { module.exports = { ng, tv, taoDrive, dungBang, dungMoiTruong, MIME_TM, MIME_LT, ADMIN }; return; }
+const bang = dungBang(), T = bang.tabs;
+const { D, thu, hen, ctx, quaGio, goc_drHetGio_ } = dungMoiTruong(bang);
 
 /* ---------- Trợ giúp ---------- */
 let nkTruoc = 0;
