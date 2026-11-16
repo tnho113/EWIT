@@ -53,6 +53,11 @@
 - **Người có quyền Sửa (không là thành viên ổ gốc) chia sẻ tiếp được từng tệp** ra ngoài (chỉ cảnh báo).
 - Đề xuất chờ Nery: (a) nhóm riêng `sd-u-<email>` cho quyền theo người; (b) chủ ổ cá nhân = Người đóng góp cả ổ; (c) chia sẻ lạ: A1 quét tự gỡ hằng đêm / A2 khi bấm / C chỉ báo cáo. Đã giao chuyên gia GW rà logic nhập liệu.
 
+## 2c. Email tên miền (16/11)
+- Thư chào gửi 15/11 23:03 bị **Bounced** sau 0,14 s (Email Log Search). Check MX: **mlwit.edu.vn chưa có MX**, chưa DKIM, chưa DMARC → Gmail người nhận từ chối. Thư nội bộ (tới admin@) vẫn tới.
+- Cần thêm ở DNS (tên miền mua tại **Tenten**; kiểm tra nameserver đang ở Tenten hay nơi khác): MX `@` → `smtp.google.com` (ưu tiên 1); TXT `@` SPF `v=spf1 include:_spf.google.com ~all`; TXT `google._domainkey` (lấy ở Admin console → Gmail → Xác thực email, 2048 bit, rồi bấm Bắt đầu xác thực); TXT `_dmarc` `v=DMARC1; p=none; rua=mailto:admin@mlwit.edu.vn`. Kiểm lại bằng toolbox.googleapps.com/apps/checkmx.
+- Đợt 2b: lệnh "Gửi lại thư chào" cho người chưa nhận; ghi lỗi gửi rõ ràng.
+
 ## 3. Cần thử thật (chưa kiểm chứng)
 - Gỡ quyền trực tiếp ở thư mục khi người đó còn quyền thừa kế từ ổ (đã có phương án hạ về Xem).
 - Tổ chức có cho Gmail ngoài làm thành viên ổ dùng chung qua API.
