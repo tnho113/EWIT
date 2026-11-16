@@ -44,6 +44,8 @@
 - Kế hoạch: nhận hiện trạng (3 Gmail thử + 9 ổ gốc hiện có) → thử 18 tình huống với 5 Gmail → buổi chạy thử với BTC bằng email thật của họ → Dọn sạch → Chuyển sang Chạy thật → nhập dữ liệu chính thức.
 - Đã biết (thử thật 16/11): "Được chia sẻ với tôi" vẫn có thể hiện mục cấp qua nhóm → không bảo đảm trống; hướng dẫn người dùng làm việc trong ổ của mình, Remove from view nếu muốn. 90_CA-NHAN cũ script không xóa (admin xóa tay).
 
+- 16/11: đã Nhận hiện trạng (23 mục trong sổ), đổi tên 12 ổ thêm [THỬ]. Tab `KIEM_THU` trên bảng: checklist 20 bước với 5 Gmail thử (E1 tnho113 EF, E2 neryewit GV, E3 ewitenglishai HV, E4 ewit.edu.vn@gmail.com HV mới, E5 ewitefc@gmail.com email mới của E4); NHOM thêm PA03, PA03-01 để thử.
+
 ## 2. Hiện trạng
 - **Bảng chính thức từ 15/11/2026 (admin@ sở hữu)**: `19avp1IU1SKRW8yN6sXWZi93yOeqAd31RhwTgyNE8sm4` (thư mục Tool_Quan_Tri). Bảng cũ `15DvLmbVA9nqAe1TMggy4KYtdxNPXoadcVhZvYlGNXO8` (Gmail Nery sở hữu) chỉ còn để tham chiếu, không chạy menu. Claude chỉ có quyền XEM bảng mới → thay đổi cấu trúc bảng (cột/tab) phải do script tự làm (lệnh nâng cấp bảng) hoặc Nery mở quyền sửa tạm.
 - **Mã hệ thống** (vd `U00001`, script tự sinh, không đổi) là khóa nội bộ (nhóm riêng `sd-u-<mã hệ thống>`); **Mã người** (mã EWIT) chỉ để hiển thị, không bắt buộc (Nery chốt 15/11).
