@@ -12,6 +12,7 @@
   - Hướng dẫn dán code cho Nery: **Google Docs** https://docs.google.com/document/d/1Sg0wIQqIbNBs23mmucOTkMbUSfJagJOCS2Ajen-VgiM/edit (bản .md trong repo chỉ để Claude tham chiếu).
 
 ## Việc kế tiếp
+0. **Shared Drive Board Đợt 2b**: làm theo `docs/quan-tri-gw/dot2b-dac-ta.md` (bắt đầu mục 0 — KHÔNG Áp dụng trên bảng mới trước khi sửa nhãn thư mục).
 1. Nery chuẩn bị ⓐ (bước 0 hướng dẫn) rồi dán code theo thứ tự ⓐ → ⓑ → ⓓ → web; gửi ảnh lỗi nếu có.
 2. Sửa lỗi phát sinh khi chạy thật (giao phiên phụ Sonnet theo từng project).
 3. B7: thử với lớp **G1-K23** (khai giảng 02/11/2026; K22 đã kết thúc) trong 2–4 tuần.
