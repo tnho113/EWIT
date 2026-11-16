@@ -13,6 +13,9 @@
  *  - Thêm vào Nhóm nhỏ (vai Thành viên): tự vào Lớp chứa nó; tự rời nhóm nhỏ khác cùng lớp.
  *  - Gỡ khỏi Lớp: tự gỡ các nhóm nhỏ của lớp đó.
  *  - Nghỉ: người chuyển "Nghỉ", gỡ mọi nhóm. Thêm lại sau này: người "Đang" lại.
+ *  - Mã hệ thống (U00001…): cấp khi tạo người, tiếp số lớn nhất ở NGUOI, không bao giờ đổi.
+ *  - Thêm cho người cũ KHÔNG đổi Họ tên / Mã người / Vai trò (dùng Việc "Sửa thông tin").
+ *  - Sửa thông tin: theo Email; ô nào có chữ thì đổi. Đổi email: cột "Email mới"; đổi khóa ở NGUOI và mọi dòng THANH_VIEN.
  */
 function duaVaoTong_(cd) {
   var nhap = docTab_(TAB.NHAP);
@@ -106,8 +109,10 @@ function xuLyDongNhap_(d, nhom, nguoi, tv) {
   var viec = chuan_(d['Việc']) || 'Thêm';
   var nguon = 'NHAP dòng ' + d._dong + ' · ' + homNay_();
   if (!emailHopLe_(email)) return 'LỖI: email không hợp lệ';
-  if (DS.VIEC.indexOf(viec) < 0) return 'LỖI: Việc phải là Thêm, Gỡ hoặc Nghỉ';
+  if (DS.VIEC.indexOf(viec) < 0) return 'LỖI: Việc phải là ' + DS.VIEC.join(', ');
   var ng = nguoi.m[email];
+  if (viec === 'Sửa thông tin') return suaThongTin_(d, ng, tv, nguon);
+  if (viec === 'Đổi email') return doiEmail_(d, ng, nguoi, tv, nguon);
 
   if (viec === 'Nghỉ') {
     if (!ng) return 'LỖI: chưa có người này ở danh sách tổng';
@@ -152,23 +157,22 @@ function xuLyDongNhap_(d, nhom, nguoi, tv) {
   if (DS.QUYEN.indexOf(quyen) < 0) return 'LỖI: Quyền phải là Xem hoặc Sửa';
   if (vai === 'Phụ trách' && DS.CO_PHU_TRACH.indexOf(n.loai) < 0) return 'LỖI: nhóm loại ' + n.loai + ' không có vai Phụ trách';
 
-  var vaiTroMoi = chuan_(d['Vai trò']) || (ng ? ng['Vai trò'] : '');
+  var vaiTroMoi = ng ? ng['Vai trò'] : chuan_(d['Vai trò']);   // người cũ: giữ vai trò đã có
   if (n.loai === 'Level' && vaiTroMoi !== 'EF') return 'LỖI: Level chỉ dành cho EF' + (vaiTroMoi ? ' (người này là ' + vaiTroMoi + ')' : '');
 
-  var ghiChuNguoi = '';
+  var ghiChuNguoi = '', boQua = '';
   if (!ng) {
     var ten = chuan_(d['Họ tên']), vt = chuan_(d['Vai trò']);
     if (!ten || !vt) return 'LỖI: người mới cần Họ tên và Vai trò';
     if (DS.VAI_TRO.indexOf(vt) < 0) return 'LỖI: Vai trò phải là HV, EF, GV hoặc Tổ chức';
     ng = { 'Email': email, 'Họ tên': ten, 'Mã người': chuan_(d['Mã người']), 'Vai trò': vt, 'Level': '', 'Trạng thái': 'Đang',
-      'Ngày vào': homNay_(), 'Cập nhật': bayGio_(), 'ID ổ': '', 'Kết quả Drive': '' };
+      'Ngày vào': homNay_(), 'Cập nhật': bayGio_(), 'ID ổ': '', 'Kết quả Drive': '', 'Mã hệ thống': capMaHeThong_(nguoi) };
     nguoi.m[email] = ng; nguoi.ds.push(ng);
     ghiChuNguoi = 'người mới, ';
     ghi_('Người', 'Thêm người mới', email + ' · ' + ten);
   } else {
-    var doi = capNhatNguoi_(ng, d, tv);
-    if (ng['Trạng thái'] === 'Nghỉ') { ng['Trạng thái'] = 'Đang'; doi.push('quay lại'); }
-    if (doi.length) { ng['Cập nhật'] = bayGio_(); ghiChuNguoi = doi.join(', ') + ', '; }
+    if (thongTinKhac_(ng, d).length) boQua = " (bỏ qua thông tin khác — dùng Việc 'Sửa thông tin')";
+    if (ng['Trạng thái'] === 'Nghỉ') { ng['Trạng thái'] = 'Đang'; ng['Cập nhật'] = bayGio_(); ghiChuNguoi = 'quay lại, '; }
   }
 
   var kq = ghepThanhVien_(tv, ng, n, vai, quyen, nguon);
@@ -198,20 +202,76 @@ function xuLyDongNhap_(d, nhom, nguoi, tv) {
       }
     }
   }
-  return '✔ ' + ghiChuNguoi + kq + (phu.length ? ' (' + phu.join('; ') + ')' : '');
+  return '✔ ' + ghiChuNguoi + kq + (phu.length ? ' (' + phu.join('; ') + ')' : '') + boQua;
 }
 
-/** Cập nhật Họ tên / Mã người / Vai trò nếu dòng NHAP ghi khác. */
-function capNhatNguoi_(ng, d, tv) {
-  var doi = [];
+/** Mã hệ thống kế tiếp: U + 5 chữ số, sau số lớn nhất đang có ở NGUOI. */
+function capMaHeThong_(nguoi) {
+  var max = 0;
+  nguoi.ds.forEach(function (o) {
+    var m = /^U(\d+)$/i.exec(chuan_(o['Mã hệ thống']));
+    if (m && Number(m[1]) > max) max = Number(m[1]);
+  });
+  var so = String(max + 1);
+  while (so.length < 5) so = '0' + so;
+  return 'U' + so;
+}
+
+/** Ô nào của dòng NHAP có chữ mà khác thông tin đã có: trả về danh sách tên trường. */
+function thongTinKhac_(ng, d) {
+  var kq = [];
   var ten = chuan_(d['Họ tên']), ma = chuan_(d['Mã người']), vt = chuan_(d['Vai trò']);
-  if (ten && ten !== ng['Họ tên']) {
-    doi.push('đổi tên'); ng['Họ tên'] = ten;
+  if (ten && ten !== chuan_(ng['Họ tên'])) kq.push('Họ tên');
+  if (ma && ma !== chuan_(ng['Mã người'])) kq.push('Mã người');
+  if (vt && vt !== chuan_(ng['Vai trò'])) kq.push('Vai trò');
+  return kq;
+}
+
+/** Việc "Sửa thông tin": theo Email; ô Họ tên / Mã người / Vai trò nào có chữ thì đổi. */
+function suaThongTin_(d, ng, tv, nguon) {
+  if (!ng) return 'LỖI: chưa có người này ở danh sách tổng';
+  var ten = chuan_(d['Họ tên']), ma = chuan_(d['Mã người']), vt = chuan_(d['Vai trò']);
+  if (!ten && !ma && !vt) return 'LỖI: chưa ghi ô nào để đổi (Họ tên, Mã người hoặc Vai trò)';
+  if (vt && DS.VAI_TRO.indexOf(vt) < 0) return 'LỖI: Vai trò phải là ' + DS.VAI_TRO.join(', ');
+  if (vt && vt !== ng['Vai trò'] && ng['Vai trò'] === 'EF') {
+    var lv = chuan_(ng['Level']);
+    tv.ds.forEach(function (x) { if (!lv && x['Email'] === ng['Email'] && x['Loại nhóm'] === 'Level' && x['Trạng thái'] === 'Đang') lv = x['Mã nhóm']; });
+    if (lv) return 'LỖI: đang ở Level ' + lv + ' (chỉ dành cho EF). Gỡ khỏi Level trước (Việc Gỡ, Mã nhóm ' + lv + ') rồi đổi Vai trò';
+  }
+  var doi = [];
+  if (ten && ten !== chuan_(ng['Họ tên'])) {
+    doi.push('Họ tên ' + chuan_(ng['Họ tên']) + '→' + ten); ng['Họ tên'] = ten;
     tv.ds.forEach(function (x) { if (x['Email'] === ng['Email']) x['Họ tên'] = ten; });
   }
-  if (ma && ma !== chuan_(ng['Mã người'])) { doi.push('đổi mã'); ng['Mã người'] = ma; }
-  if (vt && DS.VAI_TRO.indexOf(vt) >= 0 && vt !== ng['Vai trò']) { doi.push('vai trò ' + ng['Vai trò'] + '→' + vt); ng['Vai trò'] = vt; }
-  return doi;
+  if (ma && ma !== chuan_(ng['Mã người'])) { doi.push('Mã người ' + chuan_(ng['Mã người']) + '→' + ma); ng['Mã người'] = ma; }
+  if (vt && vt !== ng['Vai trò']) { doi.push('Vai trò ' + ng['Vai trò'] + '→' + vt); ng['Vai trò'] = vt; }
+  if (!doi.length) return '✔ không có gì khác để đổi';
+  ng['Cập nhật'] = bayGio_();
+  ghi_('Người', 'Sửa thông tin: ' + doi.join(', '), ng['Email'] + ' · ' + nguon);
+  return '✔ sửa thông tin: ' + doi.join(', ');
+}
+
+/** Việc "Đổi email": Email = cũ, "Email mới" = mới. Giữ Mã hệ thống, ID ổ…; đổi khóa ở NGUOI và mọi dòng THANH_VIEN. */
+function doiEmail_(d, ng, nguoi, tv, nguon) {
+  var moi = email_(d['Email mới']);
+  if (!ng) return 'LỖI: email cũ chưa có ở danh sách tổng';
+  if (!moi) return 'LỖI: thiếu Email mới';
+  if (!emailHopLe_(moi)) return 'LỖI: Email mới không hợp lệ';
+  var cu = ng['Email'];
+  if (moi === cu) return 'LỖI: Email mới trùng email cũ';
+  if (nguoi.m[moi]) return 'LỖI: Email mới đã có ở danh sách tổng';
+  if (tv.ds.some(function (x) { return x['Email'] === moi; })) return 'LỖI: Email mới đã có ở THANH_VIEN';
+  delete nguoi.m[cu]; ng['Email'] = moi; ng['Cập nhật'] = bayGio_(); nguoi.m[moi] = ng;
+  var so = 0;
+  tv.ds.forEach(function (x) {
+    if (x['Email'] !== cu) return;
+    delete tv.m[cu + '|' + x['Mã nhóm']];
+    x['Email'] = moi; x['Cập nhật'] = bayGio_();
+    tv.m[moi + '|' + x['Mã nhóm']] = x;
+    themLichSu_(x, 'đổi email từ ' + cu); so++;
+  });
+  ghi_('Người', 'Đổi email từ ' + cu + ' (' + so + ' dòng nhóm)', moi + ' · ' + nguon);
+  return '✔ đổi email từ ' + cu + ' (' + so + ' dòng nhóm, giữ Mã hệ thống ' + (chuan_(ng['Mã hệ thống']) || '—') + ')';
 }
 
 /** Thêm hoặc cập nhật một dòng THANH_VIEN. Trả về mô tả. */

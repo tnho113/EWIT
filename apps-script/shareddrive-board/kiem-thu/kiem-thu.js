@@ -52,7 +52,7 @@ const bang = taoBang({
     ['KIND', 'Kind English', 'Dự án', '', '', 'EWIT', 'Đang'], ['CU', 'Dự án cũ', 'Dự án', '', '', 'EWIT', 'Ngừng'],
     ['RAW', 'Tri thức Raw', 'Tri thức', '', '', 'MLWIT', 'Đang'], ['BTC', 'Ban tổ chức', 'Tổ chức', '', '', 'EWIT', 'Đang']],
   NHAP: [NHAP_COT],
-  NGUOI: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Level', 'Trạng thái', 'Ngày vào', 'Cập nhật', 'ID ổ', 'Kết quả Drive']],
+  NGUOI: [['Email', 'Họ tên', 'Mã người', 'Vai trò', 'Level', 'Trạng thái', 'Ngày vào', 'Cập nhật', 'ID ổ', 'Kết quả Drive', 'Mã hệ thống']],
   THANH_VIEN: [['Email', 'Họ tên', 'Mã nhóm', 'Loại nhóm', 'Vai trong nhóm', 'Quyền', 'Trạng thái', 'Ngày thêm', 'Cập nhật', 'Nguồn', 'Lịch sử', 'Kết quả Drive']],
   NHAT_KY: [['Thời gian', 'Lệnh', 'Phần', 'Việc', 'Đối tượng']]
 });
