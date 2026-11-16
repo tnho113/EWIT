@@ -281,7 +281,10 @@ function drDau_(S, n) {
     if (g && g.thuoc) phan.push(dongNhom(C.nhom[g.thuoc]));
     if (g && g.loai === 'Nhóm nhỏ') {
       phan.push(S.nhomCo[emailNhom_(C, g.ma, 'pt')] ? 'pt1' : 'pt0');
-      if (t.vai === 'Phụ trách') thanhVienNhom_(C, g.ma).forEach(function (x) { phan.push([x.email, x.vai].join('~'), dongNg(C.nguoi[x.email])); });
+      if (t.vai === 'Phụ trách') thanhVienNhom_(C, g.ma).forEach(function (x) {
+        var hv = C.nguoi[x.email];                                   // không lấy ID ổ của HV (đổi trong cùng lượt)
+        phan.push([x.email, x.vai].join('~'), hv ? [hv.ten, hv.ma, hv.vaiTro, hv.tt, hv.maHT].join('~') : '-');
+      });
     }
   });
   return (S.dau[k] = sdBam_(phan.join('|')));
@@ -849,7 +852,7 @@ function drOCaNhan_(S, n) {
 
   // Thành viên ổ: chính người đó, Người đóng góp (writer); admin là organizer do tạo ổ
   var tv = {}; tv[n.email] = { role: 'writer', type: 'user' };
-  var rTv = drDoiSoat_(S, id, tv, 'thành viên ổ ' + ten);
+  var rTv = drDoiSoat_(S, id, tv, 'thành viên ổ ' + ten, true);
   if (rTv.them && !drChua_(id)) kq.push(se + 'thêm vào ổ');
   if (rTv.doi) kq.push(se + 'chủ ổ → Người đóng góp');
 
@@ -1080,7 +1083,8 @@ function drDoiSoatTatCa_(S, M) {
 }
 
 /** Đối soát quyền trực tiếp của một tệp/thư mục/ổ với tập mong muốn {email: {role, type}}. */
-function drDoiSoat_(S, fid, muon, nhan) {
+/** goNgoai: true ở ổ cá nhân → gỡ cả người dùng không có trên bảng (vd email cũ sau Đổi email), trừ admin. */
+function drDoiSoat_(S, fid, muon, nhan, goNgoai) {
   var kq = { them: 0, doi: 0, go: 0 }, se = S.thu ? 'Sẽ ' : '';
   if (drChua_(fid)) {
     Object.keys(muon).forEach(function (e) {
@@ -1109,7 +1113,8 @@ function drDoiSoat_(S, fid, muon, nhan) {
   var ngoai = [];
   Object.keys(h.truc).forEach(function (e) {
     if (muon[e]) return;
-    if (!drQuanLyEmail_(S, e)) { if (e !== S.C.cd.admin) ngoai.push(e); return; }
+    if (e === S.C.cd.admin) return;
+    if (!drQuanLyEmail_(S, e) && !goNgoai) { ngoai.push(e); return; }
     kq.go++; S.dem.qGo++;
     ghi_('Quyền', se + 'gỡ ' + DR.TEN_QUYEN[h.truc[e].role] + ' · ' + nhan, e);
     if (!S.thu) drGoQuyen_(fid, h.truc[e], h.thuaKe[e], e);

@@ -12,7 +12,7 @@
   - Hướng dẫn dán code cho Nery: **Google Docs** https://docs.google.com/document/d/1Sg0wIQqIbNBs23mmucOTkMbUSfJagJOCS2Ajen-VgiM/edit (bản .md trong repo chỉ để Claude tham chiếu).
 
 ## Việc kế tiếp
-0. **Shared Drive Board Đợt 2b**: làm theo `docs/quan-tri-gw/dot2b-dac-ta.md` (bắt đầu mục 0 — KHÔNG Áp dụng trên bảng mới trước khi sửa nhãn thư mục).
+0. **Shared Drive Board Đợt 2b: code XONG 16/11** (88 nhóm kiểm thử giả lập đạt; công thức Tình trạng đã thử 9/9 trên bảng thật). Chờ Nery dán 8 tệp → Nâng cấp bảng → Drive Xem trước (mong 0 thư mục mới) → Áp dụng → thử 3 Gmail. Email: chờ MX/SPF hiệu lực, DKIM sau 24–72h.
 1. Nery chuẩn bị ⓐ (bước 0 hướng dẫn) rồi dán code theo thứ tự ⓐ → ⓑ → ⓓ → web; gửi ảnh lỗi nếu có.
 2. Sửa lỗi phát sinh khi chạy thật (giao phiên phụ Sonnet theo từng project).
 3. B7: thử với lớp **G1-K23** (khai giảng 02/11/2026; K22 đã kết thúc) trong 2–4 tuần.
@@ -30,6 +30,7 @@
 ## Nhật ký phiên (mới nhất ở trên)
 | Ngày | Thiết bị | Nhánh | Tóm tắt |
 |---|---|---|---|
+| 2026-11-16 | Cloud | `claude/charming-noether-yucytx` | Đợt 2b: nhãn properties + nhận lại theo tên, con trỏ + hằng đêm, nhóm riêng sd-u-, Mã hệ thống, Sửa thông tin/Đổi email, Nâng cấp bảng, thư chào hàng đợi 60', chia sẻ lạ; DNS mlwit.edu.vn thêm DMARC |
 | 2026-11-15 | Cloud | `claude/charming-noether-yucytx` | Shared Drive Board v2 Đợt 1: NHAP/NHOM/THANH_VIEN/NGUOI/XEM_NHOM/VAI_TRO/CAU_TRUC + menu Đưa vào danh sách tổng (kiểm thử 10/10) |
 | 2026-11-15 | Cloud | `claude/charming-noether-yucytx` | WD-23: chốt mô hình "mỗi người một ổ" cho Google Workspace MLWIT; tạo bản thử v1 (bảng + script, kiểm thử giả lập 9/9) trong `Tool_Quan_Tri` |
 | 2026-11-04 | Cloud | `claude/sleepy-shannon-xahr78` → `main` | WD-22: giờ học chính thức, PP theo năm, EF_LIST ≠ ⓐ.ef; ME02 → SPM-01 (21:15) |
