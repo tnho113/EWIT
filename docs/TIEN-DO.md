@@ -12,7 +12,7 @@
   - Hướng dẫn dán code cho Nery: **Google Docs** https://docs.google.com/document/d/1Sg0wIQqIbNBs23mmucOTkMbUSfJagJOCS2Ajen-VgiM/edit (bản .md trong repo chỉ để Claude tham chiếu).
 
 ## Việc kế tiếp
-0. **Shared Drive Board Đợt 2b: code XONG 16/11** (88 nhóm kiểm thử giả lập đạt; công thức Tình trạng đã thử 9/9 trên bảng thật). Chờ Nery dán 8 tệp → Nâng cấp bảng → Drive Xem trước (mong 0 thư mục mới) → Áp dụng → thử 3 Gmail. Email: chờ MX/SPF hiệu lực, DKIM sau 24–72h.
+0. **Shared Drive Board Đợt 2b: code XONG 16/11** (88 nhóm kiểm thử giả lập đạt; công thức Tình trạng đã thử 9/9 trên bảng thật). Chờ Nery dán 8 tệp → Nâng cấp bảng → Drive Xem trước (mong 0 thư mục mới) → Áp dụng → thử 3 Gmail. Email: XONG 18/11 (MX, SPF, DKIM, DMARC đều PASS; thư mới vào Spam do tên miền mới). Đã có slide giới thiệu + video + poster cho buổi giả lập BTC (Artifact).
 1. Nery chuẩn bị ⓐ (bước 0 hướng dẫn) rồi dán code theo thứ tự ⓐ → ⓑ → ⓓ → web; gửi ảnh lỗi nếu có.
 2. Sửa lỗi phát sinh khi chạy thật (giao phiên phụ Sonnet theo từng project).
 3. B7: thử với lớp **G1-K23** (khai giảng 02/11/2026; K22 đã kết thúc) trong 2–4 tuần.

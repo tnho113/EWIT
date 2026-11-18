@@ -64,6 +64,7 @@
 ## 2c. Email tên miền (16/11)
 - Thư chào gửi 15/11 23:03 bị **Bounced** sau 0,14 s (Email Log Search). Check MX: **mlwit.edu.vn chưa có MX**, chưa DKIM, chưa DMARC → Gmail người nhận từ chối. Thư nội bộ (tới admin@) vẫn tới.
 - Cần thêm ở DNS (tên miền mua tại **Tenten**; kiểm tra nameserver đang ở Tenten hay nơi khác): MX `@` → `smtp.google.com` (ưu tiên 1); TXT `@` SPF `v=spf1 include:_spf.google.com ~all`; TXT `google._domainkey` (lấy ở Admin console → Gmail → Xác thực email, 2048 bit, rồi bấm Bắt đầu xác thực); TXT `_dmarc` `v=DMARC1; p=none; rua=mailto:admin@mlwit.edu.vn`. Kiểm lại bằng toolbox.googleapps.com/apps/checkmx.
+- **18/11: email tên miền XONG.** NS ở Tenten (ns-b1/2/3.tenten.vn); MX, SPF, DMARC, DKIM (`google._domainkey`, 2048) đã công khai (Dig thấy); đã Start authentication. Thư thử admin@ → tnho113: SPF/DKIM/DMARC đều PASS; nhận chiều vào admin@ OK. CheckMX vẫn báo "không có mail server" dù Dig thấy MX `SMTP.GOOGLE.COM.` → coi là báo sai (giả thuyết: so khớp chữ hoa). Thư thử vẫn vào **Spam** do tên miền mới chưa có uy tín → nhắc người nhận kiểm Spam + Not spam; đổi tên người gửi admin@ thành tên rõ ràng.
 - Đợt 2b: lệnh "Gửi lại thư chào" cho người chưa nhận; ghi lỗi gửi rõ ràng.
 
 ## 3. Cần thử thật (chưa kiểm chứng)
