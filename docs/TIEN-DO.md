@@ -16,6 +16,8 @@
 1. Nery chuẩn bị ⓐ (bước 0 hướng dẫn) rồi dán code theo thứ tự ⓐ → ⓑ → ⓓ → web; gửi ảnh lỗi nếu có.
 2. Sửa lỗi phát sinh khi chạy thật (giao phiên phụ Sonnet theo từng project).
 3. B7: thử với lớp **G1-K23** (khai giảng 02/11/2026; K22 đã kết thúc) trong 2–4 tuần.
+4. **Ứng viên (Candidate) · SAU KHI CHẠY THẬT** (Nery 21/11): giữ dòng NHOM `CANDIDATE` (Đang) nhưng **không nhập ai** → không tạo ổ; L3+ vẫn thấy thư mục Candidate. Nhóm riêng `ung-vien@mlwit.edu.vn` (không tiền tố `sd-`, script Board không gỡ — đã kiểm `drQuanLyEmail_`) chia sẻ Người xem thư mục Candidate `1f8bUGIO_Nb5TzVfI1Z9ZHnIBZCgesFLK`. Đề xuất chờ làm: file độc lập "MLWIT · Ứng viên" (tab DANH_SACH Email/Họ tên/Đợt/Trạng thái Đang|Rời, menu Xem trước/Đồng bộ/Cho cả đợt rời/Gửi link, đồng bộ mỗi giờ chạy bằng admin@ vì AdminDirectory). Còn hỏi: ai quản lý danh sách; có gửi thư kèm link không; thêm cảnh báo Tình trạng khi nhập CANDIDATE. Cần ghi WD mới khi chốt.
+5. Tài liệu BTC 20/11: Google Doc "Sổ tay BTC · Quản lý MLWIT Shared Drive Board" `12DWZqReG1jesmvLCmA3HI-FyGyzJliKg9_DPYgOdWpg` (thư mục 00 · Điều hành IT); bản cũ `1l-uLqI4hyaz_uRrlYam8DSuzXe1217v1HZmj7jQbAUc` chờ Nery quyết xóa/giữ. Chưa thêm mục Ứng viên.
 
 ## Câu hỏi chờ Nery
 - PME-3.2 (NOT START, chưa có ngày) — thêm trạng thái NOT_STARTED? PME-2A/2B có đổi mã thành PME-2.1/2.2 cho khớp EWT-CLASSES không?
