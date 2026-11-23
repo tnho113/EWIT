@@ -98,11 +98,22 @@ function ghiDeTab_(ten, cot, dsDong) {
   tab.getRange(2, 1, v.length, tieuDe.length).setValues(v);
 }
 
-/** Ghi một cột (theo tên) cho các dòng cụ thể. */
+/**
+ * Ghi một cột (theo tên) cho các dòng cụ thể. Gom các dòng liền nhau thành một khối setValues (A6 / V8: nhanh hơn
+ * nhiều so với ghi từng ô); không chạm ô không có trong theoDong (không ghi đè ô người khác vừa sửa).
+ */
 function ghiCot_(bang, tenCot, theoDong) {
   var c = bang.tieuDe.indexOf(tenCot);
   if (c < 0) throw new Error('Tab thiếu cột "' + tenCot + '"');
-  Object.keys(theoDong).forEach(function (d) { bang.tab.getRange(Number(d), c + 1).setValue(theoDong[d]); });
+  var ds = Object.keys(theoDong).map(Number).sort(function (a, b) { return a - b; });
+  for (var i = 0; i < ds.length;) {
+    var j = i;
+    while (j + 1 < ds.length && ds[j + 1] === ds[j] + 1) j++;
+    var khoi = [];
+    for (var k = i; k <= j; k++) khoi.push([theoDong[ds[k]]]);
+    bang.tab.getRange(ds[i], c + 1, khoi.length, 1).setValues(khoi);
+    i = j + 1;
+  }
 }
 
 function ghi_(phan, viec, doiTuong) {

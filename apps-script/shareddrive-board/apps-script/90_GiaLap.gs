@@ -9,6 +9,8 @@
  *  - Sang "Giả lập": chỉ khi bảng chưa có người và chưa có ID ổ nào (không lẫn với dữ liệu thật).
  *  - "Nhận hiện trạng vào giả lập": chỉ chạy được khi CAI_DAT CHƯA TỪNG ghi "Chạy thật" (dùng cho giai đoạn thử ban đầu).
  * Không bao giờ xóa ổ đang chứa chính Bảng điều khiển.
+ * A4: Xem trước dọn sạch / Dọn sạch đếm tệp từng ổ và tệp do người khác admin sửa gần nhất; có thì Dọn sạch hỏi thêm
+ * "XOA CA TAI LIEU" — gõ sai thì bỏ qua các ổ đó (vẫn xóa phần còn lại), giữ chúng trong sổ, chưa làm trống bảng.
  */
 var GL = { TAB: '_GIA_LAP', COT: ['Loại', 'ID / Email', 'Tên', 'Ghi lúc'], NHAN: 'Chế độ', GIA_LAP: 'Giả lập', THAT: 'Chạy thật', GIOI_HAN: 270000 };
 
@@ -129,19 +131,45 @@ function glDonSach_(thu) {
   if (oBang && dsO.some(function (x) { return x.id === oBang; }))
     throw new Error('Bảng điều khiển đang nằm trong một ổ thuộc sổ giả lập. Chuyển bảng ra khỏi ổ đó trước khi dọn.');
 
+  // A4 (N4): đếm nội dung từng ổ và số tệp do NGƯỜI KHÁC admin sửa gần nhất (lastModifyingUser)
+  var admin = email_(docCaiDat_()['Email admin']), coNguoiKhac = {}, soCoNguoiKhac = 0;
+  dsO.forEach(function (x) {
+    var dem = glDemNoiDung_(x.id, admin);
+    if (dem.loi) {
+      coNguoiKhac[x.id] = true; soCoNguoiKhac++;
+      ghi_('Giả lập', 'Ổ "' + x.ten + '": không đọc được nội dung (' + dem.loi + ') — coi như CÓ tài liệu của người khác', x.id);
+    } else {
+      if (dem.khac) { coNguoiKhac[x.id] = true; soCoNguoiKhac++; }
+      ghi_('Giả lập', 'Ổ "' + x.ten + '": ' + dem.tong + ' tệp/thư mục, ' + dem.khac + ' do người khác admin tạo/sửa gần nhất', x.id);
+    }
+  });
   so.forEach(function (x) { ghi_('Giả lập', (thu ? 'Sẽ xóa ' : 'Xóa ') + x.loai, x.ten + ' · ' + x.id); });
   if (thu) {
-    P.tomTat = 'Xem trước: sẽ xóa ' + dsO.length + ' ổ (kèm mọi tệp bên trong), ' + dsN.length + ' nhóm; làm trống NGUOI, THANH_VIEN, LS_NHAP, NHAP và các cột ID.';
+    P.tomTat = 'Xem trước: sẽ xóa ' + dsO.length + ' ổ (kèm mọi tệp bên trong), ' + dsN.length + ' nhóm; làm trống NGUOI, THANH_VIEN, LS_NHAP, NHAP và các cột ID.' +
+      (soCoNguoiKhac ? ' ⚠ ' + soCoNguoiKhac + ' ổ có tệp do người khác admin sửa (xem NHAT_KY): Dọn sạch sẽ hỏi thêm "XOA CA TAI LIEU".' : '');
     return;
   }
   var tl = glNhap_('Dọn sạch giả lập',
     'Sẽ XÓA HẲN ' + dsO.length + ' ổ (kèm mọi tệp bên trong) và ' + dsN.length + ' nhóm, rồi làm trống dữ liệu người trên bảng.\nKhông hoàn tác được. Gõ XOA HET để xác nhận.');
   if (tl !== 'XOA HET') { P.tomTat = 'Đã hủy, chưa xóa gì.'; return; }
+  var boQua = {};
+  if (soCoNguoiKhac) {
+    var tl2 = glNhap_('Dọn sạch giả lập · có tài liệu của người khác',
+      soCoNguoiKhac + ' ổ có tệp do người khác (không phải admin) tạo hoặc sửa gần nhất — có thể là tài liệu THẬT:\n' +
+      dsO.filter(function (x) { return coNguoiKhac[x.id]; }).map(function (x) { return '- ' + x.ten; }).join('\n') +
+      '\nGõ XOA CA TAI LIEU để xóa cả các ổ này. Gõ khác: bỏ qua các ổ này (vẫn xóa phần còn lại).');
+    if (tl2 !== 'XOA CA TAI LIEU') {
+      boQua = coNguoiKhac;
+      ghi_('Giả lập', 'Bỏ qua ' + soCoNguoiKhac + ' ổ có tài liệu của người khác (không gõ XOA CA TAI LIEU)',
+        dsO.filter(function (x) { return coNguoiKhac[x.id]; }).map(function (x) { return x.ten; }).join(', '));
+    }
+  }
 
-  var batDau = Date.now(), xong = [], loi = 0, hetGio = false;
+  var batDau = Date.now(), xong = [], loi = 0, hetGio = false, soBo = 0;
   var khongCo = function (e) { return /not\s*found|notfound|404|does not exist/i.test(String(e && e.message || e)); };
   so.forEach(function (x) {
     if (hetGio) return;
+    if (x.loai === 'Ổ' && boQua[x.id]) { soBo++; return; }
     if (Date.now() - batDau > GL.GIOI_HAN) { hetGio = true; return; }
     try {
       if (x.loai === 'Ổ') Drive.Drives.remove(x.id, { useDomainAdminAccess: true, allowItemDeletion: true });
@@ -156,14 +184,42 @@ function glDonSach_(thu) {
   var tabSo = glTabSo_(false);
   xong.sort(function (a, b) { return b - a; }).forEach(function (d) { tabSo.deleteRow(d); });
 
-  if (hetGio || loi) {
-    P.tomTat = 'Đã xóa ' + xong.length + ' mục; còn ' + (so.length - xong.length) + ' mục' + (loi ? ' (' + loi + ' lỗi)' : '') + '. Chạy lại "Dọn sạch giả lập" để làm tiếp.';
+  if (hetGio || loi || soBo) {
+    P.tomTat = 'Đã xóa ' + xong.length + ' mục; còn ' + (so.length - xong.length) + ' mục' + (loi ? ' (' + loi + ' lỗi)' : '') +
+      (soBo ? ' (bỏ qua ' + soBo + ' ổ có tài liệu của người khác)' : '') + '. Chạy lại "Dọn sạch giả lập" để làm tiếp; bảng chưa được làm trống.';
     return;
   }
   glLamTrongBang_();
   glXoaDauVet_();
   P.tomTat = 'Đã dọn sạch: ' + dsO.length + ' ổ, ' + dsN.length + ' nhóm. Bảng đã trống dữ liệu người. Có thể "Chuyển sang Chạy thật".';
   ghi_('Giả lập', 'Dọn sạch xong', P.tomTat);
+}
+
+/**
+ * Đếm tệp/thư mục (chưa vào thùng rác) trong một ổ và số mục người sửa gần nhất KHÔNG phải admin (Drive v3 trong ổ chung
+ * không có owners; lastModifyingUser là trường gần nhất). Không rõ người sửa → tính là người khác (an toàn).
+ * Ổ không còn (404) → 0. Trả { tong, khac, loi? }.
+ */
+function glDemNoiDung_(idO, admin) {
+  var kq = { tong: 0, khac: 0 }, trang = null;
+  try {
+    do {
+      var tham = { corpora: 'drive', driveId: idO, includeItemsFromAllDrives: true, supportsAllDrives: true, q: 'trashed=false', pageSize: 1000,
+        fields: 'nextPageToken,files(id,lastModifyingUser(emailAddress,me))' };
+      if (trang) tham.pageToken = trang;
+      var r = Drive.Files.list(tham);
+      (r.files || []).forEach(function (f) {
+        kq.tong++;
+        var u = f.lastModifyingUser || {};
+        if (!(u.me === true || (u.emailAddress && email_(u.emailAddress) === admin))) kq.khac++;
+      });
+      trang = r.nextPageToken;
+    } while (trang);
+  } catch (e) {
+    if (/not\s*found|notfound|404|does not exist/i.test(String(e && e.message || e))) return { tong: 0, khac: 0 };
+    kq.loi = e.message || String(e);
+  }
+  return kq;
 }
 
 /** Làm trống dữ liệu người và các cột ID/kết quả do script ghi. Giữ cấu hình (NHOM, CAU_TRUC, VAI_TRO, CAI_DAT). */

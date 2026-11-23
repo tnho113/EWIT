@@ -88,21 +88,22 @@ thu('Xem trước không gọi lệnh ghi nào, vẫn ghi cột Kết quả/Emai
 thu('Áp dụng: tạo đúng nhóm theo hậu tố, chỉ khi có người', () => {
   const bang = taoCanh(), g = taoGiaLap();
   chay(bang, g, 'sdNhomApDung');
-  assert.deepStrictEqual(tv(g, 'sd-me02-08@example.com'), ['hv1@example.com']);
-  assert.deepStrictEqual(tv(g, 'sd-me02-08-sua@example.com'), ['hv2@example.com']);
+  // A2 (WD-28): hv2 Quyền Sửa ở Nhóm nhỏ được coi là Xem → vào sd-me02-08@, không tạo -sua
+  assert.deepStrictEqual(tv(g, 'sd-me02-08@example.com'), ['hv1@example.com', 'hv2@example.com']);
+  assert.ok(!g.nhom['sd-me02-08-sua@example.com'], 'Nhóm nhỏ: không có nhóm -sua');
   assert.deepStrictEqual(tv(g, 'sd-me02-08-pt@example.com'), ['ef1@example.com']);
   assert.deepStrictEqual(tv(g, 'sd-kind-sua@example.com'), ['gv1@example.com']);
   assert.deepStrictEqual(tv(g, 'sd-l3@example.com'), ['ef1@example.com']);
   const tao = g.ghi.filter(x => x[0] === 'Groups.insert').map(x => x[1]).sort();
   assert.deepStrictEqual(tao, ['sd-all-ef@example.com', 'sd-all-hv@example.com', 'sd-kind-sua@example.com', 'sd-l3@example.com',
-    'sd-me02-08-pt@example.com', 'sd-me02-08-sua@example.com', 'sd-me02-08@example.com']);
+    'sd-me02-08-pt@example.com', 'sd-me02-08@example.com']);
   assert.strictEqual(g.nhom['sd-me02-08-pt@example.com'].name, 'Nhóm 08 · Phụ trách');
-  assert.strictEqual(g.nhom['sd-me02-08-sua@example.com'].name, 'Nhóm 08 · Sửa');
+  assert.strictEqual(g.nhom['sd-kind-sua@example.com'].name, 'Kind English · Sửa');
   assert.strictEqual(g.cdOk['sd-l3@example.com'].whoCanPostMessage, 'ALL_MANAGERS_CAN_POST');
   assert.strictEqual(g.cdOk['sd-l3@example.com'].allowExternalMembers, 'true');
   assert.strictEqual(cot(bang, 'NHOM', 'Email nhóm', 'ME02-08'), 'sd-me02-08@example.com');
   assert.strictEqual(cot(bang, 'NHOM', 'Email nhóm', 'ME02'), '', 'lớp không ai trực tiếp: không có nhóm');
-  assert.strictEqual(cot(bang, 'NHOM', 'Kết quả', 'ME02-08'), 'sd-me02-08: tạo +1; -sua: tạo +1; -pt: tạo +1');
+  assert.strictEqual(cot(bang, 'NHOM', 'Kết quả', 'ME02-08'), 'sd-me02-08: tạo +2; -pt: tạo +1');
 });
 
 thu('sd-all-ef / sd-all-hv: chỉ người có ổ cá nhân', () => {
@@ -127,19 +128,34 @@ thu('Nhóm Đóng/Ngừng: gỡ hết người trên bảng; người ngoài b�
   assert.strictEqual(g.ghi.filter(x => x[0] === 'Groups.insert' && /sd-cu|sd-dong/.test(x[1])).length, 0, 'không tạo nhóm cho nhóm đóng');
 });
 
+// (Đợt sửa A: dùng Dự án KIND vì Nhóm nhỏ/Lớp/Level không còn nhóm -sua — A2)
 thu('Đổi quyền Xem → Sửa: chuyển nhóm; người lạ giữ; thêm thiếu', () => {
   const bang = taoCanh();
+  bang.tabs.THANH_VIEN.v.push(['hv1@example.com', 'HV Một', 'KIND', 'Dự án', 'Thành viên', 'Xem', 'Đang']);
   const g = taoGiaLap({
-    'sd-me02-08@example.com': { 'hv1@example.com': 'MEMBER', 'hv2@example.com': 'MEMBER', 'la@gmail.com': 'MEMBER' },   // hv2 đang ở Xem, nay là Sửa
-    'sd-me02-08-sua@example.com': {}
+    'sd-kind@example.com': { 'gv1@example.com': 'MEMBER', 'la@gmail.com': 'MEMBER' },   // gv1 đang ở Xem, nay là Sửa
+    'sd-kind-sua@example.com': {}
   });
   chay(bang, g, 'sdNhomApDung');
-  assert.deepStrictEqual(tv(g, 'sd-me02-08@example.com'), ['hv1@example.com', 'la@gmail.com']);
-  assert.deepStrictEqual(tv(g, 'sd-me02-08-sua@example.com'), ['hv2@example.com']);
-  assert.ok(g.ghi.some(x => x[0] === 'Members.remove' && x[1] === 'sd-me02-08@example.com' && x[2] === 'hv2@example.com'));
+  assert.deepStrictEqual(tv(g, 'sd-kind@example.com'), ['hv1@example.com', 'la@gmail.com']);
+  assert.deepStrictEqual(tv(g, 'sd-kind-sua@example.com'), ['gv1@example.com']);
+  assert.ok(g.ghi.some(x => x[0] === 'Members.remove' && x[1] === 'sd-kind@example.com' && x[2] === 'gv1@example.com'));
   assert.ok(!g.ghi.some(x => x[0] === 'Members.remove' && x[2] === 'la@gmail.com'));
-  assert.ok(/−1/.test(cot(bang, 'NHOM', 'Kết quả', 'ME02-08')) && /ngoài bảng 1/.test(cot(bang, 'NHOM', 'Kết quả', 'ME02-08')));
-  assert.strictEqual(g.nhom['sd-me02-08@example.com'].thanhVien['hv1@example.com'], 'MEMBER');
+  assert.ok(/−1/.test(cot(bang, 'NHOM', 'Kết quả', 'KIND')) && /ngoài bảng 1/.test(cot(bang, 'NHOM', 'Kết quả', 'KIND')));
+  assert.strictEqual(g.nhom['sd-kind@example.com'].thanhVien['hv1@example.com'], 'MEMBER');
+});
+
+thu('A2 · Thành viên Quyền Sửa ở Lớp / Level / Nhóm nhỏ → vào nhóm Xem; có sẵn trong -sua thì bị gỡ', () => {
+  const bang = taoCanh();
+  bang.tabs.THANH_VIEN.v.push(['gv1@example.com', 'GV Một', 'ME02', 'Lớp', 'Thành viên', 'Sửa', 'Đang']);
+  bang.tabs.THANH_VIEN.v.find(r => r[0] === 'ef1@example.com' && r[2] === 'L3')[5] = 'Sửa';
+  const g = taoGiaLap({ 'sd-me02-08-sua@example.com': { 'hv2@example.com': 'MEMBER' } });
+  chay(bang, g, 'sdNhomApDung');
+  assert.deepStrictEqual(tv(g, 'sd-me02@example.com'), ['gv1@example.com'], 'Lớp');
+  assert.deepStrictEqual(tv(g, 'sd-l3@example.com'), ['ef1@example.com'], 'Level');
+  assert.ok(!g.nhom['sd-me02-sua@example.com'] && !g.nhom['sd-l3-sua@example.com'], 'không tạo -sua');
+  assert.deepStrictEqual(tv(g, 'sd-me02-08-sua@example.com'), [], 'Nhóm nhỏ -sua cũ: gỡ hv2');
+  assert.ok(tv(g, 'sd-me02-08@example.com').includes('hv2@example.com'));
 });
 
 thu('Nhóm vừa tạo chưa thấy ngay: chờ rồi thêm thành viên được, không báo lỗi', () => {
@@ -154,7 +170,7 @@ thu('Phân trang Members.list (nhóm >2 người) đọc đủ', () => {
   const bang = taoCanh();
   const g = taoGiaLap({ 'sd-me02-08@example.com': { 'a@gmail.com': 'MEMBER', 'b@gmail.com': 'MEMBER', 'c@gmail.com': 'MEMBER', 'hv1@example.com': 'MEMBER' } });
   chay(bang, g, 'sdNhomApDung');
-  assert.ok(!g.ghi.some(x => x[0] === 'Members.insert' && x[1] === 'sd-me02-08@example.com'), 'hv1 ở trang sau, không thêm trùng');
+  assert.ok(!g.ghi.some(x => x[0] === 'Members.insert' && x[1] === 'sd-me02-08@example.com' && x[2] === 'hv1@example.com'), 'hv1 ở trang sau, không thêm trùng');
   assert.ok(/ngoài bảng 3/.test(cot(bang, 'NHOM', 'Kết quả', 'ME02-08')));
 });
 
@@ -197,7 +213,7 @@ thu('nhomCo đúng (có thật hoặc sẽ tạo; không có người thì khôn
   };
   const xt = lay(true);
   assert.deepStrictEqual(Object.keys(xt.nhomCo).sort(), ['sd-all-ef@example.com', 'sd-all-hv@example.com', 'sd-cu@example.com', 'sd-kind-sua@example.com',
-    'sd-l3@example.com', 'sd-me02-08-pt@example.com', 'sd-me02-08-sua@example.com', 'sd-me02-08@example.com', 'sd-me02@example.com']);
+    'sd-l3@example.com', 'sd-me02-08-pt@example.com', 'sd-me02-08@example.com', 'sd-me02@example.com']);
   assert.ok(Object.values(xt.nhomCo).every(v => v === true) && xt.chuaXong === false);
   assert.deepStrictEqual(g.ghi, []);
   const ap = lay(false);
@@ -283,7 +299,7 @@ thu('2b · Con trỏ: hết giờ giữa chừng → sdNhomTiep chạy tiếp, k
   ctx.sdNhomTiep();
   // số mục = 6 nhóm × 3 + 2 nhóm tổng = 20
   assert.strictEqual(goi, 20, 'tổng số nhóm đã đọc đúng một lần mỗi nhóm');
-  assert.deepStrictEqual(tv(g, 'sd-me02-08@example.com'), ['hv1@example.com']);
+  assert.deepStrictEqual(tv(g, 'sd-me02-08@example.com'), ['hv1@example.com', 'hv2@example.com']);
   assert.strictEqual(ctx.PropertiesService.getScriptProperties().getProperty('SD_CT_NHOM_n'), null, 'xong thì xóa con trỏ');
 });
 

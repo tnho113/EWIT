@@ -13,10 +13,11 @@ function canh(cheDo) {
   T.NGUOI.v.push(['a@example.com', 'A', '', 'EF', '', 'Đang', '', '', 'o2', 'kq', 'U00001']);
   T.THANH_VIEN.v.push(['a@example.com', 'A', 'KIND', 'Dự án', 'Thành viên', 'Sửa', 'Đang']);
   T.NHAP.v.push(['b@example.com', 'B', '', 'HV', 'KIND', '', '', '', '', 'TT', '', '']);
-  const g = { o: { o1: 1, o2: 1, oThat: 1 }, nhom: { 'sd-kind@example.com': 1, 'sd-u-u00001@example.com': 1, 'khac@example.com': 1 }, tep: [], tra: 'GIA LAP', oBang: '' };
+  const g = { o: { o1: 1, o2: 1, oThat: 1 }, nhom: { 'sd-kind@example.com': 1, 'sd-u-u00001@example.com': 1, 'khac@example.com': 1 }, tep: [], tra: 'GIA LAP', oBang: '', noiDung: {} };
   const them = {
     Drive: { Drives: { remove: id => { if (!g.o[id]) throw new Error('Not Found'); delete g.o[id]; } },
-      Files: { get: () => ({ driveId: g.oBang }), create: r => { g.tep.push(r); return { id: 'f' + g.tep.length }; } } },
+      Files: { get: () => ({ driveId: g.oBang }), create: r => { g.tep.push(r); return { id: 'f' + g.tep.length }; },
+        list: o => ({ files: (g.noiDung[o.driveId] || []).map(u => ({ id: 'x', lastModifyingUser: u })) }) } },
     AdminDirectory: { Groups: { list: () => ({ groups: Object.keys(g.nhom).map(e => ({ email: e, name: e })) }), remove: e => { if (!g.nhom[e]) throw new Error('notFound'); delete g.nhom[e]; } } }
   };
   const chay = ham => { const ctx = taoMoiTruong(bang, them);
@@ -82,7 +83,7 @@ thu('7. Lỗi xóa một ổ: giữ mục đó trong sổ, không làm trống b
   // thay hàm remove qua lần chạy
   const c2 = c; const cu = c2.chay;
   c2.chay = ham => { const ctx = require('./gia-lap').taoMoiTruong(c.bang, {
-      Drive: { Drives: { remove: ctxRemove }, Files: { get: () => ({ driveId: '' }) } },
+      Drive: { Drives: { remove: ctxRemove }, Files: { get: () => ({ driveId: '' }), list: () => ({ files: [] }) } },
       AdminDirectory: { Groups: { list: () => ({ groups: [] }), remove: e => { delete goc.nhom[e]; } } } });
     const ui = ctx.SpreadsheetApp.getUi(); ctx.SpreadsheetApp.getUi = () => Object.assign(ui, { ButtonSet: { OK_CANCEL: 2 }, Button: { OK: 'OK' }, prompt: () => ({ getSelectedButton: () => 'OK', getResponseText: () => 'XOA HET' }) });
     ctx[ham](); };
@@ -103,6 +104,41 @@ thu('8. Giả lập: tên ổ có [THỬ]; glGhiSo_ chỉ ghi khi Giả lập; t
   const d = canh('Chạy thật'); const ctx2 = d.chay('sdChuyenChayThat'); ctx2.P = { ss: d.bang, nk: [], loi: 0 };
   const C2 = ctx2.taiDuLieu_(); ctx2.glGhiSo_(C2, 'Ổ', 'oX', 'x'); assert(!d.T._GIA_LAP || !d.T._GIA_LAP.v.some(r => r[1] === 'oX'));
   assert.strictEqual(ctx2.dongCauTruc_(C2, 'O_TTC').duong, 'EWIT · Thông tin chung');
+});
+thu('9. A4 · Xem trước dọn sạch đếm tệp từng ổ; ổ có tệp người khác sửa cần gõ XOA CA TAI LIEU, gõ khác thì bỏ qua ổ đó', () => {
+  const c = canh(); c.chay('sdGiaLapNhanHienTrang');
+  c.g.noiDung = { o1: [{ emailAddress: 'admin@example.com', me: true }, { me: true }], o2: [{ me: true }, { emailAddress: 'video@example.com' }, {}] };
+  c.chay('sdGiaLapXemTruocDon');
+  const nk = c.T.NHAT_KY.v.map(r => r[3]).join(' | ');
+  assert(/2 tệp\/thư mục, 0 do người khác/.test(nk) && /3 tệp\/thư mục, 2 do người khác/.test(nk), nk);
+  assert(c.T.NHAT_KY.v.some(r => /XOA CA TAI LIEU/.test(r[4])), 'tóm tắt Xem trước nhắc xác nhận thứ hai');
+  assert.strictEqual(Object.keys(c.g.o).length, 3);
+  // Dọn sạch: lần 1 đúng XOA HET, lần 2 gõ sai → bỏ qua o2, vẫn xóa o1 + nhóm; bảng chưa làm trống
+  const goi = [];
+  const chay2 = (tl2) => { const ctx = require('./gia-lap').taoMoiTruong(c.bang, {
+      Drive: { Drives: { remove: id => { if (!c.g.o[id]) throw new Error('Not Found'); delete c.g.o[id]; } },
+        Files: { get: () => ({ driveId: '' }), list: o => ({ files: (c.g.noiDung[o.driveId] || []).map(u => ({ lastModifyingUser: u })) }) } },
+      AdminDirectory: { Groups: { list: () => ({ groups: [] }), remove: e => { delete c.g.nhom[e]; } } } });
+    const ui = ctx.SpreadsheetApp.getUi(); let lan = 0;
+    ctx.SpreadsheetApp.getUi = () => Object.assign(ui, { ButtonSet: { OK_CANCEL: 2 }, Button: { OK: 'OK' },
+      prompt: (td, nd) => { goi.push(nd); lan++; return { getSelectedButton: () => 'OK', getResponseText: () => lan === 1 ? 'XOA HET' : tl2 }; } });
+    ctx.sdGiaLapDonSach(); };
+  chay2('xoa');
+  assert.strictEqual(goi.length, 2, 'hỏi xác nhận thứ hai'); assert(/XOA CA TAI LIEU/.test(goi[1]) && /Ổ cá nhân · A/.test(goi[1]), goi[1]);
+  assert.deepStrictEqual(Object.keys(c.g.o).sort(), ['o2', 'oThat'], 'o1 xóa, o2 (có tài liệu người khác) giữ');
+  assert.deepStrictEqual(c.T._GIA_LAP.v.slice(1).map(r => r[1]), ['o2'], 'o2 còn trong sổ');
+  assert.strictEqual(c.T.NGUOI.v[1][0], 'a@example.com', 'chưa làm trống bảng');
+  assert(c.T.NHAT_KY.v.some(r => /Bỏ qua 1 ổ có tài liệu của người khác/.test(r[3])));
+  // gõ đúng → xóa nốt, làm trống bảng
+  goi.length = 0; chay2('XOA CA TAI LIEU');
+  assert.deepStrictEqual(Object.keys(c.g.o), ['oThat']); assert.strictEqual(c.T.NGUOI.v[1][0], '');
+});
+thu('10. A4 · Không đọc được nội dung ổ → coi như có tài liệu người khác (an toàn)', () => {
+  const c = canh(); c.chay('sdGiaLapNhanHienTrang');
+  const ctx = require('./gia-lap').taoMoiTruong(c.bang, { Drive: { Files: { get: () => ({ driveId: '' }), list: () => { throw new Error('Rate limit'); } }, Drives: { remove: () => {} } } });
+  ctx.sdGiaLapXemTruocDon();
+  assert(c.T.NHAT_KY.v.some(r => /không đọc được nội dung \(Rate limit\)/.test(r[3])));
+  assert(c.T.NHAT_KY.v.some(r => /⚠ 2 ổ có tệp do người khác/.test(r[4])));
 });
 console.log(truot ? `\n${truot} TRƯỢT / ${dat + truot}` : `\nTẤT CẢ ĐẠT (${dat}/${dat})`);
 process.exit(truot ? 1 : 0);

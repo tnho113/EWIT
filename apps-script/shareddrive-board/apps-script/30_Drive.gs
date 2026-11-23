@@ -58,6 +58,20 @@
  *     NGUOI "Kết quả Drive": chỉ ghi cho người được xử lý ở lượt này (người bỏ qua giữ nguyên ô).
  * 12. Tên lối tắt tới thư mục nhóm = "<Mã nhóm> · <Tên nhóm>". Tệp mẫu: tên = đoạn cuối Đường dẫn, tìm trong QT_MAU.
  * 13. CAI_DAT tùy chọn "Chạy đầy đủ vào": CN | T2..T7 | Không (mặc định CN) — ngày lượt hằng đêm chạy đầy đủ.
+ *
+ * ĐỢT SỬA A + WD-28 (23/11/2026):
+ * 14. Lớp chỉ xem (lopChiXem_): không ổ/Hồ sơ/nộp bài; thành viên nhận THƯ LỚP (hàng đợi 60 phút như thư chào) có link
+ *     thư mục lớp. Dấu đã gửi: ScriptProperties SD_THU_LOP_<Mã hệ thống|email>_<Mã lớp>; cột THANH_VIEN "Kết quả Drive"
+ *     được nối "thư lớp ✔ <ngày>" (chỉ để xem). Người có ổ vì lý do khác vẫn có lối tắt lớp đó ở 10_/11_LOP-….
+ * 15. Phụ trách lớp (mọi lớp): nhóm -pt = Xem thư mục lớp + Sửa CHỈ ở thư mục con mã LOP_TL (DR.MA_LOP_TL); VIDEO thừa kế Xem.
+ * 16. Đổi Mã nhóm (A1): không thấy thư mục theo nhãn sdnhom mới → nếu NHOM "ID thư mục" trỏ tới thư mục cùng ổ, chưa xóa,
+ *     sdma đúng dòng CAU_TRUC, sdnhom KHÔNG thuộc nhóm khác đang có ở NHOM → nhận lại (đổi sdnhom cả thư mục con), rồi đổi
+ *     tên/chuyển chỗ như thường. sdnhom thuộc nhóm khác đang có → LỖI, không nhận. HS_NOP (sdlop) chưa đổi theo (ngoài phạm vi).
+ * 17. Chốt hằng đêm (A3): Xem trước / Áp dụng TAY lưu dấu cấu hình (NHOM, CAU_TRUC, VAI_TRO, CAI_DAT; bỏ các cột script tự
+ *     ghi) vào SD_DAU_CAU_HINH. Lượt hằng đêm (kể cả chạy tiếp) so dấu: khác hoặc chưa có → dừng, ghi LỖI, thư cho admin.
+ * 18. Nhóm "không chắc" (A5): dongBoNhom_ lỗi đọc nhóm → ct.nhomDa[email] = 2; drDoiSoat_ không gỡ quyền của email đó.
+ * 19. Nhóm ngoài bảng (A7): CAI_DAT "Nhóm ngoài bảng" → drDoiSoat_ bỏ qua hoàn toàn (không gỡ, không báo Ngoài bảng).
+ * 20. Con trỏ (A6): lưu con trỏ + hẹn chạy tiếp TRƯỚC khi ghi bảng (ghi bảng có thể bị cắt ở giới hạn 6 phút).
  */
 var DR = {
   MIME_TM: 'application/vnd.google-apps.folder',
@@ -74,6 +88,9 @@ var DR = {
   TIEN_TO_NGHI: 'ZZ · Nghỉ · ',
   MA_HV_PT_SUB: 'CN_HV_PT_SUB',
   MA_CA_NHAN: 'CN_CA_NHAN',
+  MA_LOP_TL: 'LOP_TL',           // thư mục con của lớp mà Phụ trách lớp được Sửa (WD-28)
+  KHOA_DAU_CH: 'SD_DAU_CAU_HINH',
+  TIEN_TO_THU_LOP: 'SD_THU_LOP_',
   TEN_CA_NHAN: '90_CA-NHAN',
   KHOA_CT: 'SD_CON_TRO',
   KHOA_HANG: 'SD_HANG_THU',
@@ -82,7 +99,7 @@ var DR = {
 
 /* ===================== MENU ===================== */
 
-function sdDriveXemTruoc() { chayPhien_('Drive · Xem trước', function () { P.thu = true; drChay_({ cheDo: 'day-du' }); }); }
+function sdDriveXemTruoc() { chayPhien_('Drive · Xem trước', function () { P.thu = true; drChay_({ cheDo: 'day-du', tay: true }); }); }
 
 function sdDriveApDung() {
   try {
@@ -90,7 +107,7 @@ function sdDriveApDung() {
     var tl = ui.alert('Áp dụng lên Drive', 'Script sẽ tạo ổ, thư mục, lối tắt và cấp/gỡ quyền theo bảng. Đã chạy Xem trước và đọc NHAT_KY chưa?', ui.ButtonSet.YES_NO);
     if (tl !== ui.Button.YES) return;
   } catch (e) { /* không có giao diện: chạy luôn */ }
-  chayPhien_('Drive · Áp dụng', function () { P.thu = false; drChay_({ cheDo: 'day-du' }); });
+  chayPhien_('Drive · Áp dụng', function () { P.thu = false; drChay_({ cheDo: 'day-du', tay: true }); });
 }
 
 function sdDriveTiep() { chayPhien_('Drive · Chạy tiếp', function () { P.thu = false; drXoaHen_(); drChay_({ tiep: true }); }, DR.HAM_TIEP); }
@@ -98,10 +115,49 @@ function sdDriveTiep() { chayPhien_('Drive · Chạy tiếp', function () { P.th
 function sdDriveHangDem() {
   chayPhien_('Drive · Hằng đêm', function (cd) {
     P.thu = false;
+    var C = taiDuLieu_();
+    if (!drChotHangDem_(C)) return;                                        // A3: cấu hình đổi mà chưa Xem trước → dừng
     var ct = sdDocJson_(DR.KHOA_CT);
-    if (ct && ct.giai !== 'xong') { drChay_({ tiep: true }); return; }      // lượt trước chưa xong: chạy tiếp
-    drChay_({ cheDo: drDayDuHomNay_(cd) ? 'day-du' : 'thay-doi' });
+    if (ct && ct.giai !== 'xong') { drChay_({ tiep: true, C: C }); return; }  // lượt trước chưa xong: chạy tiếp
+    drChay_({ cheDo: drDayDuHomNay_(cd) ? 'day-du' : 'thay-doi', C: C });
   }, DR.HAM_DEM);
+}
+
+/* ===================== CHỐT AN TOÀN HẰNG ĐÊM (A3) ===================== */
+
+/** Dấu cấu hình theo từng tab (bỏ các cột script tự ghi: Email nhóm, ID thư mục, Kết quả, ID, Link báo cáo). */
+function drDauCauHinh_(C) {
+  var cd = C.cdTho || {};
+  return {
+    NHOM: sdBam_(JSON.stringify(C.dsNhom.map(function (g) { return [g.ma, g.ten, g.loai, g.thuoc, g.nhanh, g.thuongHieu, g.tt, g.thuTu]; }))),
+    CAU_TRUC: sdBam_(JSON.stringify(C.cauTruc.map(function (d) { return [d.ma, d.o, d.duong, d.loai, d.nguon, d.quyen]; }))),
+    VAI_TRO: sdBam_(JSON.stringify(Object.keys(C.vaiTro).sort().map(function (v) { var x = C.vaiTro[v]; return [v, x.ten, x.loai, x.chiaSe, x.khiNghi, x.khuon]; }))),
+    CAI_DAT: sdBam_(JSON.stringify(Object.keys(cd).sort().filter(function (k) { return k && k !== 'Link báo cáo'; }).map(function (k) { return [k, cd[k]]; })))
+  };
+}
+
+function drLuuDauCauHinh_(C) {
+  PropertiesService.getScriptProperties().setProperty(DR.KHOA_DAU_CH, JSON.stringify(drDauCauHinh_(C)));
+}
+
+/** true = được chạy. Khác dấu đã lưu (hoặc chưa từng Xem trước/Áp dụng tay) → ghi LỖI, thư cho admin, trả false. */
+function drChotHangDem_(C) {
+  var luu = null;
+  try { luu = JSON.parse(PropertiesService.getScriptProperties().getProperty(DR.KHOA_DAU_CH) || 'null'); } catch (e) { luu = null; }
+  var nay = drDauCauHinh_(C), khac = Object.keys(nay).filter(function (k) { return !luu || luu[k] !== nay[k]; });
+  if (!khac.length) return true;
+  var tieuDe = 'Có thay đổi cấu hình chưa Xem trước — lượt hằng đêm đã dừng';
+  var chiTiet = luu ? 'tab đổi: ' + khac.join(', ') : 'chưa có dấu (chưa từng chạy Xem trước / Áp dụng bằng tay)';
+  ghi_('LỖI', tieuDe, chiTiet);
+  P.tomTat = 'Hằng đêm đã dừng: ' + chiTiet + '. Chạy Drive › Xem trước, đọc NHAT_KY, rồi Áp dụng.';
+  var than = 'Lượt Áp dụng hằng đêm trên ' + C.cd.tenHienThi + ' KHÔNG chạy vì cấu hình đã đổi sau lần Xem trước / Áp dụng bằng tay gần nhất (' +
+    chiTiet + ').\n\nCách xử lý: mở Bảng điều khiển → Shared Drive › Drive › Xem trước, đọc NHAT_KY; nếu đúng ý thì Áp dụng. ' +
+    'Lượt hằng đêm sau sẽ chạy bình thường khi cấu hình không đổi nữa.';
+  try {
+    if (typeof GmailApp !== 'undefined' && GmailApp && GmailApp.sendEmail) GmailApp.sendEmail(C.cd.admin, tieuDe, than, { name: C.cd.tenHienThi });
+    else MailApp.sendEmail(C.cd.admin, tieuDe, than);
+  } catch (e) { ghi_('LỖI', 'Gửi thư báo hằng đêm dừng: ' + e.message, C.cd.admin); }
+  return false;
 }
 
 function sdBatHangDem() {
@@ -144,7 +200,9 @@ function drConTroMoi_(cheDo) { return { cheDo: cheDo || 'day-du', giai: 'nhom', 
 
 function drChay_(opt) {
   var batDau = Date.now();
-  var C = taiDuLieu_();
+  var C = opt.C || taiDuLieu_();
+  if (opt.tay) drLuuDauCauHinh_(C);                                 // A3: admin đã Xem trước / Áp dụng tay cấu hình này
+  canhBaoTvMoCoi_(C);                                              // A8(c)
   var ct;
   if (P.thu) ct = drConTroMoi_('day-du');
   else if (opt.tiep) ct = sdDocJson_(DR.KHOA_CT) || drConTroMoi_('day-du');
@@ -160,6 +218,7 @@ function drChay_(opt) {
       var r = dongBoNhom_(C, { da: ct.nhomDa, cheDo: ct.cheDo, batDau: batDau }) || {};
       if (r.da) ct.nhomDa = r.da;
       else { ct.nhomDa = {}; Object.keys(r.nhomCo || {}).forEach(function (e) { ct.nhomDa[e] = 1; }); }
+      Object.keys(r.khongChac || {}).forEach(function (e) { ct.nhomDa[e] = 2; });
       if (r.chuaXong) {
         ghi_('Drive', 'Nhóm Google chưa đồng bộ xong: chưa chạy phần Drive lượt này', P.thu ? 'Xem trước' : 'hẹn chạy tiếp');
         P.tomTat = 'Nhóm chưa xong, Drive sẽ chạy ở lượt sau.';
@@ -171,8 +230,9 @@ function drChay_(opt) {
     }
     ct.giai = 'goc'; ct.i = 0;
   }
-  var nhomCo = {};
-  Object.keys(ct.nhomDa || {}).forEach(function (e) { if (ct.nhomDa[e] === 1) nhomCo[e] = true; });
+  var nhomCo = {}, khongChac = [];
+  Object.keys(ct.nhomDa || {}).forEach(function (e) { if (ct.nhomDa[e] === 1) nhomCo[e] = true; else if (ct.nhomDa[e] === 2) khongChac.push(e); });
+  if (khongChac.length) ghi_('Cảnh báo', 'Nhóm Google đọc lỗi ở lượt này (không chắc): KHÔNG gỡ quyền của các nhóm này, chỉ thêm', khongChac.join(', '));
   apDungDrive_(C, nhomCo, batDau, ct);
 }
 
@@ -180,13 +240,14 @@ function apDungDrive_(C, nhomCo, batDau, ct) {
   ct = ct || drConTroMoi_('day-du');
   if (ct.giai === 'nhom') ct.giai = 'goc';
   var S = {
-    C: C, nhomCo: nhomCo || {}, thu: !!P.thu, batDau: batDau || Date.now(), ct: ct, thayDoi: ct.cheDo === 'thay-doi' && !P.thu,
+    C: C, nhomCo: nhomCo || {}, khongChac: {}, thu: !!P.thu, batDau: batDau || Date.now(), ct: ct, thayDoi: ct.cheDo === 'thay-doi' && !P.thu,
     tenGoc: {}, oGoc: {}, idx: {}, maCT: {}, tmGoc: {}, tmTheoNhom: {}, tepMau: {}, mau: {}, dau: {},
     M: { quyen: {}, quanLy: {} }, kqNguoi: {}, ghiNhom: {}, ghiCt: {}, baoMau: {}, baoNguon: {},
     dem: { o: 0, tm: 0, nhanLai: 0, qThem: 0, qDoi: 0, qGo: 0, ltThem: 0, ltBo: 0, thu: 0, boQua: 0 }
   };
+  Object.keys(ct.nhomDa || {}).forEach(function (e) { if (ct.nhomDa[e] === 2) S.khongChac[e] = true; });
   C.cauTruc.forEach(function (d) { S.maCT[d.ma] = true; if (d.loai === 'Ổ' && d.ma !== 'CN_TEN') S.tenGoc[d.o] = true; });
-  var xong = false;
+  var xong = false, hetGio = false;
   try {
     drOGoc_(S);
     drThuMucGoc_(S);
@@ -217,6 +278,7 @@ function apDungDrive_(C, nhomCo, batDau, ct) {
         var k = drKhoaNg_(n);
         if (ct.da[k]) return;
         drKiemGio_(S);
+        drXepThuLop_(S, n);                                          // thư lớp chỉ xem: không phụ thuộc dấu thay đổi
         if (drCanXuLy_(S, n)) {
           var loi = P.loi;
           drOCaNhan_(S, n);
@@ -233,9 +295,14 @@ function apDungDrive_(C, nhomCo, batDau, ct) {
     xong = true;
   } catch (e) {
     if (!e || !e.drHetGio) throw e;
+    hetGio = true;
   } finally {
+    // A6: lưu con trỏ (và hẹn chạy tiếp khi hết giờ) TRƯỚC khi ghi bảng — ghi bảng có thể bị cắt ở giới hạn cứng 6 phút
+    if (!S.thu) {
+      if (xong) sdXoaJson_(DR.KHOA_CT);
+      else { sdLuuJson_(DR.KHOA_CT, ct); if (hetGio) drHenChayTiep_(); }
+    }
     drGhiBang_(S, xong);
-    if (!S.thu) { if (xong) sdXoaJson_(DR.KHOA_CT); else sdLuuJson_(DR.KHOA_CT, ct); }
   }
   var d = S.dem, se = S.thu ? 'sẽ ' : '';
   P.tomTat = (S.thu ? 'Xem trước: ' : '') + (S.thayDoi ? '[chỉ thay đổi, bỏ qua ' + d.boQua + ' người] ' : '') + se + 'tạo ' + d.o + ' ổ, ' + d.tm + ' thư mục' +
@@ -246,7 +313,6 @@ function apDungDrive_(C, nhomCo, batDau, ct) {
   } else {
     P.tomTat += ' Chưa xong, ' + (S.thu ? 'Xem trước dừng do hết giờ.' : 'sẽ chạy tiếp sau 1 phút (tiếp từ chỗ dừng).');
     ghi_('Drive', 'Chưa xong, sẽ chạy tiếp', S.thu ? 'hết giờ (Xem trước, không hẹn)' : 'hẹn chạy lại sau 1 phút · giai đoạn ' + ct.giai);
-    if (!S.thu) drHenChayTiep_();
   }
 }
 
@@ -278,6 +344,7 @@ function drDau_(S, n) {
   nhomCuaNguoi_(C, n.email).forEach(function (t) {
     var g = C.nhom[t.ma];
     phan.push([t.ma, t.loai, t.vai, t.quyen].join('~'), dongNhom(g));
+    if (g && g.loai === 'Lớp') phan.push(lopDayDu_(C, g.ma) ? 'dd1' : 'dd0');   // WD-28: thêm/bớt nhóm nhỏ đổi kiểu lớp
     if (g && g.thuoc) phan.push(dongNhom(C.nhom[g.thuoc]));
     if (g && g.loai === 'Nhóm nhỏ') {
       phan.push(S.nhomCo[emailNhom_(C, g.ma, 'pt')] ? 'pt1' : 'pt0');
@@ -322,24 +389,80 @@ function drXepHangThu_(S, n, idO) {
 }
 
 /**
- * Gửi thư chào. guiLai=false: chỉ mục trong hàng đợi đã ≥ 60 phút. guiLai=true (sdGuiLaiThuChao): thêm mọi người có ổ
- * mà chưa có dấu SD_THU_<ID ổ> (trừ người còn trong hàng đợi chưa đủ 60 phút). Xem trước: chỉ báo số thư.
+ * Thư lớp chỉ xem (WD-28): xếp hàng cho người Đang là Thành viên Đang của Lớp chỉ xem Đang, khi đã có thư mục lớp và nhóm
+ * sd-<lớp>@ (để quyền đã cấp), chưa có dấu SD_THU_LOP_… và chưa trong hàng đợi. Tôn trọng CAI_DAT "Gửi thư chào".
+ */
+function drXepThuLop_(S, n) {
+  var C = S.C;
+  if (!C.cd.guiThuChao || n.tt !== 'Đang') return;
+  var pr = PropertiesService.getScriptProperties();
+  nhomCuaNguoi_(C, n.email).forEach(function (t) {
+    var g = C.nhom[t.ma];
+    if (!g || t.vai !== 'Thành viên' || g.tt !== 'Đang' || !lopChiXem_(C, g.ma)) return;
+    var idTm = S.tmTheoNhom[g.ma];
+    if (!idTm || !S.nhomCo[emailNhom_(C, g.ma, '')]) return;              // chưa có thư mục / nhóm: lượt sau
+    var khoa = drKhoaThuLop_(n, g.ma);
+    if (pr.getProperty(khoa)) return;
+    if (!S.hangThu) S.hangThu = sdDocJson_(DR.KHOA_HANG) || [];
+    if (S.hangThu.some(function (x) { return x.khoa === khoa; })) return;
+    S.dem.thu++;
+    ghi_('Thư lớp', (S.thu ? 'Sẽ xếp hàng' : 'Xếp hàng') + ' (gửi sau 60 phút) · lớp chỉ xem ' + g.ma, n.email);
+    if (S.thu) return;
+    S.hangThu.push({ lop: g.ma, idTm: idTm, email: n.email, khoa: khoa, khoaNg: drKhoaNg_(n), luc: drBayGioMs_() });
+    sdLuuJson_(DR.KHOA_HANG, S.hangThu);
+    if (!drCoTrinh_(DR.HAM_THU)) ScriptApp.newTrigger(DR.HAM_THU).timeBased().after(DR.CHO_THU_MS + 60000).create();
+  });
+}
+
+function drKhoaThuLop_(n, ma) { return DR.TIEN_TO_THU_LOP + drKhoaNg_(n) + '_' + ma; }
+
+/** Người còn là Thành viên Đang của lớp chỉ xem Đang `ma` không: trả dòng THANH_VIEN hoặc null. */
+function drTvLopChiXem_(C, n, ma) {
+  var g = C.nhom[ma];
+  if (!n || n.tt !== 'Đang' || !g || g.tt !== 'Đang' || !lopChiXem_(C, ma)) return null;
+  return nhomCuaNguoi_(C, n.email).filter(function (t) { return t.ma === ma && t.vai === 'Thành viên'; })[0] || null;
+}
+
+/**
+ * Gửi thư chào + thư lớp. guiLai=false: chỉ mục trong hàng đợi đã ≥ 60 phút. guiLai=true (sdGuiLaiThuChao): thêm mọi người
+ * có ổ mà chưa có dấu SD_THU_<ID ổ>, và mọi thành viên lớp chỉ xem (lớp đã có ID thư mục) chưa có dấu SD_THU_LOP_…
+ * (trừ mục còn trong hàng đợi chưa đủ 60 phút). Xem trước: chỉ báo số thư.
  */
 function drGuiThuDenHan_(C, guiLai) {
   var pr = PropertiesService.getScriptProperties();
   var hang = sdDocJson_(DR.KHOA_HANG) || [], bay = drBayGioMs_(), con = [], gui = [], daCo = {};
-  hang.forEach(function (x) { daCo[x.idO] = true; if (bay - x.luc >= DR.CHO_THU_MS) gui.push(x); else con.push(x); });
+  hang.forEach(function (x) { daCo[x.lop ? x.khoa : x.idO] = true; if (bay - x.luc >= DR.CHO_THU_MS) gui.push(x); else con.push(x); });
   if (guiLai) {
     C.dsNguoi.forEach(function (n) {
       if (n.idO && !daCo[n.idO] && coOCaNhan_(C, n) && !pr.getProperty('SD_THU_' + n.idO)) gui.push({ idO: n.idO, email: n.email, luc: 0 });
+      nhomCuaNguoi_(C, n.email).forEach(function (t) {
+        var g = C.nhom[t.ma], k = drKhoaThuLop_(n, t.ma);
+        if (!g || !g.idThuMuc || daCo[k] || !drTvLopChiXem_(C, n, t.ma) || pr.getProperty(k)) return;
+        gui.push({ lop: g.ma, idTm: g.idThuMuc, email: n.email, khoa: k, khoaNg: drKhoaNg_(n), luc: 0 });
+      });
     });
   }
   if (!gui.length) { if (guiLai) P.tomTat = 'Không có ai cần gửi thư chào.'; return; }
-  if (P.thu) { ghi_('Thư chào', 'Sẽ gửi ' + gui.length + ' thư chào đã đến hạn', ''); return; }
-  var theoO = {};
-  C.dsNguoi.forEach(function (n) { if (n.idO) theoO[n.idO] = n; });
-  var dong = {}, daGui = 0, loi = 0;
+  if (P.thu) { ghi_('Thư chào', 'Sẽ gửi ' + gui.length + ' thư chào/thư lớp đã đến hạn', ''); return; }
+  var theoO = {}, theoKhoa = {};
+  C.dsNguoi.forEach(function (n) { if (n.idO) theoO[n.idO] = n; theoKhoa[drKhoaNg_(n)] = n; });
+  var dong = {}, dongTv = {}, daGui = 0, loi = 0;
   gui.forEach(function (x) {
+    if (x.lop) {
+      var nl = theoKhoa[x.khoaNg] || C.nguoi[x.email], tvL = drTvLopChiXem_(C, nl, x.lop);
+      if (!tvL) { ghi_('Thư lớp', 'Bỏ (không còn là thành viên lớp chỉ xem đang học)', x.email + ' · ' + x.lop); return; }
+      var rl = drGuiThuLop_(C, nl, C.nhom[x.lop], C.nhom[x.lop].idThuMuc || x.idTm);
+      if (rl === true) {
+        daGui++;
+        pr.setProperty(x.khoa, bayGio_() + ' · ' + nl.email);
+        dongTv[tvL.dong] = 'thư lớp ✔ ' + homNay_();
+      } else {
+        loi++;
+        dongTv[tvL.dong] = 'thư lớp LỖI: ' + rl;
+        if (!guiLai) con.push(x);
+      }
+      return;
+    }
     var n = theoO[x.idO];
     if (!n || !coOCaNhan_(C, n)) { ghi_('Thư chào', 'Bỏ (không còn ổ đang dùng)', x.email); return; }
     var r = drGuiThu_(C, n, x.idO);
@@ -356,15 +479,42 @@ function drGuiThuDenHan_(C, guiLai) {
   if (con.length) sdLuuJson_(DR.KHOA_HANG, con); else sdXoaJson_(DR.KHOA_HANG);
   if (con.length && !drCoTrinh_(DR.HAM_THU)) ScriptApp.newTrigger(DR.HAM_THU).timeBased().after(DR.CHO_THU_MS + 60000).create();
   if (!con.length) drXoaTrinh_(DR.HAM_THU);
-  try {
-    var b = C.bang.NGUOI, c = b.tieuDe.indexOf('Kết quả Drive');
-    if (c >= 0) Object.keys(dong).forEach(function (d) {
-      var o = b.tab.getRange(Number(d), c + 1), cu = chuan_(o.getValues()[0][0]);
-      o.setValue((cu ? cu + ' · ' : '') + dong[d]);
-    });
-  } catch (e) { ghi_('LỖI', 'Ghi NGUOI · Kết quả Drive (thư chào): ' + e.message, ''); }
-  var tt = 'Thư chào: đã gửi ' + daGui + (loi ? ', LỖI ' + loi : '') + '.';
+  [['NGUOI', dong], ['THANH_VIEN', dongTv]].forEach(function (x) {
+    try {
+      var b = C.bang[x[0]], c = b.tieuDe.indexOf('Kết quả Drive');
+      if (c < 0 || !Object.keys(x[1]).length) return;
+      var m = {};
+      Object.keys(x[1]).forEach(function (d) {
+        var cu = chuan_(b.tab.getRange(Number(d), c + 1).getValues()[0][0]);
+        m[d] = (cu ? cu + ' · ' : '') + x[1][d];
+      });
+      ghiCot_(b, 'Kết quả Drive', m);
+    } catch (e) { ghi_('LỖI', 'Ghi ' + x[0] + ' · Kết quả Drive (thư): ' + e.message, ''); }
+  });
+  var tt = 'Thư chào/thư lớp: đã gửi ' + daGui + (loi ? ', LỖI ' + loi : '') + '.';
   P.tomTat = P.tomTat ? P.tomTat + ' ' + tt : tt;
+}
+
+/** Gửi thư báo lớp chỉ xem (WD-28). Trả true hoặc chuỗi lỗi. */
+function drGuiThuLop_(C, n, g, idTm) {
+  var ten = C.cd.tenHienThi, link = 'https://drive.google.com/drive/folders/' + idTm;
+  var tieuDe = (C.cd.giaLap ? '[THỬ] ' : '') + 'Lớp ' + g.ten + ' trên ' + ten + ' đã sẵn sàng';
+  var than = 'Chào ' + n.ten + ',\n\n' +
+    'Thư mục lớp "' + g.ten + '" trên ' + ten + ' đã sẵn sàng. Bạn xem được video và tài liệu của lớp tại:\n' + link + '\n\n' +
+    'Cách dùng:\n' +
+    '1. Đánh dấu sao (Star) thư mục, hoặc lưu đường link này, để lần sau mở lại nhanh.\n' +
+    '2. Nếu mở link mà Drive báo cần quyền truy cập: ĐỪNG bấm "Request access" (Yêu cầu quyền truy cập). ' +
+    'Quyền đang được cấp tự động và có thể mất tối đa 30 phút; hãy đợi rồi tải lại trang.\n' +
+    '\nCần hỗ trợ, bạn chỉ cần trả lời thư này.';
+  try {
+    if (typeof GmailApp !== 'undefined' && GmailApp && GmailApp.sendEmail) GmailApp.sendEmail(n.email, tieuDe, than, { name: ten });
+    else MailApp.sendEmail(n.email, tieuDe, than);
+    ghi_('Thư lớp', 'Đã gửi · ' + g.ma, n.email);
+    return true;
+  } catch (e) {
+    ghi_('LỖI', 'Gửi thư lớp (kiểm tra MX/SPF/DKIM của tên miền, hạn mức gửi): ' + e.message, n.email + ' · ' + g.ma);
+    return e.message;
+  }
 }
 
 /** Gửi một thư chào. Trả true hoặc chuỗi lỗi. */
@@ -508,6 +658,7 @@ function drThuMucNhom_(S) {
       if (loai.indexOf(g.loai) < 0) return;
       drKiemGio_(S);
       var dong = drNhomDong_(g);
+      if (!drTimTheoNhan_(S, oId, { sdma: d.ma, sdnhom: g.ma }) && !drNhanLaiTheoId_(S, oId, d, g)) return;   // A1: đổi Mã nhóm
       var cha = drChaTheoDuong_(S, oId, segs.slice(0, -1), { g: g, maDong: d.ma, khongTao: dong, timDong: drTimGoc_(S, d.o) });
       var id = drDamBao_(S, oId, cha, dienMau_(segs[segs.length - 1], null, g), { sdma: d.ma, sdnhom: g.ma }, dong);
       if (!id) return;
@@ -524,9 +675,52 @@ function drThuMucNhom_(S) {
         var c2 = drChaTheoDuong_(S, oId, s2.slice(0, -1), { goc: id, khongTao: dong });
         var id2 = drDamBao_(S, oId, c2, s2[s2.length - 1], { sdma: x.ma, sdnhom: g.ma }, dong);
         if (id2) drQuanLy_(S.M, id2, g.ma + '/' + s2.join('/'));
+        // WD-28: Phụ trách lớp được Sửa CHỈ ở thư mục con LOP_TL (tài liệu); VIDEO thừa kế Xem
+        if (id2 && !dong && g.loai === 'Lớp' && x.ma === DR.MA_LOP_TL && (g.tt === 'Đang' || g.tt === 'Kết thúc')) {
+          drCapNhom_(S, S.M, id2, emailNhom_(C, g.ma, 'pt'), 'writer');
+        }
       });
     });
   });
+}
+
+/**
+ * A1 (N1): không thấy thư mục theo nhãn sdnhom = mã mới. Nếu NHOM "ID thư mục" trỏ tới thư mục cùng ổ, chưa xóa, sdma = mã dòng
+ * CAU_TRUC này → nhận lại: đổi sdnhom (cả thư mục con mang sdnhom cũ) sang mã mới; drDamBao_ sau đó đổi tên/chuyển chỗ.
+ * sdnhom cũ thuộc một nhóm khác đang có ở NHOM → LỖI, không nhận (trả false: bỏ qua nhóm này, không tạo thư mục mới).
+ * Trả true khi đi tiếp được (đã nhận lại, hoặc không có gì để nhận → tạo mới như thường).
+ */
+function drNhanLaiTheoId_(S, oId, d, g) {
+  if (!g.idThuMuc || drChua_(oId)) return true;
+  var ix = drChiMuc_(S, oId), f = ix.ds.filter(function (x) { return x.id === g.idThuMuc; })[0];
+  if (!f) return true;                                             // không còn / khác ổ / đã vào thùng rác
+  var p = f.properties || {}, cu = p.sdnhom || '';
+  if (p.sdma !== d.ma || cu === g.ma) return true;
+  if (cu && S.C.nhom[cu]) {
+    ghi_('LỖI', 'NHOM "ID thư mục" của ' + g.ma + ' trỏ tới thư mục của nhóm ' + cu + ' (đang có ở NHOM): không nhận lại, không tạo mới. Sửa cột ID thư mục.', f.name + ' · ' + f.id);
+    return false;
+  }
+  var con = drConChau_(ix, f.id).filter(function (x) { return (x.properties || {}).sdnhom === cu && cu; });
+  S.dem.nhanLai++;
+  ghi_('Thư mục', (S.thu ? 'Sẽ nhận lại' : 'Nhận lại') + ' thư mục cũ theo ID (đổi Mã nhóm ' + (cu || '—') + ' → ' + g.ma + (con.length ? ', kèm ' + con.length + ' thư mục con' : '') + ')', f.name + ' · ' + f.id);
+  [f].concat(con).forEach(function (x) {
+    var k = drKhoa_(x.properties || {});
+    if (ix.khoa[k] === x) delete ix.khoa[k];
+    if (!S.thu && !drChua_(x.id)) Drive.Files.update({ properties: { sdnhom: g.ma } }, x.id, null, { supportsAllDrives: true });
+    x.properties = Object.assign({}, x.properties || {}, { sdnhom: g.ma });
+    drThemChiMuc_(ix, x);
+  });
+  return true;
+}
+
+/** Mọi thư mục con cháu (trong chỉ mục) của thư mục `id`. */
+function drConChau_(ix, id) {
+  var kq = [], hang = [id];
+  while (hang.length) {
+    var cha = hang.shift();
+    ix.ds.forEach(function (x) { if (x.parents[0] === cha) { kq.push(x); hang.push(x.id); } });
+  }
+  return kq;
 }
 
 /** Quyền thư mục nhóm theo bảng 2.2. */
@@ -537,7 +731,7 @@ function drQuyenNhom_(S, id, g) {
   } else if (g.loai === 'Lớp') {
     if (g.tt === 'Đang' || g.tt === 'Kết thúc') {
       drCapNhom_(S, S.M, id, emailNhom_(C, g.ma, ''), 'reader');
-      drCapNhom_(S, S.M, id, emailNhom_(C, g.ma, 'pt'), 'writer');
+      drCapNhom_(S, S.M, id, emailNhom_(C, g.ma, 'pt'), 'reader');     // WD-28: Sửa chỉ ở LOP_TL (drThuMucNhom_)
     }
   } else {
     drCapNhom_(S, S.M, id, emailNhom_(C, g.ma, ''), 'reader');
@@ -690,6 +884,7 @@ function drNopBai_(S, M, oId, chaNguoi, x, n, hop, chu) {
   dsTv.forEach(function (t) {
     var lop = C.nhom[t.ma];
     if (!lop || lop.loai !== 'Lớp' || t.vai !== 'Thành viên' || (lop.tt !== 'Đang' && lop.tt !== 'Kết thúc')) return;
+    if (!lopDayDu_(C, lop.ma)) return;                             // WD-28: lớp chỉ xem không có nộp bài
     var id = drDamBao_(S, oId, chaNguoi, mauTen.replace(/\{Mã lớp\}/g, lop.ma), drApNg_(x.ma, n, { sdlop: lop.ma }));
     if (!id) return;
     drQuanLy_(M, id, 'nộp bài ' + lop.ma + ' · ' + n.email);
@@ -801,16 +996,17 @@ function drTepTrong_(id) {
 function drApCho_(S, d, n) {
   var C = S.C;
   if (apChoO_(C, d, n)) return true;
-  if (d.o.split(',').map(chuan_).indexOf('Ổ HV') < 0 || !laNguoiHoc_(C, n)) return false;
-  if (d.loai === 'Chỗ đặt lối tắt') { var ng = drSauHaiCham_(d.nguon); return ng === 'Lớp đang học' || ng === 'Lớp đã học'; }
-  if (d.loai === 'Lối tắt') { var m = /→\s*([A-Z0-9_]+)/.exec(d.nguon || ''); return !!m && !!drDongTheoNguoi_(S, m[1]) && /^HS_/.test(m[1]); }
+  if (d.o.split(',').map(chuan_).indexOf('Ổ HV') < 0) return false;
+  // Lớp đang/đã học: cả lớp chỉ xem (WD-28); Hồ sơ học tập: chỉ người học lớp đầy đủ / nhóm nhỏ
+  if (d.loai === 'Chỗ đặt lối tắt') { var ng = drSauHaiCham_(d.nguon); return (ng === 'Lớp đang học' || ng === 'Lớp đã học') && hocLopNao_(C, n); }
+  if (d.loai === 'Lối tắt') { var m = /→\s*([A-Z0-9_]+)/.exec(d.nguon || ''); return laNguoiHoc_(C, n) && !!m && !!drDongTheoNguoi_(S, m[1]) && /^HS_/.test(m[1]); }
   return false;
 }
 
 function drOCaNhan_(S, n) {
   var C = S.C, kq = S.kqNguoi[n.email] = [], se = S.thu ? 'sẽ ' : '';
   if (!coOCaNhan_(C, n)) {
-    if (!n.idO) return;
+    if (!n.idO) { if (n.tt === 'Đang' && hocLopNao_(C, n)) kq.push('lớp chỉ xem: không tạo ổ (gửi link lớp)'); return; }
     var oCu = drLayO_(n.idO);
     if (!oCu) { kq.push('LỖI: không mở được ổ ' + n.idO); ghi_('LỖI', 'Không mở được ổ cá nhân', n.email); return; }
     var r = drDoiSoat_(S, n.idO, {}, 'ổ ' + oCu.name);
@@ -1068,7 +1264,7 @@ function drCapNhom_(S, M, fid, email, role) { if (S.nhomCo[email]) drCap_(M, fid
 /** Người/nhóm script được phép gỡ: có ở NGUOI, hoặc nhóm có tiền tố trên miền. Không bao giờ là admin. */
 function drQuanLyEmail_(S, e) {
   var cd = S.C.cd;
-  if (e === cd.admin) return false;
+  if (e === cd.admin || (cd.ngoaiBang || {})[e]) return false;
   if (S.C.nguoi[e]) return true;
   return e.indexOf(cd.tienTo) === 0 && e.slice(-(cd.mien.length + 1)) === '@' + cd.mien;
 }
@@ -1114,7 +1310,11 @@ function drDoiSoat_(S, fid, muon, nhan, goNgoai) {
   var ngoai = [];
   Object.keys(h.truc).forEach(function (e) {
     if (muon[e]) return;
-    if (e === S.C.cd.admin) return;
+    if (e === S.C.cd.admin || (S.C.cd.ngoaiBang || {})[e]) return;    // A7: nhóm ngoài bảng được phép: bỏ qua hoàn toàn
+    if (S.khongChac && S.khongChac[e]) {                               // A5: nhóm đọc lỗi lượt này: không gỡ
+      ghi_('Quyền', 'Giữ (nhóm không chắc, lỗi đọc nhóm Google lượt này) ' + DR.TEN_QUYEN[h.truc[e].role] + ' · ' + nhan, e);
+      return;
+    }
     if (!drQuanLyEmail_(S, e) && !goNgoai) { ngoai.push(e); return; }
     kq.go++; S.dem.qGo++;
     ghi_('Quyền', se + 'gỡ ' + DR.TEN_QUYEN[h.truc[e].role] + ' · ' + nhan, e);

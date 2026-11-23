@@ -7,6 +7,7 @@
  *  - Mã hệ thống: cấp cho người ở NGUOI chưa có (U + 5 chữ số, tiếp sau số lớn nhất).
  *  - CAU_TRUC: thêm HS_TL (thư mục 00_TAI-LIEU-CUA-TOI trong Hồ sơ học tập); CN_CA_NHAN chuyển thành "BỎ".
  *  - Ô chọn (data validation) cho cột Việc của NHAP.
+ *  - CAI_DAT: dòng "Nhóm ngoài bảng" (mặc định trống) — Đợt sửa A (A7).
  * Không chạm Drive. Ghi công thức Tình trạng mới vào ô tiêu đề cột "Tình trạng" của NHAP nếu khác.
  */
 function sdNangCapBang() { chayPhien_('Nâng cấp bảng', nangCapBang_); }
@@ -29,9 +30,23 @@ function nangCapBang_(cd) {
 
   if (gatOChonViec_()) ghiThem('gắn ô chọn cho cột Việc ở NHAP');
 
+  var mien = chuan_(cd && cd['Tên miền']) || 'mien';
+  if (themCaiDat_('Nhóm ngoài bảng', '', 'Email nhóm/người script KHÔNG quản lý, cách nhau bằng dấu phẩy (vd ung-vien@' + mien + ', video@' + mien +
+    '). Script không gỡ quyền của họ, không báo "Ngoài bảng", Quét không coi là chia sẻ lạ. Để trống = không có.')) ghiThem('thêm dòng CAI_DAT "Nhóm ngoài bảng"');
+
   if (ghiCongThucTinhTrang_()) ghiThem('cập nhật công thức Tình trạng ở NHAP');
 
   P.tomTat = them.length ? 'Đã nâng cấp: ' + them.length + ' thay đổi.' : 'Bảng đã đủ, không đổi gì.';
+}
+
+/** Thêm dòng CAI_DAT (Nhãn, Giá trị, Ghi chú) nếu chưa có nhãn đó. Trả về true nếu đã thêm. */
+function themCaiDat_(nhan, giaTri, ghiChu) {
+  var tab = P.ss.getSheetByName(TAB.CAI_DAT);
+  if (!tab) return false;
+  var co = tab.getDataRange().getValues().some(function (r) { return chuan_(r[0]) === nhan; });
+  if (co) return false;
+  tab.appendRow([nhan, giaTri, ghiChu || '']);
+  return true;
 }
 
 /** Thêm cột tiêu đề cuối hàng 1 nếu chưa có. Trả về true nếu đã thêm. */
@@ -164,6 +179,7 @@ function congThucTinhTrang_() {
     ['vLoai', 'XLOOKUP(vMa;NHOM!A2:A;NHOM!C2:C;"")'],
     ['vThuoc', 'XLOOKUP(vMa;NHOM!A2:A;NHOM!D2:D;"")'],
     ['vTTNhom', 'XLOOKUP(vMa;NHOM!A2:A;NHOM!G2:G;"")'],
+    ['vChiXem', '(vLoai="Lớp")*(COUNTIFS(NHOM!C2:C;"Nhóm nhỏ";NHOM!D2:D;vMa)=0)'],
     ['vDangTV', 'COUNTIFS(THANH_VIEN!A2:A;vEmail;THANH_VIEN!C2:C;vMa;THANH_VIEN!G2:G;"Đang")'],
     ['vDungTV', 'COUNTIFS(THANH_VIEN!A2:A;vEmail;THANH_VIEN!C2:C;vMa;THANH_VIEN!G2:G;"Đang";THANH_VIEN!E2:E;vVaiNhom;THANH_VIEN!F2:F;vQuyen)'],
     ['vTrongLop', 'COUNTIFS(THANH_VIEN!A2:A;vEmail;THANH_VIEN!C2:C;vThuoc;THANH_VIEN!G2:G;"Đang")'],
@@ -176,6 +192,11 @@ function congThucTinhTrang_() {
       '&IF((vLoai="Nhóm nhỏ")*(vVaiNhom="Thành viên")*(vThuoc<>"")*(vTrongLop=0);"; sẽ tự vào lớp "&vThuoc;"")' +
       '&IF(vCoNg*(vNgTT="Nghỉ");"; người sẽ quay lại";"")'],
     ['vHq', 'IF(vHqRaw="";"";" ("&MID(vHqRaw;3;200)&")")'],
+    ['vCB',
+      'IF((vVaiNhom="Thành viên")*(vQuyen="Sửa")*REGEXMATCH(vLoai;"^(Lớp|Level|Nhóm nhỏ)$");" · ⚠ Lớp/Level/Nhóm nhỏ chỉ có Xem — Sửa sẽ được coi là Xem; muốn tải tài liệu chọn Vai Phụ trách";"")' +
+      '&IF(vTTNhom="Kết thúc";" · ⚠ nhóm đã Kết thúc";"")' +
+      '&IF((vLoai="Nhóm nhỏ")*(vVaiNhom="Phụ trách")*(vThuoc<>"")*(vTrongLop=0);" · ℹ phụ trách nhóm nhỏ chưa ở lớp "&vThuoc&" (không bắt buộc)";"")' +
+      '&IF(vChiXem*(vVaiNhom="Thành viên");" · ℹ lớp chỉ xem: không tạo ổ, gửi link lớp";"")'],
     ['vLoiThem',
       'IF(vMa="";"✘ thiếu Mã nhóm";' +
       'IF(' + KHONG('vCoNhom') + ';"✘ nhóm "&vMa&" chưa có ở NHOM";' +
@@ -192,7 +213,7 @@ function congThucTinhTrang_() {
       'IF(vKhac;"⚠ khác thông tin đã có — dùng Việc \'Sửa thông tin\' (nhóm vẫn được thêm)";' +
       'IF(' + KHONG('vCoNg') + ';"→ người mới, sẽ thêm vào "&vMa;' +
       'IF(vDungTV>0;"✔ đã có trong "&vMa;' +
-      'IF(vDangTV>0;"⚠ đã có trong "&vMa&", sẽ đổi vai/quyền";"→ chưa đưa vào "&vMa))))&vHq)'],
+      'IF(vDangTV>0;"⚠ đã có trong "&vMa&", sẽ đổi vai/quyền";"→ chưa đưa vào "&vMa))))&vHq&vCB)'],
     ['vGo',
       'IF(vMa="";"✘ thiếu Mã nhóm";' +
       'IF(' + KHONG('vCoNhom') + ';"✘ nhóm "&vMa&" chưa có ở NHOM";' +

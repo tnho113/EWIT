@@ -31,6 +31,13 @@ function duaVaoTong_(cd) {
     if (r.indexOf('LỖI') === 0) { dem.loi++; P.loi++; } else { dem.xong++; }
   });
 
+  // A8(c): dòng THANH_VIEN Đang mang Mã nhóm không còn ở NHOM → cảnh báo, không im lặng
+  var moCoi = {};
+  tv.ds.forEach(function (t) { if (t['Trạng thái'] === 'Đang' && !nhom[t['Mã nhóm']]) (moCoi[t['Mã nhóm']] = moCoi[t['Mã nhóm']] || []).push(t['Email']); });
+  Object.keys(moCoi).forEach(function (ma) {
+    ghi_('Cảnh báo', 'THANH_VIEN có ' + moCoi[ma].length + ' dòng Đang mang Mã nhóm "' + ma + '" không còn ở NHOM (bị bỏ qua: sửa Mã nhóm hoặc Gỡ)', moCoi[ma].join(', '));
+  });
+
   ghiDeTab_(TAB.NGUOI, COT.NGUOI, nguoi.ds);
   ghiDeTab_(TAB.THANH_VIEN, COT.THANH_VIEN, tv.ds);
   P.tomTat = dem.xong + ' dòng xong, ' + dem.loi + ' dòng lỗi.';
@@ -42,6 +49,7 @@ function duaVaoTong_(cd) {
 
 function docNhom_() {
   var b = docTab_(TAB.NHOM), m = {};
+  kiemMaNhomTrung_(b.dong);                                // A8(d): mã trùng → dừng
   b.dong.forEach(function (d) {
     var ma = maNhom_(d['Mã nhóm']);
     if (!ma) return;

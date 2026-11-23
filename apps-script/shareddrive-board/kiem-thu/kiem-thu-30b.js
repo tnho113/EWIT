@@ -177,6 +177,7 @@ nhom('1d. Hằng đêm: ngày chạy đầy đủ thì xử lý mọi người; 
   const H = canh(), T = H.T, ctx = H.ctx;
   H.apDung();
   T.CAI_DAT.v.push(['Chạy đầy đủ vào', 'CN,T2,T3,T4,T5,T6,T7']);
+  H.xemTruoc();                                          // A3: đổi CAI_DAT → admin Xem trước để hằng đêm được chạy
   const g = demGet(H);
   H.dem(); H.khongLoi();
   assert.strictEqual(g.dem[H.oCN('hv1@example.com').id], 1, 'đầy đủ: có xử lý hv1');
@@ -184,6 +185,7 @@ nhom('1d. Hằng đêm: ngày chạy đầy đủ thì xử lý mọi người; 
   H.apDung();
   ctx.drHetGio_ = H.E.goc_drHetGio_;
   T.CAI_DAT.v[T.CAI_DAT.v.length - 1][1] = 'Không';
+  ctx.drLuuDauCauHinh_(ctx.taiDuLieu_());                 // A3: như admin đã Xem trước (không chạy để giữ con trỏ dở)
   H.dem(); H.khongLoi();
   assert(H.nk().some(r => r[1] === 'Drive · Hằng đêm'));
   assert.strictEqual(H.props().getProperty('SD_CON_TRO_n'), null, 'chạy tiếp lượt dở rồi xong');

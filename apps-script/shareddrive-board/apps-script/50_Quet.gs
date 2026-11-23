@@ -367,10 +367,11 @@ function qtQuyenTrucTiep_(p) {
   return d.some(function (x) { return x.inherited !== true; });
 }
 
-/** Quyền "lạ": trực tiếp và không do script cấp (nhóm tiền tố CAI_DAT, hoặc admin). */
+/** Quyền "lạ": trực tiếp và không do script cấp (nhóm tiền tố CAI_DAT, hoặc admin), và không ở CAI_DAT "Nhóm ngoài bảng". */
 function qtQuyenLa_(C, p) {
   if (p.deleted || !qtQuyenTrucTiep_(p)) return false;
   var e = email_(p.emailAddress || '');
+  if (e && (C.cd.ngoaiBang || {})[e]) return false;               // A7: CAI_DAT "Nhóm ngoài bảng" được phép
   if (p.type === 'group' && e.indexOf(C.cd.tienTo) === 0) return false;
   if (p.type === 'user' && e && e === C.cd.admin) return false;
   return true;

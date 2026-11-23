@@ -23,7 +23,9 @@
  *  - P.thu được đặt BÊN TRONG hàm truyền cho chayPhien_ (chayPhien_ tạo P mới mỗi lần).
  *  - Không bao giờ gỡ: thành viên vai OWNER, và chính Email admin (kể cả khi admin có ở NGUOI).
  *  - "Người trên bảng" (được phép gỡ) = mọi email ở NGUOI; email khác chỉ báo "ngoài bảng".
- *  - Lỗi khi lấy nhóm (Groups.get) mà không phải "không tìm thấy" → ghi LỖI, bỏ qua nhóm đó, không tạo.
+ *  - Lỗi khi lấy nhóm (Groups.get) mà không phải "không tìm thấy" → ghi LỖI, bỏ qua nhóm đó, không tạo; nhóm được đánh dấu
+ *    "không chắc" (da = 2, trả trong khongChac) để 30_Drive KHÔNG gỡ quyền của nhóm đó ở lượt này (A5 / V2).
+ *    Lỗi đọc thành viên (Members.list): nhóm vẫn có (nhomCo) nên quyền giữ nguyên.
  *  - Nhóm đã tồn tại có tập mong muốn rỗng: đồng bộ gỡ người trên bảng, nhưng không tạo/xóa nhóm.
  *  - Hết giờ (NH_GIOI_HAN ms kể từ đầu dongBoNhom_) → dừng an toàn, trả chuaXong:true, hẹn sdNhomApDung sau 1 phút
  *    (chỉ khi Áp dụng). Trình kích hoạt hẹn giờ được xóa khi chạy xong.
@@ -79,7 +81,7 @@ function dongBoNhom_(C, opt) {
     var dau = nhDauMuc_(m), khoaDau = 'SDH_G_' + m.email, cu = thayDoi ? pr.getProperty(khoaDau) : null;
     if (cu && cu.slice(1) === dau) { da[m.email] = cu.charAt(0) === '1' ? 1 : 0; continue; }
     var r = nhXuLyMuc_(C, m, thu);
-    da[m.email] = r.co ? 1 : 0;
+    da[m.email] = r.khongChac ? 2 : (r.co ? 1 : 0);              // 2 = lỗi đọc nhóm (không chắc): Drive không gỡ quyền của nhóm này
     if (!thu) { if (r.loi) pr.deleteProperty(khoaDau); else pr.setProperty(khoaDau, (r.co ? '1' : '0') + dau); }
     if (m.ma) {
       var k = kqNhom[m.ma] = kqNhom[m.ma] || { dong: C.nhom[m.ma].dong, phan: [], emailXem: '' };
@@ -98,9 +100,9 @@ function dongBoNhom_(C, opt) {
   } else if (!thu) {
     nhXoaHenGio_();
   }
-  var nhomCo = {};
-  Object.keys(da).forEach(function (e) { if (da[e] === 1) nhomCo[e] = true; });
-  return { nhomCo: nhomCo, chuaXong: chuaXong, da: da };
+  var nhomCo = {}, khongChac = {};
+  Object.keys(da).forEach(function (e) { if (da[e] === 1) nhomCo[e] = true; else if (da[e] === 2) khongChac[e] = true; });
+  return { nhomCo: nhomCo, chuaXong: chuaXong, da: da, khongChac: khongChac };
 }
 
 /** Dấu của một nhóm mong muốn (email + tập thành viên). */
@@ -116,7 +118,7 @@ function nhMucTieu_(C) {
   C.dsNhom.forEach(function (g) {
     var dong = !nhomConHieuLuc_(C, g.ma);
     var theoHau = { '': {}, sua: {}, pt: {} };
-    if (!dong) thanhVienNhom_(C, g.ma).forEach(function (t) { theoHau[hauToCua_(t)][t.email] = true; });
+    if (!dong) thanhVienNhom_(C, g.ma).forEach(function (t) { theoHau[hauToCua_(t, C)][t.email] = true; });
     [['', 'Xem'], ['sua', 'Sửa'], ['pt', 'Phụ trách']].forEach(function (h) {
       ds.push({ email: emailNhom_(C, g.ma, h[0]), ten: g.ten + ' · ' + h[1], nhan: 'nhóm ' + g.ma + (h[0] ? ' (' + h[0] + ')' : ''),
         ma: g.ma, hau: h[0], tv: theoHau[h[0]] });
@@ -184,7 +186,7 @@ function nhXuLyMuc_(C, m, thu) {
   var mong = Object.keys(m.tv), r = { co: false, tomTat: '' }, phan = [];
   var co;
   try { co = nhTonTai_(m.email); }
-  catch (e) { ghi_('LỖI', 'Không đọc được nhóm', m.email + ' · ' + e.message); r.tomTat = 'LỖI đọc nhóm: ' + e.message; r.loi = true; return r; }
+  catch (e) { ghi_('LỖI', 'Không đọc được nhóm', m.email + ' · ' + e.message); r.tomTat = 'LỖI đọc nhóm: ' + e.message; r.loi = true; r.khongChac = true; return r; }
 
   if (!co) {
     if (!mong.length) return r;                                  // chưa có và không cần → không tạo

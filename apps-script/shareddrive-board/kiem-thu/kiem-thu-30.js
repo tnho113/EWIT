@@ -348,7 +348,9 @@ nhom('5. Quyền thư mục cho nhóm đúng bảng 2.2', () => {
   assert.deepStrictEqual(q(tmTv('L3').id), { [sd('L3')]: 'reader', [sd('L2')]: 'reader' }, 'L3: cấp L3 và cao hơn (L1 chưa có nhóm)');
   assert.deepStrictEqual(q(tmTv('L2').id), { [sd('L2')]: 'reader' });
   assert.deepStrictEqual(q(tmDa('KIND').id), { [sd('KIND')]: 'reader', [sd('KIND', 'sua')]: 'writer' });
-  assert.deepStrictEqual(q(tmLop('ME02').id), { [sd('ME02')]: 'reader', [sd('ME02', 'pt')]: 'writer' });
+  // WD-28: Phụ trách lớp Xem thư mục lớp, Sửa chỉ ở TAI-LIEU (LOP_TL); VIDEO thừa kế Xem
+  assert.deepStrictEqual(q(tmLop('ME02').id), { [sd('ME02')]: 'reader', [sd('ME02', 'pt')]: 'reader' });
+  assert.deepStrictEqual(q(tep({ sdma: 'LOP_TL', sdnhom: 'ME02' }).id), { [sd('ME02', 'pt')]: 'writer' }, 'TAI-LIEU: pt Sửa');
   assert.deepStrictEqual(q(tep({ sdma: 'LOP_VIDEO', sdnhom: 'ME02' }).id), {}, 'VIDEO thừa kế');
   const h = 'hv1@example.com';
   // Đợt 2b: quyền theo người cấp cho nhóm riêng sd-u-<Mã hệ thống>, không cho email
@@ -456,7 +458,8 @@ nhom('11. Lớp PA03 Kết thúc → lối tắt sang Đã học, gỡ writer + 
   assert(!ltTrong(oh, tmCN(h, 'CN_LOP_DANG').id).some(t => t.shortcutDetails.targetId === pa), 'bỏ khỏi Đang học');
   assert.deepStrictEqual(q(nop(h, 'PA03').id), {}, 'HS_NOP: chỉ còn xem thừa kế');
   assert(D.coQuyen(sdU(h), nop(h, 'PA03').id), 'vẫn xem được bài cũ (qua nhóm riêng)');
-  assert.deepStrictEqual(q(tmLop('PA03').id), { [sd('PA03')]: 'reader', [sd('PA03', 'pt')]: 'writer' }, 'lớp Kết thúc vẫn giữ quyền');
+  assert.deepStrictEqual(q(tmLop('PA03').id), { [sd('PA03')]: 'reader', [sd('PA03', 'pt')]: 'reader' }, 'lớp Kết thúc vẫn giữ quyền');
+  assert.deepStrictEqual(q(tep({ sdma: 'LOP_TL', sdnhom: 'PA03' }).id), { [sd('PA03', 'pt')]: 'writer' }, 'lớp Kết thúc: pt vẫn Sửa TAI-LIEU');
   const og = oCN('gv1@example.com').id;
   assert(ltTrong(og, tmCN('gv1@example.com', 'CN_LOP_PT').id).some(t => t.shortcutDetails.targetId === pa), 'GV vẫn thấy lớp Kết thúc');
   assert.deepStrictEqual(ltTrong(og, tep({ sdma: 'CN_HV_PT_SUB', sdnhom: 'PA03-01' }, og).id), [], 'bỏ lối tắt bài HV khi lớp hết Đang');

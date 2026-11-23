@@ -26,12 +26,15 @@ function taiDuLieu_() {
       thuongHieu: chuan_(cdTab['Thương hiệu mặc định']) || 'EWIT',
       tenHienThi: chuan_(cdTab['Tên hiển thị']) || chuan_(cdTab['Thương hiệu mặc định']) || 'EWIT',
       guiThuChao: chuan_(cdTab['Gửi thư chào']) !== 'Không',
-      giaLap: chuan_(cdTab['Chế độ']) === 'Giả lập'      // Giả lập: tên ổ có [THỬ], ghi sổ _GIA_LAP, cho phép Dọn sạch
+      giaLap: chuan_(cdTab['Chế độ']) === 'Giả lập',     // Giả lập: tên ổ có [THỬ], ghi sổ _GIA_LAP, cho phép Dọn sạch
+      ngoaiBang: dsEmailNgoaiBang_(cdTab['Nhóm ngoài bảng'])   // A7: email script không quản lý (không gỡ, không báo lạ)
     },
+    cdTho: cdTab,
     nhom: {}, dsNhom: [], nguoi: {}, dsNguoi: [], tv: [], vaiTro: {}, cauTruc: [], bang: {}
   };
 
   var bNhom = docTab_(TAB.NHOM); C.bang.NHOM = bNhom;
+  kiemMaNhomTrung_(bNhom.dong);
   bNhom.dong.forEach(function (d) {
     var ma = maNhom_(d['Mã nhóm']);
     if (!ma) return;
@@ -79,6 +82,25 @@ function taiDuLieu_() {
   return C;
 }
 
+/** A8(d): NHOM có Mã nhóm trùng → dừng mọi lượt chạy (thư mục/nhóm Google sẽ bị đổi qua lại). */
+function kiemMaNhomTrung_(dong) {
+  var dem = {}, trung = [];
+  dong.forEach(function (d) {
+    var ma = maNhom_(d['Mã nhóm']);
+    if (!ma) return;
+    dem[ma] = (dem[ma] || 0) + 1;
+    if (dem[ma] === 2) trung.push(ma);
+  });
+  if (trung.length) throw new Error('NHOM có Mã nhóm trùng: ' + trung.join(', ') + '. Sửa cho mỗi mã chỉ còn một dòng rồi chạy lại.');
+}
+
+/** CAI_DAT "Nhóm ngoài bảng": danh sách email cách nhau bằng dấu phẩy → { email: true }. */
+function dsEmailNgoaiBang_(s) {
+  var m = {};
+  chuan_(s).split(/[,;\s]+/).map(email_).forEach(function (e) { if (e) m[e] = true; });
+  return m;
+}
+
 /* ---------- Tên và nhóm ---------- */
 
 /** Bỏ dấu tiếng Việt, chữ thường, ký tự lạ thành "-". "ME02-08" → "me02-08", "Đào tạo" → "dao-tao". */
@@ -92,9 +114,17 @@ function emailNhom_(C, ma, hau) {
   return C.cd.tienTo + slug_(ma) + (hau ? '-' + hau : '') + '@' + C.cd.mien;
 }
 
-/** Hậu tố nhóm Google của một dòng THANH_VIEN. */
-function hauToCua_(t) {
+/** Loại nhóm chỉ có mức Xem cho Thành viên (WD-28 · A2): Quyền "Sửa" ở đây được coi là Xem. */
+var LOAI_CHI_XEM = ['Lớp', 'Level', 'Nhóm nhỏ'];
+
+/**
+ * Hậu tố nhóm Google của một dòng THANH_VIEN. C (tùy chọn): lấy Loại nhóm ở NHOM (đúng hơn cột "Loại nhóm" của THANH_VIEN).
+ * Thành viên + Quyền "Sửa" ở Lớp / Level / Nhóm nhỏ → coi như Xem (hậu tố ''), vì các loại này không cấp quyền cho nhóm -sua.
+ */
+function hauToCua_(t, C) {
   if (t.vai === 'Phụ trách') return LOP_NHOM.PHU_TRACH;
+  var g = C && C.nhom ? C.nhom[t.ma] : null, loai = g ? g.loai : t.loai;
+  if (LOAI_CHI_XEM.indexOf(loai) >= 0) return LOP_NHOM.THANH_VIEN_XEM;
   return t.quyen === 'Sửa' ? LOP_NHOM.THANH_VIEN_SUA : LOP_NHOM.THANH_VIEN_XEM;
 }
 
@@ -167,18 +197,59 @@ function nhomConHieuLuc_(C, ma) {
   return !!g && g.tt !== 'Đóng' && g.tt !== 'Ngừng';
 }
 
-/** Có ổ cá nhân khi: người Đang và có ít nhất một nhóm đang hiệu lực (nhóm không Đóng/Ngừng). */
-function coOCaNhan_(C, n) {
-  return n.tt === 'Đang' && nhomCuaNguoi_(C, n.email).some(function (t) { return nhomConHieuLuc_(C, t.ma); });
+/**
+ * WD-28: Lớp "đầy đủ" khi NHOM có ít nhất một dòng Loại "Nhóm nhỏ" có Thuộc = mã lớp (mọi trạng thái).
+ * Không có nhóm nhỏ → lớp "chỉ xem": thành viên không có ổ riêng / Hồ sơ học tập / nộp bài, chỉ được Xem thư mục lớp.
+ */
+function lopDayDu_(C, maLop) {
+  if (!C._dayDu) {
+    C._dayDu = {};
+    C.dsNhom.forEach(function (g) { if (g.loai === 'Nhóm nhỏ' && g.thuoc) C._dayDu[g.thuoc] = true; });
+  }
+  return !!C._dayDu[maLop];
 }
 
-/** Người này có đang học không (Vai trò HV, HOẶC là Thành viên Đang của một Lớp/Nhóm nhỏ) — dùng cho EF/GV đi học. */
+/** Nhóm `ma` là Lớp chỉ xem (Lớp không có nhóm nhỏ nào). */
+function lopChiXem_(C, ma) {
+  var g = C.nhom[ma];
+  return !!g && g.loai === 'Lớp' && !lopDayDu_(C, ma);
+}
+
+/**
+ * Có ổ cá nhân khi: người Đang và có ít nhất một nhóm đang hiệu lực (nhóm không Đóng/Ngừng) KHÔNG phải Lớp chỉ xem (WD-28).
+ */
+function coOCaNhan_(C, n) {
+  // Lớp chỉ xem chỉ bỏ qua với vai Thành viên; Phụ trách lớp chỉ xem vẫn cần ổ (30_LOP-PHU-TRACH).
+  return n.tt === 'Đang' && nhomCuaNguoi_(C, n.email).some(function (t) {
+    return nhomConHieuLuc_(C, t.ma) && !(t.vai === 'Thành viên' && lopChiXem_(C, t.ma));
+  });
+}
+
+/**
+ * Người này có đang học không (Vai trò HV, HOẶC là Thành viên Đang của một Lớp ĐẦY ĐỦ / Nhóm nhỏ) — dùng cho EF/GV đi học.
+ * Lớp chỉ xem không tính (WD-28).
+ */
 function laNguoiHoc_(C, n) {
   if (n.vaiTro === 'HV') return true;
   return nhomCuaNguoi_(C, n.email).some(function (t) {
     var g = C.nhom[t.ma];
-    return t.vai === 'Thành viên' && g && (g.loai === 'Lớp' || g.loai === 'Nhóm nhỏ');
+    return t.vai === 'Thành viên' && g && ((g.loai === 'Lớp' && lopDayDu_(C, g.ma)) || g.loai === 'Nhóm nhỏ');
   });
+}
+
+/** Thành viên Đang của ít nhất một Lớp (đầy đủ hoặc chỉ xem): dùng cho chỗ đặt lối tắt Lớp đang học / đã học. */
+function hocLopNao_(C, n) {
+  return nhomCuaNguoi_(C, n.email).some(function (t) { var g = C.nhom[t.ma]; return t.vai === 'Thành viên' && g && g.loai === 'Lớp'; });
+}
+
+/** A8(c): dòng THANH_VIEN Đang mang Mã nhóm không còn ở NHOM → ghi cảnh báo (không im lặng bỏ qua). */
+function canhBaoTvMoCoi_(C) {
+  var mo = {};
+  C.tv.forEach(function (t) { if (t.tt === 'Đang' && !C.nhom[t.ma]) (mo[t.ma] = mo[t.ma] || []).push(t.email); });
+  Object.keys(mo).forEach(function (ma) {
+    ghi_('Cảnh báo', 'THANH_VIEN có ' + mo[ma].length + ' dòng Đang mang Mã nhóm "' + ma + '" không còn ở NHOM (bị bỏ qua: sửa Mã nhóm hoặc Gỡ)', mo[ma].join(', '));
+  });
+  return Object.keys(mo).length;
 }
 
 /** Dòng CAU_TRUC có áp cho ổ của người này không (cột "Ổ" của dòng ổ cá nhân). */
