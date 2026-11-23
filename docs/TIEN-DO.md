@@ -24,6 +24,7 @@
    23/11: DAO-TAO-EF (dòng thử, không thành viên) thay bằng **TDT · Tổ đào tạo** (Ban); Nhánh dự án tổ đổi `10_TO-DAO-TAO` (NHOM + Doc đề xuất). Đề xuất thang quyền 4 mức Xem · Nhận xét · Sửa (writer) · Quản lý (fileOrganizer) + vai Thành viên/Phụ trách — chờ Nery chốt. Lưu ý code: CAU_TRUC cột Quyền chỉ hiểu 'sửa/tải lên'→writer, 'nhận xét'→commenter (drVaiTuQuyen_); Phụ trách lớp = writer cố định trong code (muốn Quản lý phải sửa code).
    23/11: viết lại toàn bộ tab HUONG_DAN (66 dòng, mục A–I: bản đồ tab, 4 bước, quy ước mã, thang quyền, menu, giả lập→chạy thật, lưu ý, cài script với link GitHub 9 tệp, tài liệu). Dòng 2 là công thức đọc Chế độ từ CAI_DAT. Cập nhật lại khi đổi quy trình.
    23/11: sắp lại CAU_TRUC bằng moveDimension (giữ nguyên nội dung + ID): 9 Ổ → Quản trị → Tri thức → Thông tin chung → Thư viện EF → Dự án & Ban → Lớp học → Hồ sơ (HS_TL ngay sau HS_NG) → Ổ cá nhân (theo tiền tố 00/05/06/10/11/20/30/40) → BỎ. Script đọc theo Mã, không theo thứ tự dòng.
+   23/11: **Rà soát chuyên gia** (Opus, chỉ đọc): 4 NẶNG, 10 VỪA, 12 NHẸ; kiểm thử 96/96 đạt. Báo cáo `docs/quan-tri-gw/ra-soat-2026-11-23.md`. Nery tạm dừng KIEM_THU ở bước 4 (chưa Áp dụng). Chờ Nery chọn: V3 (ai xem bài nộp ở lớp không chia nhóm nhỏ), V4 (Phụ trách lớp có quyền thư mục VIDEO không), V6 (dữ liệu trẻ em), V7 (lớp Đóng thì hồ sơ học tập ra sao), E2 Phụ trách nhóm nhỏ có tự vào lớp không.
 
 ## Câu hỏi chờ Nery
 - PME-3.2 (NOT START, chưa có ngày) — thêm trạng thái NOT_STARTED? PME-2A/2B có đổi mã thành PME-2.1/2.2 cho khớp EWT-CLASSES không?
