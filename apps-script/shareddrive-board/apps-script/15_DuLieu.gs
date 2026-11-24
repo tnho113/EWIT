@@ -220,7 +220,10 @@ function lopChiXem_(C, ma) {
  */
 function coOCaNhan_(C, n) {
   // Lớp chỉ xem chỉ bỏ qua với vai Thành viên; Phụ trách lớp chỉ xem vẫn cần ổ (30_LOP-PHU-TRACH).
+  // V7 (Nery 24/11): học viên lớp ĐẦY ĐỦ (hoặc nhóm nhỏ) đã Đóng/Ngừng vẫn giữ ổ để xem Hồ sơ học tập của mình.
   return n.tt === 'Đang' && nhomCuaNguoi_(C, n.email).some(function (t) {
+    var g = C.nhom[t.ma];
+    if (t.vai === 'Thành viên' && g && ((g.loai === 'Lớp' && lopDayDu_(C, g.ma)) || g.loai === 'Nhóm nhỏ')) return true;
     return nhomConHieuLuc_(C, t.ma) && !(t.vai === 'Thành viên' && lopChiXem_(C, t.ma));
   });
 }

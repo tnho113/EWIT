@@ -63,6 +63,20 @@ nhom('B1a. lopDayDu_ / coOCaNhan_ / laNguoiHoc_: lớp có nhóm nhỏ (mọi tr
   assert.strictEqual(H.ctx.hocLopNao_(C, C.nguoi['ef1@example.com']), true);
 });
 
+nhom('V7. Lớp đầy đủ Đóng: học viên vẫn có ổ (giữ Hồ sơ); lớp chỉ xem Đóng: không', () => {
+  const H = canh(T => {
+    TV_KES(T);
+    T.NHOM.v.find(r => r[0] === 'ME02')[6] = 'Đóng';
+    T.NHOM.v.find(r => r[0] === 'KES-02')[6] = 'Đóng';
+  });
+  H.ctx.P = { ss: H.bang, nk: [], loi: 0 };
+  const C = H.ctx.taiDuLieu_();
+  const hv = Object.values(C.nguoi).filter(n => n.vaiTro === 'HV' && H.ctx.nhomCuaNguoi_(C, n.email).some(t => t.ma === 'ME02' || C.nhom[t.ma] && C.nhom[t.ma].thuoc === 'ME02'));
+  assert(hv.length > 0, 'có HV lớp ME02 trong dữ liệu mẫu');
+  hv.forEach(n => assert.strictEqual(H.ctx.coOCaNhan_(C, n), true, n.email + ' giữ ổ khi lớp đầy đủ Đóng'));
+  assert.strictEqual(H.ctx.coOCaNhan_(C, C.nguoi['hv5@example.com']), false, 'lớp chỉ xem Đóng: không ổ');
+});
+
 nhom('B1a2. Phụ trách lớp chỉ xem (không nhóm nào khác) vẫn có ổ cá nhân', () => {
   const H = canh(T => {
     TV_KES(T);
